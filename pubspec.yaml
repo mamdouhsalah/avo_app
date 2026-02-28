@@ -1,0 +1,47 @@
+name: avo_app
+description: "AVO Medical Application"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Networking
+  dio: ^5.4.0
+
+  # State Management
+  provider: ^6.1.2
+
+  # Icons
+  flutter_svg: ^2.0.10+1
+  flutter_screenutil: ^5.9.3
+  image_picker: ^1.2.1
+  google_fonts: ^8.0.2
+  flutter_secure_storage: ^10.0.0
+  table_calendar: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/imgs/logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    -  assets/imgs/logo/
+    -  assets/imgs/onboard/onboard1.svg
+    -  assets/imgs/onboard/onboard2.svg
+    -  assets/imgs/onboard/onboard3.svg
