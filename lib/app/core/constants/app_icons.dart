@@ -21,4 +21,5 @@ class AppIcons {
   static const IconData client = Icons.people;
   static const IconData appointment = Icons.event;
   static const IconData pharmacy = Icons.local_pharmacy;
+  
 }

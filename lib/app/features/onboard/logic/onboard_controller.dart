@@ -1,6 +1,6 @@
-import 'package:avo_app/features/onboard/data/onboard_data.dart';
+import 'package:avo_app/app/core/models/onboard_model.dart';
+import 'package:avo_app/app/features/onboard/data/onboard_data.dart';
 import 'package:flutter/material.dart';
-import 'package:avo_app/core/models/onboard_model.dart';
 
 class OnboardController {
   final PageController pageController = PageController();
@@ -18,7 +18,7 @@ class OnboardController {
   void nextPage() {
     if (currentIndex < slides.length - 1) {
       pageController.nextPage(
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
