@@ -10,6 +10,8 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      
+      // light color scheme
       colorScheme: const ColorScheme.light(
         primary: AppColors.lightPrimary,
         onPrimary: Colors.white,
@@ -17,15 +19,17 @@ class AppTheme {
         onSecondary: AppColors.lightPrimary,
         surface: AppColors.lightBackground,
         onSurface: AppColors.lightText,
-        background: AppColors.lightBackground,
-        onBackground: AppColors.lightText,
         error: AppColors.error,
         onError: Colors.white,
         outline: AppColors.lightBorder,
         outlineVariant: AppColors.lightDivider,
         shadow: AppColors.lightShadow,
       ),
+
+      // light scaffold 
       scaffoldBackgroundColor: AppColors.lightBackground,
+      
+      // app bar theme
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.lightBackground,
         foregroundColor: AppColors.lightText,
@@ -38,20 +42,28 @@ class AppTheme {
           fontSize: 24.sp,
           fontWeight: FontWeight.bold,
         ),
+        
+        // light icon theme
         iconTheme: IconThemeData(
           color: AppColors.lightIcon,
           size: 24.sp,
         ),
+
+        // action icon theme => the icons on the right side of the app bar
         actionsIconTheme: IconThemeData(
           color: AppColors.lightIcon,
           size: 24.sp,
         ),
+
+        // system overlay style for status bar
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
         ),
       ),
+
+      // light bottom navigation bar theme
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.lightBackground,
         selectedItemColor: AppColors.lightPrimary,
@@ -65,6 +77,8 @@ class AppTheme {
         unselectedLabelStyle:
             TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w400),
       ),
+
+      // light navigation bar theme
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.lightBackground,
         indicatorColor: AppColors.lightIconWithTranceparent,
@@ -90,6 +104,8 @@ class AppTheme {
           );
         }),
       ),
+
+      // light elevated button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.lightButton,
@@ -110,6 +126,8 @@ class AppTheme {
           ),
         ),
       ),
+
+      // light outlined button theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.lightPrimary,
@@ -126,6 +144,8 @@ class AppTheme {
           ),
         ),
       ),
+      
+      // light text button theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.lightPrimary,
@@ -140,6 +160,8 @@ class AppTheme {
           ),
         ),
       ),
+
+      // light input decoration theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.lightBackground,
@@ -185,6 +207,8 @@ class AppTheme {
         prefixIconColor: AppColors.lightIcon,
         suffixIconColor: AppColors.lightSecondaryText,
       ),
+
+      // light card theme
       cardTheme: CardThemeData(
         color: AppColors.lightBackground,
         shadowColor: AppColors.lightShadow,
@@ -194,15 +218,21 @@ class AppTheme {
         ),
         margin: EdgeInsets.all(8.w),
       ),
+
+      // light divider theme
       dividerTheme: DividerThemeData(
         color: AppColors.lightDivider,
         thickness: 1.h,
         space: 1.h,
       ),
+
+      // light icon theme
       iconTheme: IconThemeData(
         color: AppColors.lightIcon,
         size: 24.sp,
       ),
+
+      // light list tile theme
       listTileTheme: ListTileThemeData(
         iconColor: AppColors.lightIcon,
         textColor: AppColors.lightText,
@@ -212,6 +242,8 @@ class AppTheme {
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       ),
+
+      // light snack bar theme
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.lightText,
         contentTextStyle: TextStyle(color: Colors.white, fontSize: 14.sp),
@@ -231,6 +263,7 @@ class AppTheme {
     );
   }
 
+// dark theme 
   static ThemeData get darkTheme {
     const darkBg = Color(0xFF121212);
     const darkSurface = Color(0xFF1E1E1E);
@@ -238,6 +271,8 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: darkBg,
+      
+      // dark color scheme
       colorScheme: const ColorScheme.dark(
         primary: AppColors.darkPrimary,
         onPrimary: Colors.white,
@@ -245,10 +280,10 @@ class AppTheme {
         onSecondary: AppColors.darkPrimary,
         surface: AppColors.darkBackground,
         onSurface: AppColors.darkText,
-        background: AppColors.darkBackground,
-        onBackground: AppColors.darkText,
         error: AppColors.error,
       ),
+
+      // dark app bar theme
       appBarTheme: AppBarTheme(
         backgroundColor: darkBg,
         foregroundColor: AppColors.darkText,

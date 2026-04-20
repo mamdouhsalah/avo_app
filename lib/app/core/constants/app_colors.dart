@@ -21,7 +21,7 @@ class AppColors {
 
   // Dark Mode
   static const Color darkPrimary = Color(0xff00A991);
-  static const Color darkBackground = Color(0xff00000);
+  static const Color darkBackground = Color(0x0ff00000);
   static const Color darkText = Color(0xFFFFFFFF);
   static const Color darkButton = Color(0xff00A991);
   static const Color darkSecondaryText = Color(0xffC4C2C2);
