@@ -43,6 +43,8 @@ flutter:
 
   assets:
     -  assets/imgs/logo/
-    -  assets/imgs/onboard/onboard1.svg
-    -  assets/imgs/onboard/onboard2.svg
-    -  assets/imgs/onboard/onboard3.svg
+    -  assets/imgs/doctor/
+    -  assets/imgs/onboard/
+    -  assets/imgs/profile/
+    -  assets/imgs/chatbut/
+    -  assets/imgs/categories/
