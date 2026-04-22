@@ -248,6 +248,8 @@ class AppTheme {
         background: AppColors.darkBackground,
         onBackground: AppColors.darkText,
         error: AppColors.error,
+        outline: AppColors.darkBorder,
+        outlineVariant: AppColors.darkDivider,
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: darkBg,
@@ -276,6 +278,50 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8.r),
         ),
         margin: EdgeInsets.all(8.w),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.darkDivider, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.darkDivider, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.error, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        ),
+        hintStyle: TextStyle(
+          color: AppColors.darkSecondaryText,
+          fontSize: 14.sp,
+        ),
+        labelStyle: TextStyle(
+          color: AppColors.darkSecondaryText,
+          fontSize: 14.sp,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: AppColors.darkPrimary,
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w500,
+        ),
+        errorStyle: TextStyle(
+          color: AppColors.error,
+          fontSize: 12.sp,
+        ),
+        prefixIconColor: AppColors.darkIcon,
+        suffixIconColor: AppColors.darkSecondaryText,
       ),
     );
   }

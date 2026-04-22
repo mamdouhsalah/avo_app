@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/constants/app_spacing.dart';
+import 'package:avo_app/app/features/auth/screens/login_screen.dart';
 import 'package:avo_app/app/features/onboard/logic/onboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -147,6 +148,13 @@ class _OnboardScreenState extends State<OnboardScreen> {
                     onTap: () {
                       if (_controller.currentIndex ==
                           _controller.slides.length - 1) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const LoginScreen(),
+                          ),
+                        );
                       } else {
                         _controller.nextPage();
                         setState(() {});
