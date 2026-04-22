@@ -3,8 +3,8 @@ import 'package:avo_app/app/features/appointment/data/mock_data.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/appointment_card.dart';
 import 'package:flutter/material.dart';
 
-class UpcomingAppointmentScreen extends StatelessWidget {
-  const UpcomingAppointmentScreen({super.key});
+class CanceledAppointmentsScreen extends StatelessWidget {
+  const CanceledAppointmentsScreen  ({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
             title: AppStrings.appName,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.dark,
+            themeMode: ThemeMode.light,
             home: const AppoiontmentScreen(),
             locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
