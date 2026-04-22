@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
+import 'package:avo_app/app/features/appointment/screens/upcomming_appointment.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/appointment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
@@ -41,9 +42,8 @@ class AppoiontmentScreen extends StatelessWidget {
         body: SafeArea(
         child: TabBarView(
         children: [
-          SingleChildScrollView(
-            child: AppointmentCard(appointment: upcomingAppointments[0]),
-          ),
+          UpcomingAppointmentScreen(),
+          
           SingleChildScrollView(
             child: AppointmentCard(appointment: completedAppointments[0]),
           ),
