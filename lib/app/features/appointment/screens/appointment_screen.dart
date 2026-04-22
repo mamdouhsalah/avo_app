@@ -1,6 +1,7 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/features/appointment/screens/canceled_appointments.dart';
+import 'package:avo_app/app/features/appointment/screens/completed_appointments.dart';
 import 'package:avo_app/app/features/appointment/screens/upcomming_appointments.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/appointment_card.dart';
 import 'package:flutter/material.dart';
@@ -44,9 +45,7 @@ class AppoiontmentScreen extends StatelessWidget {
         child: TabBarView(
         children: [
           UpcomingAppointmentsScreen(),
-                      SingleChildScrollView(
-            child: AppointmentCard(appointment: canceledAppointments[0]),
-          ),
+          CompletedAppointmentsScreen(),
           CanceledAppointmentsScreen(),
         ],
       ),
