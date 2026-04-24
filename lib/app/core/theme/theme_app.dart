@@ -104,6 +104,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12.r),
           ),
           textStyle: TextStyle(
+            inherit: false,
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             letterSpacing: .3,
@@ -120,6 +121,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12.r),
           ),
           textStyle: TextStyle(
+            inherit: false,
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             letterSpacing: .3,
@@ -134,6 +136,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(8.r),
           ),
           textStyle: TextStyle(
+            inherit: false,
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
             letterSpacing: .2,
@@ -249,6 +252,45 @@ class AppTheme {
         onBackground: AppColors.darkText,
         error: AppColors.error,
       ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.darkPrimary,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: AppColors.darkSecondaryText,
+          disabledForegroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          minimumSize: Size(double.infinity, 52.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          textStyle: TextStyle(
+            inherit: false,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+            letterSpacing: .3,
+          ),
+        ),
+      ),
+
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.darkPrimary,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          textStyle: TextStyle(
+            inherit: false,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            letterSpacing: .2,
+          ),
+        ),
+      ),
+
       appBarTheme: AppBarTheme(
         backgroundColor: darkBg,
         foregroundColor: AppColors.darkText,

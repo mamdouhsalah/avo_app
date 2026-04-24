@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app/features/chatbot/screens/chat_screen.dart';
+import 'app/features/reminder/screens/reminder_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return DevicePreview(
-          enabled: !kReleaseMode,
+          // enabled: !kReleaseMode,
+          enabled: false,
           builder: (context) => MaterialApp(
             debugShowCheckedModeBanner: true,
             title: AppStrings.appName,
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
             //home: const OnboardScreen(),
-            home: const ChatScreen(),
+            home: const ReminderScreen(),
             locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,
