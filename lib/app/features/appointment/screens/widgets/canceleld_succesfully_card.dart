@@ -1,10 +1,12 @@
+import 'package:avo_app/app/core/constants/app_svg.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class CancelAppointmentCard extends StatelessWidget {
+class CancelSuccessfullyAppointmentCard extends StatelessWidget {
   final String doctorName;
-  const CancelAppointmentCard({super.key, required this.doctorName});
+  const CancelSuccessfullyAppointmentCard({super.key, required this.doctorName});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class CancelAppointmentCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.r),
           ),
           width: 375.w,
-          height: 267.h,
+          height: 333.h,
           child: Column(
             children: [
               // the top line
@@ -38,12 +40,17 @@ class CancelAppointmentCard extends StatelessWidget {
                   ),
                 ),
               ),
-        
+
+              SizedBox(height: 21.h),
+              
+              // canceled successfully icon
+              SvgPicture.asset(AppSvg.doneSuccessfully, width: 55.w, height: 55.h,),
+
               SizedBox(height: 16.h),
               // cancel appointment text
         
               Text(
-                'Cancel Appointment',
+                'Cancel Successfully',
                 style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
@@ -54,7 +61,7 @@ class CancelAppointmentCard extends StatelessWidget {
         
               // are you sure message
               Text(
-                'Are You sure you want to cancel appointment  of D. $doctorName ?',
+                'Your appointment  with $doctorName is canceled successfully',
 
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16.sp, color: Colors.grey),
