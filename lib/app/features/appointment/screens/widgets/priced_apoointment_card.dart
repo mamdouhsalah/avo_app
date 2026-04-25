@@ -15,7 +15,7 @@ class PricedAppointmentCard extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.only(left: 18.0.w , top: 16.h),
+        padding: EdgeInsets.only(top: 16.h),
         child: SizedBox(
           height: 106.h,
           child: Container(
@@ -24,15 +24,8 @@ class PricedAppointmentCard extends StatelessWidget {
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(16.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.onSurface.withOpacity(.1),
-                    blurRadius: 5.r,
-                    offset: Offset(0, 1),
-                    spreadRadius: 1.r
-                  ),
-                ],
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: colorScheme.primary, width: 2),
                 
               ),
               child: Stack(children: [
