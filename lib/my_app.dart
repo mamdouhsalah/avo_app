@@ -2,6 +2,7 @@ import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/features/appointment/screens/appointment_screen.dart';
 import 'package:avo_app/app/features/appointment/screens/detailed_appointmenet.dart';
+import 'package:avo_app/app/features/payment/screens/payment_details.dart';
 import 'package:avo_app/app/features/payment/screens/payment_methods.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
@@ -25,8 +26,8 @@ class MyApp extends StatelessWidget {
             title: AppStrings.appName,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.light,
-            home: const PaymentMethods(),
+            themeMode: ThemeMode.dark,
+            home: const PaymentDetails(),
             locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,

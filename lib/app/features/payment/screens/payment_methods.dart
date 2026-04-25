@@ -102,8 +102,8 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                     Expanded(child: Text(method.name, style: TextStyle(color: colorScheme.onSurface)) ),
                      
                     SizedBox(width: 12.w),
-                    // Method SVG
-                    SvgPicture.asset(method.svgPath, width: 40.w, height: 40.h , color: colorScheme.onSurface,),
+                    // Method SVG // we need to handle the color of svg based on mode (dark or light) but for now we will use the default color of svg
+                    SvgPicture.asset(method.svgPath, width: 40.w, height: 40.h , ),
               
                   ],
                 ),
