@@ -1,3 +1,4 @@
+import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/features/appointment/data/mock_data.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/info_card.dart';
@@ -54,6 +55,11 @@ class DetailedAppointmenet extends StatelessWidget {
              
              // message to doctor
              Message(), 
+
+             SizedBox(height: 50.h),
+
+             // continue button
+             MainButton(text: 'Continue', onPressed: () {} ,width: 343, height: 48,)
             ]
            )
           ),
