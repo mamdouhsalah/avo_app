@@ -1,6 +1,7 @@
 import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/features/appointment/screens/appointment_screen.dart';
+import 'package:avo_app/app/features/appointment/screens/detailed_appointmenet.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,8 @@ class MyApp extends StatelessWidget {
             title: AppStrings.appName,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.dark,
-            home: const AppoiontmentScreen(),
+            themeMode: ThemeMode.light,
+            home: const DetailedAppointmenet(),
             locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,

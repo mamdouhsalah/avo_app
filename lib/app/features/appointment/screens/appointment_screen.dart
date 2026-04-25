@@ -48,7 +48,7 @@ class AppoiontmentScreen extends StatelessWidget {
         body: SafeArea(
         child: TabBarView(
         children: [
-          PaymentSuccessfullyCard(doctorName: upcomingAppointments[0].doctorName),
+          UpcomingAppointmentsScreen(),
           CompletedAppointmentsScreen(),
           CanceledAppointmentsScreen(),
         ],
