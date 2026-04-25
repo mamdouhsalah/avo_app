@@ -4,6 +4,7 @@ import 'package:avo_app/app/features/appointment/screens/canceled_appointments.d
 import 'package:avo_app/app/features/appointment/screens/completed_appointments.dart';
 import 'package:avo_app/app/features/appointment/screens/upcomming_appointments.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/appointment_card.dart';
+import 'package:avo_app/app/features/appointment/screens/widgets/selected_appointment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
 import 'package:avo_app/app/features/appointment/data/mock_data.dart';
@@ -44,7 +45,7 @@ class AppoiontmentScreen extends StatelessWidget {
         body: SafeArea(
         child: TabBarView(
         children: [
-          UpcomingAppointmentsScreen(),
+          SelectedAppointmentCard(appointment: upcomingAppointments[0]),
           CompletedAppointmentsScreen(),
           CanceledAppointmentsScreen(),
         ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+
 class RatingStars extends StatelessWidget {
   final double rating;
 
@@ -7,26 +9,33 @@ class RatingStars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (index) {
+        IconData icon;
+        Color color;
+
         if (index < rating.floor()) {
-          return Padding(
-            padding: EdgeInsets.only(right: 4.0.w),
-            child: Icon(Icons.star, color: colorScheme.primary ,size: 45.sp,),
-          );
-        } else if (index < rating) {  
-          return Padding(
-            padding: EdgeInsets.only(right: 4.0.w),
-            child: Icon(Icons.star_half, color: colorScheme.primary, size: 45.sp),
-          );
+          icon = Icons.star;
+          color = colorScheme.primary;
+        } else if (index < rating) {
+          icon = Icons.star_half;
+          color = colorScheme.primary;
         } else {
-          return Padding(
-            padding: EdgeInsets.only(right: 4.0.w),
-            child: Icon(Icons.star_border, color: Colors.grey, size: 45.sp),
-          );
+          icon = Icons.star_border;
+          color = Colors.grey;
         }
+
+        return Padding(
+          padding: EdgeInsets.only(right: 4.w),
+          child: Icon(
+            icon,
+            color: color,
+            size: 45.sp,
+          ),
+        );
       }),
     );
   }
