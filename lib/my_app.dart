@@ -5,6 +5,7 @@ import 'package:avo_app/app/features/appointment/screens/detailed_appointmenet.d
 import 'package:avo_app/app/features/cart/screens/cart_screen.dart';
 import 'package:avo_app/app/features/payment/screens/payment_details.dart';
 import 'package:avo_app/app/features/payment/screens/payment_methods.dart';
+import 'package:avo_app/app/features/tracking_order/screens/tracking_screen.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +28,8 @@ class MyApp extends StatelessWidget {
             title: AppStrings.appName,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.dark,
-            home: const CartScreen(),
+            themeMode: ThemeMode.light,
+            home: const TrackingScreen(),
             locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,
