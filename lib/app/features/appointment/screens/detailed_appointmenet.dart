@@ -1,6 +1,7 @@
 import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/features/appointment/data/mock_data.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/info_card.dart';
+import 'package:avo_app/app/features/appointment/screens/widgets/message.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/priced_apoointment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,7 +49,11 @@ class DetailedAppointmenet extends StatelessWidget {
                       title: 'Time',
                       value: '${upcomingAppointments[0].timeStart} - ${upcomingAppointments[0].timeEnd}'),
                 ],
-             )
+             ),
+             SizedBox(height:  24.5.h),
+             
+             // message to doctor
+             Message(), 
             ]
            )
           ),
