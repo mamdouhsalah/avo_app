@@ -8,6 +8,7 @@ class RegisterRequestModel {
   final String dateOfBirth;
   final num height;
   final num weight;
+  final String? image;
 
   RegisterRequestModel({
     required this.fullName,
@@ -19,6 +20,7 @@ class RegisterRequestModel {
     required this.dateOfBirth,
     required this.height,
     required this.weight,
+    this.image,
   });
 
   Map<String, dynamic> toJson() {
@@ -32,6 +34,7 @@ class RegisterRequestModel {
       'date_of_birth': dateOfBirth,
       'height': height,
       'weight': weight,
+      if (image != null) 'image': image,
     };
   }
 }
