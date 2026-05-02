@@ -2,8 +2,12 @@ class DoctorModel {
   final String id;
   final String name;
   final String specialty;
+  final String? hospital;
   final double rating;
   final int reviews;
+  final double hourlyRate;
+  final int experience;
+  final int patientsTreated;
   final String openTime;
   final String closeTime;
   final bool isFavorite;
@@ -13,25 +17,15 @@ class DoctorModel {
     required this.id,
     required this.name,
     required this.specialty,
+    this.hospital,
     required this.rating,
     required this.reviews,
+    this.hourlyRate = 0.0,
+    this.experience = 0,
+    this.patientsTreated = 0,
     required this.openTime,
     required this.closeTime,
     this.isFavorite = false,
     this.imageUrl,
   });
-
-  DoctorModel copyWith({bool? isFavorite}) {
-    return DoctorModel(
-      id: id,
-      name: name,
-      specialty: specialty,
-      rating: rating,
-      reviews: reviews,
-      openTime: openTime,
-      closeTime: closeTime,
-      isFavorite: isFavorite ?? this.isFavorite,
-      imageUrl: imageUrl,
-    );
-  }
 }

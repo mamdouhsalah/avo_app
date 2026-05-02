@@ -18,6 +18,48 @@ class PharmacyModel {
     required this.openTime,
     required this.closeTime,
     this.imageUrl,
-    required this.isFavorite ,
+    required this.isFavorite,
   });
+
+  PharmacyModel copyWith({bool? isFavorite}) {
+    return PharmacyModel(
+      id: id,
+      name: name,
+      type: type,
+      rating: rating,
+      reviews: reviews,
+      openTime: openTime,
+      closeTime: closeTime,
+      imageUrl: imageUrl,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
+
+  factory PharmacyModel.fromJson(Map<String, dynamic> json) {
+    return PharmacyModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      type: json['type'] ?? '',
+      rating: (json['rating'] ?? 0.0).toDouble(),
+      reviews: json['reviews'] ?? 0,
+      openTime: json['open_time'] ?? '',
+      closeTime: json['close_time'] ?? '',
+      imageUrl: json['image_url'],
+      isFavorite: json['is_favorite'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'type': type,
+      'rating': rating,
+      'reviews': reviews,
+      'open_time': openTime,
+      'close_time': closeTime,
+      'image_url': imageUrl,
+      'is_favorite': isFavorite,
+    };
+  }
 }

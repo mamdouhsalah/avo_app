@@ -25,4 +25,26 @@ class MedicineModel {
       imageUrl: imageUrl,
     );
   }
+
+  factory MedicineModel.fromJson(Map<String, dynamic> json) {
+    return MedicineModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      dosage: json['dosage'] ?? '',
+      time: json['time'] ?? '',
+      isTaken: json['is_taken'] ?? false,
+      imageUrl: json['image_url'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'dosage': dosage,
+      'time': time,
+      'is_taken': isTaken,
+      'image_url': imageUrl,
+    };
+  }
 }

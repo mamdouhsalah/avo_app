@@ -62,13 +62,11 @@ class _OnboardScreenState extends State<OnboardScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        /// IMAGE
                         SvgPicture.asset(slide.image,
                             height: 343.h, width: 355.w, fit: BoxFit.contain),
 
                         SizedBox(height: 24.h),
 
-                        /// DOTS
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
@@ -91,7 +89,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
 
                         SizedBox(height: 24.h),
 
-                        /// TITLE
                         Text(
                           slide.title,
                           textAlign: TextAlign.center,
@@ -103,7 +100,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
 
                         SizedBox(height: 16.h),
 
-                        /// DESCRIPTION
                         Text(
                           slide.description,
                           textAlign: TextAlign.center,
@@ -162,7 +158,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           Icons.navigate_next_outlined,
                           color: Theme.of(context).colorScheme.onPrimary,
                           size: 40.sp,
-                          // icon responsive to circle
                         ),
                       ),
                     ),

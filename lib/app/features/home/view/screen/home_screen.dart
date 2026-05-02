@@ -1,12 +1,12 @@
 import 'package:avo_app/app/features/home/data/home_data.dart';
 import 'package:avo_app/app/features/home/view/screen/catogery_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/search_Screen.dart';
-import 'package:avo_app/app/features/home/view/widget/appointment_card.dart';
+import 'package:avo_app/app/core/shared/appointment_card.dart';
 import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
-import 'package:avo_app/app/features/home/view/widget/custom_navigationbar.dart';
-import 'package:avo_app/app/features/home/view/widget/bestdoctor_card.dart';
-import 'package:avo_app/app/features/home/view/widget/medicine_card.dart';
-import 'package:avo_app/app/features/home/view/widget/bestpharmacy_card.dart';
+import 'package:avo_app/app/core/shared/custom_navigationbar.dart';
+import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
+import 'package:avo_app/app/core/shared/medicine_card.dart';
+import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
 import 'package:avo_app/app/features/home/view/widget/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeViewModel>();
+    final user = vm.currentUser;
 
     return Scaffold(
       body: Stack(
@@ -67,16 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   ],
                 ),
-
-                /// 🔹 Content
                 SliverToBoxAdapter(
                   child: Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 9.w, vertical: 0.h),
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 1.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// 🔹 Header
                         Row(
                           children: [
                             Container(
@@ -92,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: ClipOval(
                                 child: Image.asset(
-                                  vm.user.first.image.toString(),
+                                  user.image.toString(),
                                   width: 55.r,
                                   height: 55.r,
                                   fit: BoxFit.cover,
@@ -113,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 Text(
-                                  vm.user.first.name,
+                                  user.name,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14.sp,
@@ -188,7 +186,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SizedBox(height: 25.h),
 
-                        /// 🔹 Appointments
                         SectionHeader(
                           title: 'Upcoming Appointments',
                           onSeeAll: () => const SearchScreen(),
@@ -210,7 +207,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SizedBox(height: 24.h),
 
-                        /// 🔹 Medicine
                         SectionHeader(
                           title: "Upcoming Medicine",
                           onSeeAll: () => const SearchScreen(),
@@ -232,7 +228,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SizedBox(height: 24.h),
 
-                        /// 🔹 Categories
                         SectionHeader(
                           title: 'Categories',
                           onSeeAll: () => const CatogeryScreen(),
@@ -269,7 +264,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SizedBox(height: 24.h),
 
-                        /// 🔹 Doctors
                         SectionHeader(
                           title: "Best Doctors",
                           onSeeAll: () => const SearchScreen(),
@@ -288,9 +282,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
 
                         SizedBox(height: 16.h),
-
-                        /// 🔹 Pharmacies
-                        SectionHeader(
+    
+                          SectionHeader(
                           title: "Best Pharmacies",
                           onSeeAll: () => const SearchScreen(),
                         ),

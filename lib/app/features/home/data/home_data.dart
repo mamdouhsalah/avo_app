@@ -3,55 +3,75 @@ import 'package:avo_app/app/core/models/catogery_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/medicine_model.dart';
 import 'package:avo_app/app/core/models/pharmacy_model.dart';
-import 'package:avo_app/app/core/models/user_model.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/core/models/timerange_model.dart';
 import 'package:flutter/material.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  // ── Static User ─────────────────────────────
-  final List<UserModel> user = [
-    const UserModel(
-      id: '1',
-      name: 'Sofia Andro',
-      email: 'sofia@email.com',
-      phone: '+201234567890',
-      image: 'assets/imgs/profile/profile.png',
-      role: 'patient',
-      isVerified: true,
-    )
-  ];
+  final PatientModel currentUser = const PatientModel(
+    id: '1',
+    name: 'Sofia Andro',
+    email: 'sofia@email.com',
+    phone: '+201234567890',
+    image: 'assets/imgs/profile/profile.png',
+    role: 'patient',
+    isVerified: true,
+  );
 
-  // ── Data ───────────────────────────────────
   final List<AppointmentModel> appointments = [
-    const AppointmentModel(
+    AppointmentModel(
+      id: '1',
+      doctor: const DoctorModel(
         id: '1',
-        doctorName: 'Jason Smith',
+        name: 'Jennifer Miller',
         specialty: 'Neurosurgeon',
-        rating: 4.8,
-        reviews: 120,
-        date: '2 Oct',
-        time: '10:00am',
-        imageUrl: 'assets/imgs/doctor/doctor1.png'),
-    const AppointmentModel(
-      id: '2',
-      doctorName: 'Melisa Josef',
-      specialty: 'Pediatrician | Mercy Hospital',
-      rating: 3.9,
-      reviews: 85,
-      date: '5 Oct',
-      time: '10:30 am - 05:30 pm',
-      imageUrl: 'assets/imgs/doctor/doctor2.png',
+        hospital: 'City Hospital', 
+        rating: 4.4,
+        reviews: 98,
+        hourlyRate: 50,
+        experience: 10,
+        patientsTreated: 500,
+        openTime: '10:30 am',
+        closeTime: '06:30 pm',
+        isFavorite: false,
+        imageUrl: 'assets/imgs/doctor/doctor1.png',
+      ),
+      rating: 4.5,
+      isFavorite: false,
+      timeRange: TimeRange(
+        start: const TimeOfDay(hour: 10, minute: 30), 
+        end: const TimeOfDay(hour: 12, minute: 30),
+      ),
+      date: DateTime.now().add(const Duration(days: 1)),
     ),
-    const AppointmentModel(
-        id: '3',
-        doctorName: 'Sarah Connor',
+    AppointmentModel(
+      id: '2',
+      doctor: const DoctorModel(
+        id: '2',
+        name: 'Laura White',
         specialty: 'Cardiologist',
-        rating: 4.9,
-        reviews: 210,
-        date: '10 Oct',
-        time: '02:00pm',
-        imageUrl: 'assets/imgs/doctor/doctor3.png'),
+        hospital: 'Heart Care Center',
+        rating: 4.2,
+        reviews: 76,
+        hourlyRate: 60,
+        experience: 8,
+        patientsTreated: 350,
+        openTime: '12:00 pm',
+        closeTime: '08:30 pm',
+        isFavorite: true,
+        imageUrl: 'assets/imgs/doctor/doctor2.png',
+      ),
+      rating: 4.0,
+      isFavorite: true,
+      timeRange: TimeRange(
+        start: const TimeOfDay(hour: 14, minute: 0), 
+        end: const TimeOfDay(hour: 15, minute: 0),
+      ),
+      date: DateTime.now().add(const Duration(days: 3)),
+    ),
   ];
 
+  // ── Medicines ──────────────────────────────
   final List<MedicineModel> medicines = [
     const MedicineModel(
       id: '1',
@@ -84,46 +104,25 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  final List<CategoryModel> categories = [
-    const CategoryModel(
-        id: '1', name: 'Heart', image: 'assets/imgs/categories/heart.png'),
-    const CategoryModel(
-        id: '2', name: 'Dental', image: 'assets/imgs/categories/Dental.png'),
-    const CategoryModel(
-        id: '3', name: 'Kidney', image: 'assets/imgs/categories/Kidney.png'),
-    const CategoryModel(
-        id: '4', name: 'Stomach', image: 'assets/imgs/categories/Stomach.png'),
-    const CategoryModel(
-        id: '5', name: 'Lung', image: 'assets/imgs/categories/Lung.png'),
-    const CategoryModel(
-        id: '6', name: 'Brain', image: 'assets/imgs/categories/brain.png'),
-    const CategoryModel(
-        id: '7',
-        name: 'Pediatrics',
-        image: 'assets/imgs/categories/Pediatrics.png'),
-    const CategoryModel(
-        id: '8', name: 'Liver', image: 'assets/imgs/categories/Liver.png'),
-    const CategoryModel(
-        id: '9', name: 'ENT', image: 'assets/imgs/categories/ENT.png'),
-    const CategoryModel(
-        id: '10',
-        name: 'Ophthalmology',
-        image: 'assets/imgs/categories/Ophthalmology.png'),
-    const CategoryModel(
-        id: '11',
-        name: 'Orthopedics',
-        image: 'assets/imgs/categories/Orthopedics.png'),
-    const CategoryModel(
-        id: '12',
-        name: 'Gynecology',
-        image: 'assets/imgs/categories/Gynecology.png'),
-    const CategoryModel(
-        id: '13',
-        name: 'Dermatology',
-        image: 'assets/imgs/categories/Dermatology.png'),
+  // ── Categories ─────────────────────────────
+  final List<CategoryModel> categories = const [
+    CategoryModel(id: '1', name: 'Heart', image: 'assets/imgs/categories/heart.png'),
+    CategoryModel(id: '2', name: 'Dental', image: 'assets/imgs/categories/Dental.png'),
+    CategoryModel(id: '3', name: 'Kidney', image: 'assets/imgs/categories/Kidney.png'),
+    CategoryModel(id: '4', name: 'Stomach', image: 'assets/imgs/categories/Stomach.png'),
+    CategoryModel(id: '5', name: 'Lung', image: 'assets/imgs/categories/Lung.png'),
+    CategoryModel(id: '6', name: 'Brain', image: 'assets/imgs/categories/brain.png'),
+    CategoryModel(id: '7', name: 'Pediatrics', image: 'assets/imgs/categories/Pediatrics.png'),
+    CategoryModel(id: '8', name: 'Liver', image: 'assets/imgs/categories/Liver.png'),
+    CategoryModel(id: '9', name: 'ENT', image: 'assets/imgs/categories/ENT.png'),
+    CategoryModel(id: '10', name: 'Ophthalmology', image: 'assets/imgs/categories/Ophthalmology.png'),
+    CategoryModel(id: '11', name: 'Orthopedics', image: 'assets/imgs/categories/Orthopedics.png'),
+    CategoryModel(id: '12', name: 'Gynecology', image: 'assets/imgs/categories/Gynecology.png'),
+    CategoryModel(id: '13', name: 'Dermatology', image: 'assets/imgs/categories/Dermatology.png'),
   ];
 
-  final List<DoctorModel> bestDoctors = [
+  // ── Best Doctors ───────────────────────────
+  final List<DoctorModel> bestDoctors = const [
     DoctorModel(
       id: '1',
       name: 'Jennifer Miller',
@@ -157,31 +156,10 @@ class HomeViewModel extends ChangeNotifier {
       isFavorite: false,
       imageUrl: 'assets/imgs/doctor/doctor3.png',
     ),
-    DoctorModel(
-      id: '4',
-      name: 'Emily Davis',
-      specialty: 'Pediatrician',
-      rating: 4.7,
-      reviews: 120,
-      openTime: '09:00 am',
-      closeTime: '05:00 pm',
-      isFavorite: true,
-      imageUrl: 'assets/imgs/doctor/doctor4.png',
-    ),
-    DoctorModel(
-      id: '5',
-      name: 'Michael Brown',
-      specialty: 'Dermatologist',
-      rating: 4.6,
-      reviews: 145,
-      openTime: '11:00 am',
-      closeTime: '07:00 pm',
-      isFavorite: false,
-      imageUrl: 'assets/imgs/doctor/doctor5.png',
-    ),
   ];
 
-  final List<PharmacyModel> bestPharmacies = [
+  // ── Best Pharmacies ────────────────────────
+  final List<PharmacyModel> bestPharmacies = const [
     PharmacyModel(
       id: '1',
       name: 'City Pharmacy',
@@ -203,17 +181,6 @@ class HomeViewModel extends ChangeNotifier {
       closeTime: '02:30 pm',
       isFavorite: true,
       imageUrl: 'assets/imgs/doctor/doctor3.png',
-    ),
-    PharmacyModel(
-      id: '3',
-      name: 'Care Pharmacy',
-      type: 'Pharmacy | ABC Clinic',
-      rating: 4.4,
-      reviews: 92,
-      openTime: '10:30 am',
-      closeTime: '08:30 pm',
-      isFavorite: false,
-      imageUrl: 'assets/imgs/doctor/doctor4.png',
     ),
   ];
 }

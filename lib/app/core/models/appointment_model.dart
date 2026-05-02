@@ -1,21 +1,20 @@
+import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:avo_app/app/core/models/timerange_model.dart';
+
 class AppointmentModel {
   final String id;
-  final String doctorName;
-  final String specialty;
+  final DoctorModel doctor;
   final double rating;
-  final int reviews;
-  final String date;
-  final String time;
-  final String? imageUrl;
+  final bool isFavorite;
+  final TimeRange timeRange;
+  final DateTime date;
 
   const AppointmentModel({
     required this.id,
-    required this.doctorName,
-    required this.specialty,
+    required this.doctor,
     required this.rating,
-    required this.reviews,
+    required this.isFavorite,
+    required this.timeRange,
     required this.date,
-    required this.time,
-    this.imageUrl,
   });
 }

@@ -1,6 +1,6 @@
 import 'package:avo_app/app/features/home/data/home_data.dart';
-import 'package:avo_app/app/features/home/view/widget/bestdoctor_card.dart';
-import 'package:avo_app/app/features/home/view/widget/bestpharmacy_card.dart';
+import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
+import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -86,7 +86,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   color: Theme.of(context).colorScheme.outlineVariant,
                 ),
 
-                /// ❌ Clear Button
                 suffixIcon: query.isNotEmpty
                     ? IconButton(
                         onPressed: () {
@@ -118,7 +117,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
             SizedBox(height: 20.h),
 
-            /// 🔥 Results
             Expanded(
               child: query.isEmpty
                   ? Center(
@@ -144,7 +142,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     )
                   : ListView(
                       children: [
-                        /// 👨‍⚕️ Doctors
                         if (doctors.isNotEmpty) ...[
                           Text(
                             "Doctors",
@@ -164,7 +161,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ],
 
-                        /// 🏥 Pharmacies
                         if (pharmacies.isNotEmpty) ...[
                           SizedBox(height: 20.h),
                           Text(
@@ -185,7 +181,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ],
 
-                        /// ❌ No Results
                         if (doctors.isEmpty && pharmacies.isEmpty)
                           Center(
                             child: Padding(

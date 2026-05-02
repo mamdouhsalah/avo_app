@@ -31,8 +31,8 @@ class AppointmentCard extends StatelessWidget {
               Container(
                 width: 55.r,
                 height: 55.r,
-                padding: const EdgeInsets.all(0), // سمك البوردر
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.all(0), 
+                               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: Theme.of(context).colorScheme.surface,
@@ -41,7 +41,7 @@ class AppointmentCard extends StatelessWidget {
                 ),
                 child: ClipOval(
                   child: Image.asset(
-                    appointment.imageUrl.toString(),
+                    appointment.doctor.imageUrl.toString(),
                     width: 55.r,
                     height: 55.r,
                     fit: BoxFit.cover,
@@ -54,7 +54,7 @@ class AppointmentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      appointment.doctorName,
+                      appointment.doctor.name,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.w500,
@@ -62,7 +62,7 @@ class AppointmentCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "(${appointment.specialty})",
+                      "(${appointment.doctor.specialty})",
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.w400,
@@ -106,7 +106,7 @@ class AppointmentCard extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onPrimary, size: 24.sp),
               SizedBox(width: 6.w),
               Text(
-                appointment.date,
+                appointment.doctor.openTime,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w400,
@@ -123,7 +123,7 @@ class AppointmentCard extends StatelessWidget {
                     SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
-                        appointment.time,
+                        appointment.doctor.closeTime,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.w400,
