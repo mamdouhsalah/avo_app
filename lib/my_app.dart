@@ -6,6 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'app/features/chatbot/screens/chat_screen.dart';
+import 'app/features/reminder/screens/reminder_screen.dart';
+import 'package:avo_app/app/core/constants/app_strings.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,19 +23,27 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return DevicePreview(
-          enabled: !kReleaseMode,
+// enabled: !kReleaseMode,
+          enabled: false,
           builder: (context) => MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) => HomeViewModel()),
             ],
             child: MaterialApp(
+              // --- إعدادات اللغات بتاعتك ---
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+
               debugShowCheckedModeBanner: true,
-              title: 'AVO Medical App',
+              title: AppStrings.appName,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: ThemeMode.system,
-              home: const HomeScreen(),
-              locale: DevicePreview.locale(context),
+              
+              // --- شاشة البداية ---
+              home: const HomeScreen(), 
+              
               builder: DevicePreview.appBuilder,
               useInheritedMediaQuery: true,
             ),
