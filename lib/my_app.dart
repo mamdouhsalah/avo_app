@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/theme/theme_app.dart';
+import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:avo_app/app/features/home/data/home_data.dart';
 import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
 import 'package:device_preview/device_preview.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return DevicePreview(
-// enabled: !kReleaseMode,
+          // enabled: !kReleaseMode,
           enabled: false,
           builder: (context) => MultiProvider(
             providers: [
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
               themeMode: ThemeMode.system,
               
               // --- شاشة البداية ---
-              home: const HomeScreen(), 
+              home: const SplashScreen(), 
               
               builder: DevicePreview.appBuilder,
               useInheritedMediaQuery: true,
