@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app/features/chatbot/screens/chat_screen.dart';
+import 'app/features/reminder/screens/reminder_screen.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,8 +21,14 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return DevicePreview(
-          enabled: !kReleaseMode,
+          // enabled: !kReleaseMode,
+          enabled: false,
           builder: (context) => MaterialApp(
+
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+
             debugShowCheckedModeBanner: true,
             title: AppStrings.appName,
             theme: AppTheme.lightTheme,
@@ -28,6 +37,7 @@ class MyApp extends StatelessWidget {
             //home: const OnboardScreen(),
             home: const ChatScreen(),
             locale: DevicePreview.locale(context),
+            // locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,
           ),

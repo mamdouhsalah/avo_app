@@ -1,0 +1,13 @@
+{
+  "chatbot": {
+    "chatbot_title": "AVO Assistant",
+    "chatbot_online": "Online",
+    "bot_welcome_msg": "Hello! I am AVO Bot. How can I assist you with your health today?"
+  },
+
+  "shared": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "done": "Done"
+  }
+}
