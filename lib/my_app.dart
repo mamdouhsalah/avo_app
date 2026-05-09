@@ -8,6 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app/features/chatbot/screens/chat_screen.dart';
 import 'app/features/reminder/screens/reminder_screen.dart';
 
+import 'package:easy_localization/easy_localization.dart';
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -22,14 +24,19 @@ class MyApp extends StatelessWidget {
           // enabled: !kReleaseMode,
           enabled: false,
           builder: (context) => MaterialApp(
+
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+
             debugShowCheckedModeBanner: true,
             title: AppStrings.appName,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
             //home: const OnboardScreen(),
-            home: const ReminderScreen(),
-            locale: DevicePreview.locale(context),
+            home: const ChatScreen(),
+            // locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,
           ),
