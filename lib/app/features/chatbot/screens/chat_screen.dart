@@ -5,6 +5,9 @@ import 'package:avo_app/app/features/chatbot/data/chat_message_model.dart';
 import 'package:avo_app/app/features/chatbot/screens/widgets/chat_bubble_widget.dart';
 import 'package:avo_app/app/features/chatbot/screens/widgets/chat_input_widget.dart';
 
+import 'package:easy_localization/easy_localization.dart';
+import '../../../core/Language/locale_keys.g.dart';
+
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
@@ -15,7 +18,8 @@ class ChatScreen extends StatelessWidget {
     // Dummy Data >>> داتا وهميه
     final List<ChatMessageModel> dummyMessages = [
       ChatMessageModel(
-        text: "Hello! I am AVO Bot. How can I assist you with your health today?",
+        // text: "Hello! I am AVO Bot. How can I assist you with your health today?",
+        text: LocaleKeys.chatbot_bot_welcome_msg.tr(), // 👈 ترجمة رسالة الترحيب
         isUser: false,
         time: "10:00 AM",
       ),
@@ -81,7 +85,8 @@ class ChatScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "AVO Assistant",
+                // "AVO Assistant",
+                LocaleKeys.chatbot_chatbot_title.tr(), // 👈 ترجمة اسم البوت
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -89,7 +94,8 @@ class ChatScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                "Online",
+                // "Online",
+                LocaleKeys.chatbot_chatbot_online.tr(), // 👈 ترجمة كلمة متصل
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,

@@ -1,0 +1,13 @@
+{
+  "chatbot": {
+    "chatbot_title": "مساعد أفو",
+    "chatbot_online": "متصل",
+    "bot_welcome_msg": "أهلاً! أنا مساعد أفو. إزاي أقدر أساعدك في صحتك النهاردة؟"
+  },
+
+  "shared": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "done": "تم"
+  }
+}
