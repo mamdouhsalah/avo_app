@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
             themeMode: ThemeMode.system,
             //home: const OnboardScreen(),
             home: const ChatScreen(),
+            locale: DevicePreview.locale(context),
             // locale: DevicePreview.locale(context),
             builder: DevicePreview.appBuilder,
             useInheritedMediaQuery: true,
