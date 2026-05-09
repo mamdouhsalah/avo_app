@@ -1,0 +1,6 @@
+/// Run the following command every time you edit JSON files
+/// Edit JSON ➔ Run Terminal Command ➔ Use Key in Code ➔ Hot Restart.
+
+command:
+
+flutter pub run easy_localization:generate -S "assets/translations" -O "lib/app/core/Language" && flutter pub run easy_localization:generate -S "assets/translations" -O "lib/app/core/Language" -o "locale_keys.g.dart" -f keys

@@ -16,4 +16,9 @@ class AppImgs {
   static const String google = "assets/icons/social/google.svg";
   static const String facebook = "assets/icons/social/facebook.svg";
   static const String apple = "assets/icons/social/apple.svg";
+
+  // Profile & Others
+  static const String doctor = "";
+  static const String patient = "";
+  static const String profile = 'assets/imgs/profile/profile.svg';
 }
