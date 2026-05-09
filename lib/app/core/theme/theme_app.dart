@@ -11,6 +11,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: const ColorScheme.light(
+        brightness: Brightness.light,
         primary: AppColors.lightPrimary,
         onPrimary: Colors.white,
         secondary: AppColors.lightIconWithTranceparent,

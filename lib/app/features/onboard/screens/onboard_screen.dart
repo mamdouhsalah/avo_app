@@ -1,4 +1,3 @@
-import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/onboard/logic/onboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,26 +56,23 @@ class _OnboardScreenState extends State<OnboardScreen> {
                   final slide = _controller.slides[index];
                   return Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.h16,
-                      vertical: AppSpacing.v28,
+                      horizontal: 16.w,
+                      vertical: 28.h,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        /// IMAGE
                         SvgPicture.asset(slide.image,
                             height: 343.h, width: 355.w, fit: BoxFit.contain),
 
-                        SizedBox(height: AppSpacing.v24),
+                        SizedBox(height: 24.h),
 
-                        /// DOTS
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
                             _controller.slides.length,
                             (dotIndex) => Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.h8),
+                              margin: EdgeInsets.symmetric(horizontal: 8.w),
                               width: _controller.currentIndex == dotIndex
                                   ? 20.w
                                   : 10.w,
@@ -91,9 +87,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           ),
                         ),
 
-                        SizedBox(height: AppSpacing.v24),
+                        SizedBox(height: 24.h),
 
-                        /// TITLE
                         Text(
                           slide.title,
                           textAlign: TextAlign.center,
@@ -103,9 +98,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           ),
                         ),
 
-                        SizedBox(height: AppSpacing.v16),
+                        SizedBox(height: 16.h),
 
-                        /// DESCRIPTION
                         Text(
                           slide.description,
                           textAlign: TextAlign.center,
@@ -121,8 +115,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(
-                  vertical: AppSpacing.v12, horizontal: AppSpacing.h12),
+              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
               child: Row(
                 children: [
                   if (_controller.currentIndex != _controller.slides.length - 1)
@@ -165,7 +158,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           Icons.navigate_next_outlined,
                           color: Theme.of(context).colorScheme.onPrimary,
                           size: 40.sp,
-                          // icon responsive to circle
                         ),
                       ),
                     ),

@@ -18,7 +18,7 @@ dependencies:
   # State Management
   provider: ^6.1.2
 
-  # Icons
+  # Icons & Utils
   flutter_svg: ^2.0.10+1
   flutter_screenutil: ^5.9.3
   image_picker: ^1.2.1
@@ -26,6 +26,8 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   table_calendar: ^3.2.0
   device_preview: ^1.3.1
+  firebase_core: ^4.7.0
+  firebase_auth: ^6.4.0
   easy_localization: ^3.0.8
 
 dev_dependencies:
@@ -44,7 +46,9 @@ flutter:
 
   assets:
     - assets/imgs/logo/
-    - assets/imgs/onboard/onboard1.svg
-    - assets/imgs/onboard/onboard2.svg
-    - assets/imgs/onboard/onboard3.svg
+    - assets/imgs/doctor/
+    - assets/imgs/onboard/
+    - assets/imgs/profile/
+    - assets/imgs/chatbut/
+    - assets/imgs/categories/
     - assets/translations/
