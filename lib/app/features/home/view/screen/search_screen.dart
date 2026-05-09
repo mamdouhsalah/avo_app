@@ -100,7 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     : null,
 
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.background,
+                fillColor: Theme.of(context).colorScheme.surface,
 
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),

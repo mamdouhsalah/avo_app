@@ -15,8 +15,8 @@ class WaveHeaderPainter extends CustomPainter {
       Offset(0, size.height), // البداية من أسفل (عند الموجة)
       const Offset(0, 0),      // النهاية عند القمة (Y = 0)
       [
-        color.withOpacity(0.5),                // اللون كامل الشفافية تحت
-        color.withOpacity(0.0), // شفاف تماماً فوق
+        color.withValues(alpha: 0.5),                // اللون كامل الشفافية تحت
+        color.withValues(alpha: 0.0), // شفاف تماماً فوق
       ],
       [0.0, 1.0], // توزيع اللون (من 0% لـ 100%)
     );

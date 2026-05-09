@@ -34,13 +34,13 @@ class CategoryItem extends StatelessWidget {
           ),
           color: isSelected
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.background,
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8.r),
           boxShadow: isSelected
               ? [
                   BoxShadow(
                     color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.35),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   )

@@ -1,4 +1,3 @@
-import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -33,7 +32,7 @@ class CalendarStripWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(12.r),
           ),
           todayDecoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12.r),
           ),
           todayTextStyle: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),

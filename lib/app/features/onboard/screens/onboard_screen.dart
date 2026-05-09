@@ -1,4 +1,3 @@
-import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/auth/screens/login_screen.dart';
 import 'package:avo_app/app/features/onboard/logic/onboard_controller.dart';
 import 'package:flutter/material.dart';

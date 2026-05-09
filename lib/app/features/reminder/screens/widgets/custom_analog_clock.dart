@@ -65,7 +65,7 @@ class InteractiveAnalogClock extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -105,7 +105,7 @@ class InteractiveAnalogClock extends StatelessWidget {
                     style: TextStyle(
                       fontSize: isSelected ? 16.sp : 14.sp,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? theme.colorScheme.primary : Colors.white.withOpacity(0.9),
+                      color: isSelected ? theme.colorScheme.primary : Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                 ),

@@ -53,7 +53,7 @@ class ReminderScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       body: Stack(
         children: [
           // 1. الخلفية المتموجة

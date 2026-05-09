@@ -1,6 +1,6 @@
 import 'package:avo_app/app/features/home/data/home_data.dart';
 import 'package:avo_app/app/features/home/view/screen/catogery_screen.dart';
-import 'package:avo_app/app/features/home/view/screen/search_Screen.dart';
+import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
 import 'package:avo_app/app/core/shared/appointment_card.dart';
 import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
 import 'package:avo_app/app/core/shared/custom_navigationbar.dart';
@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .colorScheme
                                     .outlineVariant,
                               ),
-                              color: Theme.of(context).colorScheme.background,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Row(
@@ -335,8 +335,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       shape: BoxShape.circle,
                       color: Theme.of(context)
                           .colorScheme
-                          .background
-                          .withOpacity(0.8),
+                          .surface
+                          .withValues(alpha: 0.8),
                     ),
                     child: Image.asset('assets/imgs/chatbut/chatbut.png',
                         color: Theme.of(context).colorScheme.primary,

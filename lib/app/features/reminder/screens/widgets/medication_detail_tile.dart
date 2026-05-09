@@ -18,7 +18,7 @@ class MedicationDetailTile extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
-          BoxShadow(color: theme.colorScheme.shadow.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -31,7 +31,7 @@ class MedicationDetailTile extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.6),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: Icon(Icons.medication_rounded, color: theme.colorScheme.primary, size: 28.sp),
@@ -50,7 +50,7 @@ class MedicationDetailTile extends StatelessWidget {
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.1),
+                              color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20.r),
                             ),
                             child: Text("Active", style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.bold)),
@@ -79,7 +79,7 @@ class MedicationDetailTile extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.h16, vertical: 10.h),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant?.withOpacity(0.3) ?? Colors.grey.withOpacity(0.05),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16.r), bottomRight: Radius.circular(16.r)),
             ),
             child: Row(
@@ -88,7 +88,7 @@ class MedicationDetailTile extends StatelessWidget {
                 SizedBox(width: 6.w),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                  decoration: BoxDecoration(color: theme.colorScheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(20.r)),
+                  decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha:0.1), borderRadius: BorderRadius.circular(20.r)),
                   child: Text(reminder.time, style: TextStyle(color: theme.colorScheme.primary, fontSize: 12.sp, fontWeight: FontWeight.bold)),
                 ),
               ],

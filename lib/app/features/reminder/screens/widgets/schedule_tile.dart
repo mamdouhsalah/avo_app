@@ -21,7 +21,7 @@ class ScheduleTile extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
@@ -29,7 +29,7 @@ class ScheduleTile extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
-              color: isTaken ? theme.colorScheme.surfaceVariant : theme.colorScheme.primary.withOpacity(0.1),
+              color: isTaken ? theme.colorScheme.surfaceContainerHighest : theme.colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12.r),
             ),
             child: Icon(

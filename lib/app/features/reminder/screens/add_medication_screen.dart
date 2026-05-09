@@ -76,7 +76,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             top: 0, left: 0, right: 0,
             child: CustomPaint(
               size: Size(double.infinity, 280.h),
-              painter: WaveHeaderPainter(color: theme.colorScheme.primary.withOpacity(0.15)),
+              painter: WaveHeaderPainter(color: theme.colorScheme.primary.withValues(alpha: 0.15)),
             ),
           ),
 
@@ -209,7 +209,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: [BoxShadow(color: theme.colorScheme.shadow.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                      boxShadow: [BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +238,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextStyle(fontSize: 14.sp, color: theme.colorScheme.onSurface.withOpacity(0.7))),
+        Text(title, style: TextStyle(fontSize: 14.sp, color: theme.colorScheme.onSurface.withValues(alpha: 0.7))),
         SizedBox(height: 8.h),
         InkWell(
           onTap: () => _pickDate(context, onPicked: onPicked),
@@ -268,7 +268,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         border: Border.all(
-          color: isPlaceholder ? Colors.grey.shade300 : theme.colorScheme.primary.withOpacity(0.5),
+          color: isPlaceholder ? Colors.grey.shade300 : theme.colorScheme.primary.withValues(alpha: 0.5),
           width: isPlaceholder ? 1 : 1.5,
         ),
         borderRadius: BorderRadius.circular(6.r),
@@ -303,7 +303,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                 margin: EdgeInsets.only(right: 12.w),
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 decoration: BoxDecoration(
-                  color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant,
+                  color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
@@ -325,9 +325,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.05),
+                color: theme.colorScheme.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(10.r),
-                border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+                border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
@@ -360,7 +360,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
         Text(title, style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700)),
         CupertinoSwitch(
           value: value,
-          activeColor: theme.colorScheme.primary,
+          activeTrackColor: theme.colorScheme.primary,
           onChanged: onChanged,
         ),
       ],

@@ -21,7 +21,7 @@ class ChatInputWidget extends StatelessWidget {
         color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.05),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -44,9 +44,9 @@ class ChatInputWidget extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 14.w),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20.r),
-                      border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+                      border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       suggestions[index],
@@ -70,12 +70,12 @@ class ChatInputWidget extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: AppSpacing.h12),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant ?? Colors.grey.withOpacity(0.1),
+                        color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(24.r),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.add_circle_outline, color: theme.colorScheme.onSurface.withOpacity(0.5), size: 22.sp),
+                          Icon(Icons.add_circle_outline, color: theme.colorScheme.onSurface.withValues(alpha: 0.5), size: 22.sp),
                           SizedBox(width: AppSpacing.h8),
                           Expanded(
                             child: TextField(
@@ -88,7 +88,7 @@ class ChatInputWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Icon(Icons.mic_none_rounded, color: theme.colorScheme.onSurface.withOpacity(0.5), size: 22.sp),
+                          Icon(Icons.mic_none_rounded, color: theme.colorScheme.onSurface.withValues(alpha: 0.5), size: 22.sp),
                         ],
                       ),
                     ),

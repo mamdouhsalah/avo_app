@@ -77,7 +77,7 @@ class ChatScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18.r,
-            backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
             child: Icon(Icons.smart_toy_rounded, color: theme.colorScheme.primary, size: 20.sp),
           ),
           SizedBox(width: AppSpacing.h12),

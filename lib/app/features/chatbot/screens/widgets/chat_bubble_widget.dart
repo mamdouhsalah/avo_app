@@ -23,7 +23,7 @@ class ChatBubbleWidget extends StatelessWidget {
           if (!isUser) ...[
             CircleAvatar(
               radius: 16.r,
-              backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
               child: Icon(Icons.smart_toy_rounded, size: 18.sp, color: theme.colorScheme.primary),
             ),
             SizedBox(width: AppSpacing.h8),
@@ -61,7 +61,7 @@ class ChatBubbleWidget extends StatelessWidget {
                   Text(
                     message.time,
                     style: TextStyle(
-                      color: isUser ? theme.colorScheme.onPrimary.withOpacity(0.7) : theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: isUser ? theme.colorScheme.onPrimary.withValues(alpha: 0.7) : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 10.sp,
                     ),
                   ),
@@ -75,7 +75,7 @@ class ChatBubbleWidget extends StatelessWidget {
             SizedBox(width: AppSpacing.h8),
             CircleAvatar(
               radius: 16.r,
-              backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
               // هنا ممكن تحط صورة اليوزر الحقيقية لو متاحة
               child: Icon(Icons.person, size: 18.sp, color: theme.colorScheme.primary),
             ),

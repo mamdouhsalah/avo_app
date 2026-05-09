@@ -16,7 +16,7 @@ class NextDoseCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.08),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.08),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -36,7 +36,7 @@ class NextDoseCard extends StatelessWidget {
                     "Next dose in",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -53,7 +53,7 @@ class NextDoseCard extends StatelessWidget {
               ),
               CircleAvatar(
                 radius: 24.r,
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                 child: Icon(Icons.medication_rounded, size: 28.sp, color: theme.colorScheme.primary),
               ),
             ],
@@ -67,7 +67,7 @@ class NextDoseCard extends StatelessWidget {
                   children: [
                     Text("Amoxicillin", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
                     SizedBox(height: 2.h),
-                    Text("500mg • 1 pill", style: TextStyle(fontSize: 13.sp, color: theme.colorScheme.onSurface.withOpacity(0.6))),
+                    Text("500mg • 1 pill", style: TextStyle(fontSize: 13.sp, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
                   ],
                 ),
               ),
