@@ -37,10 +37,10 @@ class MyApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: ThemeMode.system,
-
+              
               // --- شاشة البداية ---
-              home: const ProfileScreen(),
-
+              home: const SplashScreen(), 
+              
               builder: DevicePreview.appBuilder,
             ),
           ),
