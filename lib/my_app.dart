@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/theme/theme_app.dart';
+import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
 import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:avo_app/app/features/home/data/home_data.dart';
 import 'package:device_preview/device_preview.dart';
@@ -20,8 +21,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return DevicePreview(
-          // enabled: !kReleaseMode,
-          enabled: false,
+          enabled: true,
           builder: (context) => MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) => HomeViewModel()),
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
               supportedLocales: context.supportedLocales,
               locale: context.locale,
 
-              debugShowCheckedModeBanner: true,
+              debugShowCheckedModeBanner: false,
               title: AppStrings.appName,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
