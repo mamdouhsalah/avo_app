@@ -11,14 +11,13 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: const ColorScheme.light(
+        brightness: Brightness.light,
         primary: AppColors.lightPrimary,
         onPrimary: Colors.white,
         secondary: AppColors.lightIconWithTranceparent,
         onSecondary: AppColors.lightPrimary,
         surface: AppColors.lightBackground,
         onSurface: AppColors.lightText,
-        background: AppColors.lightBackground,
-        onBackground: AppColors.lightText,
         error: AppColors.error,
         onError: Colors.white,
         outline: AppColors.lightBorder,
@@ -104,6 +103,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12.r),
           ),
           textStyle: TextStyle(
+            inherit: false,
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             letterSpacing: .3,
@@ -120,6 +120,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12.r),
           ),
           textStyle: TextStyle(
+            inherit: false,
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             letterSpacing: .3,
@@ -134,6 +135,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(8.r),
           ),
           textStyle: TextStyle(
+            inherit: false,
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
             letterSpacing: .2,
@@ -245,10 +247,49 @@ class AppTheme {
         onSecondary: AppColors.darkPrimary,
         surface: AppColors.darkBackground,
         onSurface: AppColors.darkText,
-        background: AppColors.darkBackground,
-        onBackground: AppColors.darkText,
         error: AppColors.error,
+        outline: AppColors.darkBorder,
+        outlineVariant: AppColors.darkDivider,
       ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.darkPrimary,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: AppColors.darkSecondaryText,
+          disabledForegroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          minimumSize: Size(double.infinity, 52.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          textStyle: TextStyle(
+            inherit: false,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+            letterSpacing: .3,
+          ),
+        ),
+      ),
+
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.darkPrimary,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          textStyle: TextStyle(
+            inherit: false,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            letterSpacing: .2,
+          ),
+        ),
+      ),
+
       appBarTheme: AppBarTheme(
         backgroundColor: darkBg,
         foregroundColor: AppColors.darkText,
@@ -276,6 +317,50 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8.r),
         ),
         margin: EdgeInsets.all(8.w),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.darkDivider, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.darkDivider, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.error, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        ),
+        hintStyle: TextStyle(
+          color: AppColors.darkSecondaryText,
+          fontSize: 14.sp,
+        ),
+        labelStyle: TextStyle(
+          color: AppColors.darkSecondaryText,
+          fontSize: 14.sp,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: AppColors.darkPrimary,
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w500,
+        ),
+        errorStyle: TextStyle(
+          color: AppColors.error,
+          fontSize: 12.sp,
+        ),
+        prefixIconColor: AppColors.darkIcon,
+        suffixIconColor: AppColors.darkSecondaryText,
       ),
     );
   }
