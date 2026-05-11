@@ -1,9 +1,10 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
-import 'package:avo_app/app/features/auth/screens/create_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateAccountTypeScreen extends StatelessWidget {
   const CreateAccountTypeScreen({super.key});
@@ -60,12 +61,7 @@ class CreateAccountTypeScreen extends StatelessWidget {
                     final role = roles[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CreateAccountScreen(),
-                          ),
-                        );
+                        context.push(AppRouter.createAccount);
                       },
                       child: Container(
                         decoration: BoxDecoration(

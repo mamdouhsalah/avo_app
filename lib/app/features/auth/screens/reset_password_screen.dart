@@ -1,8 +1,9 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/core/shared/custom_text_form_field.dart';
-import 'package:avo_app/app/features/auth/screens/validation_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({super.key});
@@ -16,7 +17,7 @@ class ResetPasswordScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: const Text('Forgot Password'),
       ),
@@ -54,12 +55,7 @@ class ResetPasswordScreen extends StatelessWidget {
               SizedBox(height: 40.h),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ValidationCodeScreen(),
-                    ),
-                  );
+                  context.push(AppRouter.validationCode);
                 },
                 child: const Text('Send Code'),
               ),

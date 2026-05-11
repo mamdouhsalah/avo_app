@@ -1,11 +1,11 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/add_medication_fab.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/calendar_strip_widget.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/medication_detail_tile.dart';
 import 'package:flutter/material.dart';
-
-import 'add_medication_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -67,10 +67,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
       floatingActionButton: AddMedicationFab(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddMedicationScreen()),
-          );
+          context.push(AppRouter.addMedication);
         },
       ),
     );

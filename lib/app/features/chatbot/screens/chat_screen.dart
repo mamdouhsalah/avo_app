@@ -4,6 +4,7 @@ import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/chatbot/data/chat_message_model.dart';
 import 'package:avo_app/app/features/chatbot/screens/widgets/chat_bubble_widget.dart';
 import 'package:avo_app/app/features/chatbot/screens/widgets/chat_input_widget.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import '../../../core/Language/locale_keys.g.dart';
@@ -70,7 +71,7 @@ class ChatScreen extends StatelessWidget {
       leadingWidth: 50.w,
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20.sp, color: theme.colorScheme.onSurface),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => context.pop(),
       ),
       titleSpacing: 0,
       title: Row(

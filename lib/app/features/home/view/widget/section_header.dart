@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  final Widget Function()? onSeeAll;
+  final String? routePath;
 
   const SectionHeader({
     super.key,
     required this.title,
-    this.onSeeAll,
+    this.routePath,
   });
 
   @override
@@ -25,15 +26,10 @@ class SectionHeader extends StatelessWidget {
         ),
         const Spacer(),
 
-        if (onSeeAll != null)
+        if (routePath != null)
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => onSeeAll!(),
-                ),
-              );
+              context.push(routePath!);
             },
             child: Text(
               "view all",

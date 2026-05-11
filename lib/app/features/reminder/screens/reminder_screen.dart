@@ -1,14 +1,13 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
-import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/add_medication_fab.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/next_dose_card.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/schedule_tile.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/wave_header_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'add_medication_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class ReminderScreen extends StatelessWidget {
   const ReminderScreen({super.key});
@@ -114,10 +113,7 @@ class ReminderScreen extends StatelessWidget {
                             ),
                             TextButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const ScheduleScreen()),
-                                );
+                                context.push(AppRouter.schedule);
                               },
                               child: Text(
                                 "See all",
@@ -148,10 +144,7 @@ class ReminderScreen extends StatelessWidget {
 
       floatingActionButton: AddMedicationFab(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddMedicationScreen()),
-          );
+          context.push(AppRouter.addMedication);
         },
       ),
 

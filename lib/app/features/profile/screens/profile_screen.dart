@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-
-// مسارات الشاشات جوه الفولدرات الجديدة
-import 'account_info_screen.dart';
-import 'personal_info_screen.dart';
-import '../../payment/screens/checkout_screen.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,9 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                const CircleAvatar(
-                  radius: 70,
-                  backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.grey.shade200,
+                  child: const Icon(Icons.person, color: Colors.grey),
                 ),
                 Positioned(
                   bottom: 0,
@@ -73,19 +71,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                   icon: Icons.lock_outline,
                   title: "Account Information",
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AccountInfoScreen())),
+                  onTap: () => context.push(AppRouter.accountInfo),
                 ),
                 _buildListTile(
                   context,
                   icon: Icons.person_outline,
                   title: "Personal Information",
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PersonalInfoScreen())),
+                  onTap: () => context.push(AppRouter.personalInfo),
                 ),
                 _buildListTile(
                   context,
                   icon: Icons.credit_card_outlined,
                   title: "Cards Details",
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CheckoutScreen())),
+                  onTap: () => context.push(AppRouter.checkout),
                 ),
 
                 ListTile(

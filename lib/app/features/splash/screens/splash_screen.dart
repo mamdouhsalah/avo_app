@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
-import 'package:avo_app/app/features/onboard/screens/onboard_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,10 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void _startTimer() {
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const OnboardScreen()),
-        );
+        context.go(AppRouter.onboard);
       }
     });
   }

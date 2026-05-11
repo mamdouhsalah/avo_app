@@ -1,11 +1,11 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/core/shared/custom_text_form_field.dart';
-import 'package:avo_app/app/features/auth/screens/create_account_type_screen.dart';
-import 'package:avo_app/app/features/auth/screens/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -122,11 +122,7 @@ class _LoginScreenState extends State<LoginScreen>
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ResetPasswordScreen()),
-                    );
+                    context.push(AppRouter.resetPassword);
                   },
                   child: Text(
                     'Forgot Password?',
@@ -186,12 +182,7 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CreateAccountTypeScreen(),
-                        ),
-                      );
+                      context.push(AppRouter.createAccountType);
                     },
                     child: Text(
                       'Create an account',

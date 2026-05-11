@@ -1,8 +1,9 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/core/shared/custom_text_form_field.dart';
-import 'package:avo_app/app/features/auth/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class SetPasswordScreen extends StatefulWidget {
   const SetPasswordScreen({super.key});
@@ -52,11 +53,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             SizedBox(height: 32.h),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false,
-                );
+                context.go(AppRouter.login);
               },
               child: const Text('Back to Login'),
             ),
@@ -76,7 +73,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: const Text('Create New Password'),
       ),

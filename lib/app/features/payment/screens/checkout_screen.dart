@@ -1,8 +1,9 @@
 import 'dart:math';
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
-import 'package:avo_app/app/features/payment/screens/add_card_screen.dart';
 import 'package:avo_app/app/features/payment/screens/payment_success_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -45,7 +46,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color, size: 20),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           "Checkout",
@@ -68,17 +69,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   TextButton.icon(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddCardScreen(
-                            onCardAdded: (newCard) {
-                              setState(() {
-                                cards.add(newCard); // اللوجيك بتاع إضافة كارت جديد
-                              });
-                            },
-                          ),
-                        ),
+                      context.push(
+                        AppRouter.addCard,
+                        extra: (newCard) {
+                          setState(() {
+                            cards.add(newCard as PaymentCardModel);
+                          });
+                        },
                       );
                     },
                     icon: Icon(Icons.add, size: 18, color: theme.colorScheme.primary),
@@ -329,21 +326,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              // بنشغل نافذة التأكيد قبل ما نفتح شيت النجاح
-              _showConfirmationDialog(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+
+          const SizedBox(width: 20), // 🔥 مسافة أمان بين السعر والزرار
+
+          // 🔥 غلفنا الزرار بـ Expanded عشان نمنع تمدده لما لا نهاية ويضرب الشاشة
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                // بنشغل نافذة التأكيد قبل ما نفتح شيت النجاح
+                _showConfirmationDialog(context);
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(0, 50), // 🔥 السطر ده بيحل التعارض مع الثيم
+                backgroundColor: theme.colorScheme.primary,
+                // 🔥 شيلنا الـ horizontal padding عشان الـ Expanded هيقوم بالواجب
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
-            ),
-            child: Text(
-              "Pay Now \u2192",
-              style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 16),
+              child: Text(
+                "Pay Now \u2192",
+                style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -364,7 +369,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           content: Text("Are you sure you want to pay \$249.00?", style: theme.textTheme.bodyMedium),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: Text("Cancel", style: TextStyle(color: theme.hintColor)),
             ),
             ElevatedButton(
@@ -373,7 +378,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () {
-                Navigator.pop(context); // اقفل الديالوج
+                context.pop(); // اقفل الديالوج
                 _showSuccessSheet(context); // افتح شيت النجاح
               },
               child: Text("Confirm", style: TextStyle(color: theme.colorScheme.onPrimary)),

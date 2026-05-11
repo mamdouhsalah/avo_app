@@ -1,9 +1,8 @@
 import 'package:avo_app/app/features/home/data/home_data.dart';
-import 'package:avo_app/app/features/home/view/screen/catogery_screen.dart';
-import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:go_router/go_router.dart';
 import 'package:avo_app/app/core/shared/appointment_card.dart';
 import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
-import 'package:avo_app/app/core/shared/custom_navigationbar.dart';
 import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/medicine_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
@@ -135,12 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         InkWell(
                           borderRadius: BorderRadius.circular(12.r),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const SearchScreen(),
-                              ),
-                            );
+                            context.push(AppRouter.search);
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
@@ -188,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SectionHeader(
                           title: 'Upcoming Appointments',
-                          onSeeAll: () => const SearchScreen(),
+                          routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
 
@@ -209,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SectionHeader(
                           title: "Upcoming Medicine",
-                          onSeeAll: () => const SearchScreen(),
+                          routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
 
@@ -230,7 +224,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SectionHeader(
                           title: 'Categories',
-                          onSeeAll: () => const CatogeryScreen(),
+                          // Add category screen to router if needed, using search for now as placeholder
+                          routePath: AppRouter.search,
                         ),
 
                         GridView.builder(
@@ -266,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         SectionHeader(
                           title: "Best Doctors",
-                          onSeeAll: () => const SearchScreen(),
+                          routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
 
@@ -285,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
     
                           SectionHeader(
                           title: "Best Pharmacies",
-                          onSeeAll: () => const SearchScreen(),
+                          routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
 
@@ -317,7 +312,9 @@ class _HomeScreenState extends State<HomeScreen> {
               duration: const Duration(milliseconds: 400),
               opacity: isVisible ? 1 : 0.8,
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  context.push(AppRouter.chat);
+                },
                 child: Container(
                   width: 86.w,
                   height: 86.h,
@@ -345,23 +342,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 70.w),
                   ),
                 ),
-              ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
-            bottom: isVisible ? 0 : -100.h,
-            left: 0,
-            right: 0,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: isVisible ? 1 : 0,
-              child: CustomBottomNav(
-                currentIndex: currentIndex,
-                onTap: (index) {
-                  setState(() => currentIndex = index);
-                },
               ),
             ),
           ),

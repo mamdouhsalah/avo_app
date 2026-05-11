@@ -1,6 +1,6 @@
 import 'package:avo_app/app/core/theme/theme_app.dart';
-import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
-import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
+// import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
+// import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:avo_app/app/features/home/data/home_data.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:avo_app/app/core/constants/app_strings.dart';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
             providers: [
               ChangeNotifierProvider(create: (_) => HomeViewModel()),
             ],
-            child: MaterialApp(
+            child: MaterialApp.router(
               // --- إعدادات اللغات بتاعتك ---
               localizationsDelegates: context.localizationDelegates,
               supportedLocales: context.supportedLocales,
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
               themeMode: ThemeMode.system,
               
               // --- شاشة البداية ---
-              home: const SplashScreen(), 
+              routerConfig: AppRouter.router,
               
               builder: DevicePreview.appBuilder,
             ),

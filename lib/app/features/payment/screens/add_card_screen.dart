@@ -1,5 +1,6 @@
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AddCardScreen extends StatefulWidget {
   final Function(PaymentCardModel) onCardAdded;
@@ -36,7 +37,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           "Add Card",
@@ -138,7 +139,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                       isFront: true,
                     );
                     widget.onCardAdded(newCard); // هنا بنبعت الكارت للشاشة الرئيسية
-                    Navigator.pop(context);
+                    context.pop();
                   }
                 },
                 child: const Text(

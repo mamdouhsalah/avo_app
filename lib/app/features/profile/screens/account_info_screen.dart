@@ -1,5 +1,6 @@
 import 'package:avo_app/app/features/profile/data/account_info_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AccountInfoScreen extends StatelessWidget {
 
@@ -22,7 +23,7 @@ class AccountInfoScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           'Account Info',

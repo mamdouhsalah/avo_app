@@ -1,8 +1,9 @@
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
-import 'package:avo_app/app/features/auth/screens/set_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class ValidationCodeScreen extends StatefulWidget {
   const ValidationCodeScreen({super.key});
@@ -44,7 +45,7 @@ class _ValidationCodeScreenState extends State<ValidationCodeScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: const Text('OTP Verification'),
       ),
@@ -120,12 +121,7 @@ class _ValidationCodeScreenState extends State<ValidationCodeScreen> {
               SizedBox(height: 40.h),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SetPasswordScreen(),
-                    ),
-                  );
+                  context.push(AppRouter.setPassword);
                 },
                 child: const Text('Verify'),
               ),
