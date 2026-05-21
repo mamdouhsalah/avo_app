@@ -17,11 +17,11 @@ class AppColors {
   static const Color lightShadow = Color(0x1A000000);
   static const Color lightBlueOutLine = Color(0xFF0095FF);
   static const Color lightMoveOutLine = Color(0xFF735BF2);
-  static const Color lightOrangeOutLine = Color(0xFFFFB017);
+  static const Color lightOrangeOutLine = Color(0xFFFBC02D);
 
   // Dark Mode
   static const Color darkPrimary = Color(0xff00A991);
-  static const Color darkBackground = Color(0x0ff00000);
+  static const Color darkBackground = Color(0xFF121212);
   static const Color darkText = Color(0xFFFFFFFF);
   static const Color darkButton = Color(0xff00A991);
   static const Color darkSecondaryText = Color(0xffC4C2C2);
