@@ -47,10 +47,14 @@ flutter:
 
   assets:
     - assets/imgs/logo/
-    - assets/imgs/doctor/
     - assets/imgs/onboard/
+    - assets/imgs/appointment/
+    - assets/imgs/doctor/
     - assets/imgs/profile/
     - assets/imgs/chatbut/
     - assets/imgs/categories/
     - assets/icons/social/
+    - assets/svg/appointment/
+    - assets/svg/payment/
+    - assets/svg/order/
     - assets/translations/

@@ -1,4 +1,11 @@
 import 'package:avo_app/app/core/theme/theme_app.dart';
+import 'package:avo_app/app/features/appointment/screens/appointment_screen.dart';
+import 'package:avo_app/app/features/appointment/screens/detailed_appointmenet.dart';
+import 'package:avo_app/app/features/cart/screens/cart_screen.dart';
+import 'package:avo_app/app/features/payment/screens/payment_details.dart';
+import 'package:avo_app/app/features/payment/screens/payment_methods.dart';
+import 'package:avo_app/app/features/schedule/screens/schedule_screen.dart';
+import 'package:avo_app/app/features/tracking_order/screens/tracking_screen.dart';
 // import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
 // import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:avo_app/app/features/home/data/home_data.dart';

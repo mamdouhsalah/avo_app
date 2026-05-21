@@ -17,8 +17,8 @@ class AppImgs {
   static const String facebook = "assets/icons/social/facebook.svg";
   static const String apple = "assets/icons/social/apple.svg";
 
-  // Profile & Others
-  static const String doctor = "";
-  static const String patient = "";
+  // Profile & Appointment
+  static const String doctor = "assets/imgs/appointment/doctor.png"; // 🔥 أخدنا مسار زياد
+  static const String patient = "assets/imgs/appointment/patient.png"; // 🔥 أخدنا مسار زياد
   static const String profile = 'assets/imgs/profile/profile.svg';
 }
