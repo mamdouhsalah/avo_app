@@ -20,7 +20,7 @@ class CreateAccountTypeScreen extends StatelessWidget {
       {'title': 'Pharmacy', 'image': AppImgs.rolePharmacy},
       {'title': 'Hospital', 'image': AppImgs.roleHospital},
       {'title': 'Store', 'image': AppImgs.roleStore},
-      {'title': 'Charity', 'image': AppImgs.roleCharity},
+      {'title': 'Admin', 'image': AppImgs.roleAdmin},
     ];
 
     return Scaffold(

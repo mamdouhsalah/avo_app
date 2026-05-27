@@ -5,12 +5,12 @@ class AppImgs {
   static const String onboard3 = "assets/imgs/onboard/onboard3.svg";
 
   // Roles
-  static const String rolePatient = "assets/imgs/roles/patient.svg";
-  static const String roleDoctor = "assets/imgs/roles/doctor.svg";
-  static const String rolePharmacy = "assets/imgs/roles/pharmacy.svg";
-  static const String roleHospital = "assets/imgs/roles/hospital.svg";
-  static const String roleStore = "assets/imgs/roles/store.svg";
-  static const String roleCharity = "assets/imgs/roles/charity.svg";
+  static const String rolePatient = "assets/svg/roles/patient.svg";
+  static const String roleDoctor = "assets/svg/roles/doctor.svg";
+  static const String rolePharmacy = "assets/svg/roles/pharmacy.svg";
+  static const String roleHospital = "assets/svg/roles/hospital.svg";
+  static const String roleStore = "assets/svg/roles/store.svg";
+  static const String roleAdmin = "assets/svg/roles/admin.svg";
 
   // Social
   static const String google = "assets/icons/social/google.svg";
@@ -18,7 +18,7 @@ class AppImgs {
   static const String apple = "assets/icons/social/apple.svg";
 
   // Profile & Appointment
-  static const String doctor = "assets/imgs/appointment/doctor.png"; // 🔥 أخدنا مسار زياد
-  static const String patient = "assets/imgs/appointment/patient.png"; // 🔥 أخدنا مسار زياد
+  static const String doctor = "assets/imgs/appointment/doctor.png";
+  static const String patient = "assets/imgs/appointment/patient.png";
   static const String profile = 'assets/imgs/profile/profile.svg';
 }

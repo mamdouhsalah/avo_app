@@ -1,7 +1,7 @@
 import 'package:avo_app/app/core/constants/app_svg.dart';
+import 'package:avo_app/app/features/tracking_order/data/models/order_model.dart';
 import 'package:avo_app/app/features/tracking_order/screens/widgets/time_line_item.dart';
 import 'package:flutter/material.dart';
-import 'package:avo_app/app/features/tracking_order/data/models/order_model.dart';
 
 class TrackingTimeline extends StatelessWidget {
   final List<TrackingStep> steps;

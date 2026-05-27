@@ -6,7 +6,7 @@ import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
 import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/medicine_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
-import 'package:avo_app/app/features/home/view/widget/section_header.dart';
+import 'package:avo_app/app/core/shared/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -128,9 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-
                         SizedBox(height: 24.h),
-
                         InkWell(
                           borderRadius: BorderRadius.circular(12.r),
                           onTap: () {
@@ -177,15 +175,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-
                         SizedBox(height: 25.h),
-
                         SectionHeader(
                           title: 'Upcoming Appointments',
                           routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
-
                         SizedBox(
                           height: 158.h,
                           child: ListView.builder(
@@ -198,15 +193,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         ),
-
                         SizedBox(height: 24.h),
-
                         SectionHeader(
                           title: "Upcoming Medicine",
                           routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
-
                         SizedBox(
                           height: 200.h,
                           child: ListView.builder(
@@ -219,15 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         ),
-
                         SizedBox(height: 24.h),
-
                         SectionHeader(
                           title: 'Categories',
-                          // Add category screen to router if needed, using search for now as placeholder
                           routePath: AppRouter.search,
                         ),
-
                         GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -256,15 +244,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
-
                         SizedBox(height: 24.h),
-
                         SectionHeader(
                           title: "Best Doctors",
                           routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
-
                         Column(
                           children: vm.bestDoctors.map((doc) {
                             return BestDoctorCard(
@@ -275,15 +260,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           }).toList(),
                         ),
-
                         SizedBox(height: 16.h),
-    
-                          SectionHeader(
+                        SectionHeader(
                           title: "Best Pharmacies",
                           routePath: AppRouter.search,
                         ),
                         SizedBox(height: 16.h),
-
                         Column(
                           children: vm.bestPharmacies.map((pharmacy) {
                             return BestPharmacyCard(
@@ -294,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           }).toList(),
                         ),
-
                         SizedBox(height: 100.h),
                       ],
                     ),
@@ -313,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
               opacity: isVisible ? 1 : 0.8,
               child: GestureDetector(
                 onTap: () {
-                  context.push(AppRouter.chat);
+                  context.go('/chat-bot');
                 },
                 child: Container(
                   width: 86.w,

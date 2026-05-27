@@ -9,18 +9,16 @@ import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../core/Language/locale_keys.g.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+class ChatBotScreen extends StatelessWidget {
+  const ChatBotScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Dummy Data >>> داتا وهميه
     final List<ChatMessageModel> dummyMessages = [
       ChatMessageModel(
-        // text: "Hello! I am AVO Bot. How can I assist you with your health today?",
-        text: LocaleKeys.chatbot_bot_welcome_msg.tr(), // 👈 ترجمة رسالة الترحيب
+        text: LocaleKeys.chatbot_bot_welcome_msg.tr(),
         isUser: false,
         time: "10:00 AM",
       ),
@@ -30,7 +28,8 @@ class ChatScreen extends StatelessWidget {
         time: "10:01 AM",
       ),
       ChatMessageModel(
-        text: "Sure! What is the dosage and when would you like to be reminded?",
+        text:
+            "Sure! What is the dosage and when would you like to be reminded?",
         isUser: false,
         time: "10:01 AM",
       ),
@@ -49,7 +48,8 @@ class ChatScreen extends StatelessWidget {
           // قائمة الرسائل
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.h20, vertical: AppSpacing.v20),
+              padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.h20, vertical: AppSpacing.v20),
               itemCount: dummyMessages.length,
               itemBuilder: (context, index) {
                 return ChatBubbleWidget(message: dummyMessages[index]);
@@ -70,7 +70,8 @@ class ChatScreen extends StatelessWidget {
       elevation: 0,
       leadingWidth: 50.w,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20.sp, color: theme.colorScheme.onSurface),
+        icon: Icon(Icons.arrow_back_ios_new_rounded,
+            size: 20.sp, color: theme.colorScheme.onSurface),
         onPressed: () => context.pop(),
       ),
       titleSpacing: 0,
@@ -79,7 +80,8 @@ class ChatScreen extends StatelessWidget {
           CircleAvatar(
             radius: 18.r,
             backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-            child: Icon(Icons.smart_toy_rounded, color: theme.colorScheme.primary, size: 20.sp),
+            child: Icon(Icons.smart_toy_rounded,
+                color: theme.colorScheme.primary, size: 20.sp),
           ),
           SizedBox(width: AppSpacing.h12),
           Column(
@@ -95,12 +97,12 @@ class ChatScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                // "Online",
-                LocaleKeys.chatbot_chatbot_online.tr(), // 👈 ترجمة كلمة متصل
+                LocaleKeys.chatbot_chatbot_online.tr(), 
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: Colors.green, // يمكن استبدالها بـ AppColors.success لو موجودة
+                  color: Colors
+                      .green, 
                 ),
               ),
             ],
