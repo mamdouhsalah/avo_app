@@ -9,15 +9,27 @@ class TimeRange {
     required this.end,
   });
 
-  factory TimeRange.fromJson(Map<String, dynamic> json) {
+  factory TimeRange.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const TimeRange(
+        start: TimeOfDay(hour: 0, minute: 0),
+        end: TimeOfDay(hour: 0, minute: 0),
+      );
+    }
+    final startStr = json['start']?.toString() ?? '0:0';
+    final endStr = json['end']?.toString() ?? '0:0';
+    
+    final startParts = startStr.split(':');
+    final endParts = endStr.split(':');
+
     return TimeRange(
       start: TimeOfDay(
-        hour: int.tryParse(json['start']?.split(':')[0] ?? '0') ?? 0,
-        minute: int.tryParse(json['start']?.split(':')[1] ?? '0') ?? 0,
+        hour: int.tryParse(startParts.isNotEmpty ? startParts[0] : '0') ?? 0,
+        minute: int.tryParse(startParts.length > 1 ? startParts[1] : '0') ?? 0,
       ),
       end: TimeOfDay(
-        hour: int.tryParse(json['end']?.split(':')[0] ?? '0') ?? 0,
-        minute: int.tryParse(json['end']?.split(':')[1] ?? '0') ?? 0,
+        hour: int.tryParse(endParts.isNotEmpty ? endParts[0] : '0') ?? 0,
+        minute: int.tryParse(endParts.length > 1 ? endParts[1] : '0') ?? 0,
       ),
     );
   }

@@ -23,6 +23,34 @@ class RegisterRequestModel {
     this.image,
   });
 
+  factory RegisterRequestModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return RegisterRequestModel(
+        fullName: '',
+        email: '',
+        password: '',
+        role: '',
+        phoneNumber: '',
+        gender: '',
+        dateOfBirth: '',
+        height: 0,
+        weight: 0,
+      );
+    }
+    return RegisterRequestModel(
+      fullName: json['full_name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      password: json['password']?.toString() ?? '',
+      role: json['role']?.toString() ?? '',
+      phoneNumber: json['phone_number']?.toString() ?? '',
+      gender: json['gender']?.toString() ?? '',
+      dateOfBirth: json['date_of_birth']?.toString() ?? '',
+      height: json['height'] as num? ?? 0,
+      weight: json['weight'] as num? ?? 0,
+      image: json['image']?.toString(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'full_name': fullName,

@@ -2,7 +2,10 @@ import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 // import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
 // import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
-import 'package:avo_app/app/features/home/data/home_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avo_app/app/features/home/data/home_repository.dart';
+import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
+import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,7 +32,16 @@ class MyApp extends StatelessWidget {
           builder: (context) => MultiProvider(
             providers: [
               Provider<FirebaseConsumer>.value(value: firebaseConsumer),
-              ChangeNotifierProvider(create: (_) => HomeViewModel()),
+              Provider<HomeRepository>(
+                create: (context) => HomeRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
+              BlocProvider<HomeCubit>(
+                create: (context) => HomeCubit(
+                  repository: context.read<HomeRepository>(),
+                )..loadDashboard('1'),
+              ),
             ],
             child: MaterialApp.router(
               // --- إعدادات اللغات بتاعتك ---
