@@ -1,3 +1,4 @@
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/my_app.dart';
 import 'package:flutter/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -8,6 +9,10 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  // for firebase initialization
+  final firebaseConsumer = FirebaseConsumerImpl();
+  await firebaseConsumer.init();
 
   runApp(
     EasyLocalization(
@@ -20,7 +25,7 @@ void main() async {
       useFallbackTranslations: true,
       assetLoader: CodegenLoader(),
       fallbackLocale: const Locale('en'),
-      child: const MyApp(),
+      child: MyApp(firebaseConsumer: firebaseConsumer),
     ),
   );
 }
