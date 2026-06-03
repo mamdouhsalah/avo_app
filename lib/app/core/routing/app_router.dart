@@ -1,139 +1,184 @@
-import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
-import 'package:avo_app/app/features/auth/screens/create_account_screen.dart';
-import 'package:avo_app/app/features/auth/screens/validation_code_screen.dart';
-import 'package:avo_app/app/features/auth/screens/set_password_screen.dart';
-import 'package:avo_app/app/features/payment/screens/add_card_screen.dart';
-import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
 import 'package:avo_app/app/core/layout/main_layout.dart';
+import 'package:avo_app/app/core/models/chatmodel.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/features/auth/screens/create_account_screen.dart';
+import 'package:avo_app/app/features/auth/screens/create_account_type_screen.dart';
+import 'package:avo_app/app/features/auth/screens/login_screen.dart';
+import 'package:avo_app/app/features/auth/screens/reset_password_screen.dart';
+import 'package:avo_app/app/features/auth/screens/set_password_screen.dart';
+import 'package:avo_app/app/features/auth/screens/validation_code_screen.dart';
+import 'package:avo_app/app/features/chatbot/screens/chatbot_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/analytics_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/appointment_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/chats_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/dashboard_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/details_patient_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/labresult_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/new_chat_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/patient_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/schedule_appointment_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/chat_details_screen.dart';
+import 'package:avo_app/app/features/doctor/view/screen/audio_call_screen.dart';
+import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
+import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
+import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
+import 'package:avo_app/app/features/payment/screens/add_card_screen.dart';
+import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
+import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
+import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
+import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
+import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
+import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
+import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
+import 'package:avo_app/app/features/onboard/screens/onboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// استدعاء الشاشات بتاعتك
-import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
-import 'package:avo_app/app/features/onboard/screens/onboard_screen.dart';
-import 'package:avo_app/app/features/auth/screens/login_screen.dart';
-import 'package:avo_app/app/features/auth/screens/create_account_type_screen.dart';
-import 'package:avo_app/app/features/auth/screens/reset_password_screen.dart';
-import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
-import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
-import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
-import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';
-import 'package:avo_app/app/features/chatbot/screens/chat_screen.dart';
-import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
-import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
-import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
-import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
-
 class AppRouter {
-  // 1. تعريف أسماء المسارات
+  // ==================== Routes Names ====================
   static const String splash = '/splash';
   static const String onboard = '/onboard';
   static const String login = '/login';
   static const String createAccountType = '/create-account-type';
-  static const String resetPassword = '/reset-password';
   static const String createAccount = '/create-account';
   static const String validationCode = '/validation-code';
   static const String setPassword = '/set-password';
+  static const String resetPassword = '/reset-password';
 
-  static const String maps = '/maps';
+  // Doctor Features
+  static const String dashboard = '/dashboard';
+  static const String patients = '/patients';
+  static const String appointments = '/appointments';
+  static const String labResults = '/lab-results';
   static const String schedule = '/schedule';
+  static const String chats = '/chats';
+  static const String newChat = '/new-chat';
+  static const String analytics = '/analytics';
+
+  // Other Features
   static const String home = '/home';
+  static const String search = '/search';
   static const String reminder = '/reminder';
   static const String profile = '/profile';
+  static const String profileFull = '/profile/full'; // بدون Bottom Nav
 
-  static const String search = '/search';
-  static const String chat = '/chat';
+  static const String chatBot = '/chat-bot';
   static const String checkout = '/checkout';
   static const String accountInfo = '/account-info';
   static const String personalInfo = '/personal-info';
   static const String addCard = '/add-card';
   static const String addMedication = '/add-medication';
+  static const String detailsPatient = '/details-patient';
+  static const String scheduleAppointment = '/schedule-appointment';
 
-  // 2. إعداد الـ Router
   static final GoRouter router = GoRouter(
-    initialLocation: home,
+    initialLocation: dashboard,
     routes: [
+      // ==================== Auth Routes ====================
+      GoRoute(path: splash, builder: (context, state) => const SplashScreen()),
       GoRoute(
-        path: splash,
-        builder: (context, state) => const SplashScreen(),
-      ),
+          path: onboard, builder: (context, state) => const OnboardScreen()),
+      GoRoute(path: login, builder: (context, state) => const LoginScreen()),
       GoRoute(
-        path: onboard,
-        builder: (context, state) => const OnboardScreen(),
-      ),
+          path: createAccountType,
+          builder: (context, state) => const CreateAccountTypeScreen()),
       GoRoute(
-        path: login,
-        builder: (context, state) => const LoginScreen(),
-      ),
+          path: createAccount,
+          builder: (context, state) => const CreateAccountScreen()),
       GoRoute(
-        path: createAccountType,
-        builder: (context, state) => const CreateAccountTypeScreen(),
-      ),
+          path: validationCode,
+          builder: (context, state) => const ValidationCodeScreen()),
       GoRoute(
-        path: resetPassword,
-        builder: (context, state) => const ResetPasswordScreen(),
-      ),
+          path: setPassword,
+          builder: (context, state) => const SetPasswordScreen()),
       GoRoute(
-        path: createAccount,
-        builder: (context, state) => const CreateAccountScreen(),
-      ),
-      GoRoute(
-        path: validationCode,
-        builder: (context, state) => const ValidationCodeScreen(),
-      ),
-      GoRoute(
-        path: setPassword,
-        builder: (context, state) => const SetPasswordScreen(),
-      ),
+          path: resetPassword,
+          builder: (context, state) => const ResetPasswordScreen()),
 
-      // ====== شاشات الـ Bottom Navigation Bar (ShellRoute) ======
+      // ==================== Main Layout (With Bottom Navigation) ====================
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
+          GoRoute(path: home, builder: (context, state) => const HomeScreen()),
           GoRoute(
-            path: maps,
-            builder: (context, state) => const Center(child: Text("Maps Screen")),
-          ),
-          GoRoute(
-            path: schedule,
-            builder: (context, state) => const ScheduleScreen(),
-          ),
-          GoRoute(
-            path: home,
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: reminder,
-            builder: (context, state) => const ReminderScreen(),
-          ),
+              path: reminder,
+              builder: (context, state) => const ReminderScreen()),
           GoRoute(
             path: profile,
-            builder: (context, state) => const ProfileScreen(),
+            builder: (context, state) => const ProfileScreen(
+              showBottomNav: true,
+              showAppBar: true,
+              showDrawer: true,
+            ),
           ),
         ],
       ),
 
-      // ====== الشاشات الفرعية (Standalone Routes) ======
+      // ==================== Full Screen Routes (بدون Bottom Navigation) ====================
       GoRoute(
-        path: search,
-        builder: (context, state) => const SearchScreen(),
+          path: dashboard,
+          builder: (context, state) => const DashboardScreen()),
+      GoRoute(
+          path: patients, builder: (context, state) => const PatientScreen()),
+      GoRoute(
+          path: appointments,
+          builder: (context, state) => const AppointmentScreen()),
+      GoRoute(
+          path: labResults,
+          builder: (context, state) => const LabresultScreen()),
+      GoRoute(
+          path: analytics,
+          builder: (context, state) => const AnalyticsScreen()),
+      GoRoute(path: chats, builder: (context, state) => const ChatsScreen()),
+      GoRoute(
+          path: newChat, builder: (context, state) => const NewChatScreen()),
+      GoRoute(
+          path: scheduleAppointment,
+          builder: (context, state) => const ScheduleAppointmentScreen()),
+
+      // Profile Full Screen (بدون Bottom Nav)
+      GoRoute(
+        path: profileFull,
+        builder: (context, state) => const ProfileScreen(
+          showBottomNav: false,
+          showAppBar: true,
+          showDrawer: true,
+        ),
+      ),
+
+      // Other Routes
+      GoRoute(
+        path: '/patient-details',
+        builder: (context, state) {
+          final patient = state.extra as PatientModel;
+          return DetailsPatientScreen(patient: patient);
+        },
       ),
       GoRoute(
-        path: chat,
-        builder: (context, state) => const ChatScreen(),
+        path: '/chat-details',
+        builder: (context, state) {
+          final chat = state.extra as ChatModel;
+          return ChatDetailsScreen(chat: chat);
+        },
       ),
       GoRoute(
-        path: checkout,
-        builder: (context, state) => const CheckoutScreen(),
+        path: '/audio-call',
+        builder: (context, state) {
+          final chat = state.extra as ChatModel;
+          return AudioCallScreen(
+            name: chat.patient.name,
+            imageUrl: chat.patient.image ?? '',
+          );
+        },
       ),
+      GoRoute(path: search, builder: (context, state) => const SearchScreen()),
       GoRoute(
-        path: accountInfo,
-        builder: (context, state) => AccountInfoScreen(),
-      ),
+          path: checkout, builder: (context, state) => const CheckoutScreen()),
       GoRoute(
-        path: personalInfo,
-        builder: (context, state) => const PersonalInfoScreen(),
-      ),
+          path: accountInfo, builder: (context, state) => AccountInfoScreen()),
+      GoRoute(
+          path: personalInfo,
+          builder: (context, state) => const PersonalInfoScreen()),
       GoRoute(
         path: addCard,
         builder: (context, state) {
@@ -143,15 +188,30 @@ class AppRouter {
           );
         },
       ),
+
       GoRoute(
-        path: addMedication,
-        builder: (context, state) => const AddMedicationScreen(),
-      ),
+          path: addMedication,
+          builder: (context, state) => const AddMedicationScreen()),
+      GoRoute(
+          path: chatBot, builder: (context, state) => const ChatBotScreen()),
     ],
   );
 
-  // 3. دوال مساعدة للتنقل السريع (Navigation Helpers)
-  static void goToCheckout(BuildContext context) => context.push(checkout);
-  static void goToAccountInfo(BuildContext context) => context.push(accountInfo);
-  static void goToPersonalInfo(BuildContext context) => context.push(personalInfo);
+  // ==================== Navigation Helpers ====================
+  static void goToProfile(BuildContext context, {bool fullScreen = false}) {
+    if (fullScreen) {
+      context.push(profileFull);
+    } else {
+      context.push(profile);
+    }
+  }
+
+  static void goToDashboard(BuildContext context) => context.go(dashboard);
+  static void goToPatients(BuildContext context) => context.go(patients);
+  static void goToAppointments(BuildContext context) =>
+      context.go(appointments);
+  static void goToLabResults(BuildContext context) => context.go(labResults);
+  static void goToChats(BuildContext context) => context.go(chats);
+  static void goToAnalytics(BuildContext context) => context.go(analytics);
+  static void goToNewChat(BuildContext context) => context.go(newChat);
 }

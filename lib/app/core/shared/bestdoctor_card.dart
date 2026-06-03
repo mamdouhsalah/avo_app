@@ -17,16 +17,18 @@ class BestDoctorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       width: double.infinity,
       height: 170.h,
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
+          color: theme.colorScheme.primary,
           width: 1.2.sp,
         ),
         boxShadow: [
@@ -47,11 +49,11 @@ class BestDoctorCard extends StatelessWidget {
               Container(
                 width: 55.r,
                 height: 55.r,
-                padding: const EdgeInsets.all(0), // سمك البوردر
+                padding: const EdgeInsets.all(0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                     width: 2,
                   ),
                 ),
@@ -77,7 +79,7 @@ class BestDoctorCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15.sp,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
 
@@ -87,7 +89,7 @@ class BestDoctorCard extends StatelessWidget {
                       "(${doctor.specialty})",
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: Theme.of(context).colorScheme.outlineVariant,
+                        color: theme.colorScheme.outlineVariant,
                       ),
                     ),
 
@@ -123,8 +125,8 @@ class BestDoctorCard extends StatelessWidget {
                 icon: Icon(
                   doctor.isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: doctor.isFavorite
-                      ? Theme.of(context).colorScheme.error
-                      : Theme.of(context).colorScheme.outlineVariant,
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.outlineVariant,
                   size: 22.sp,
                 ),
               ),
@@ -139,7 +141,7 @@ class BestDoctorCard extends StatelessWidget {
               height: 40.h,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colorScheme.primary,
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Text(
@@ -148,7 +150,7 @@ class BestDoctorCard extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onPrimary),
+                    color: theme.colorScheme.onPrimary),
               ),
             ),
           ),

@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class MainLayout extends StatelessWidget {
-  final Widget child; // الشاشة اللي هتتعرض جوه الـ Scaffold
+  final Widget child;
+  final bool showBottomNav;
 
-  const MainLayout({super.key, required this.child});
+  const MainLayout({
+    super.key,
+    required this.child,
+    this.showBottomNav = true,
+  });
 
-  // دالة بتحدد إحنا في أي شاشة عشان تنور الأيقونة الصح
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/maps')) return 0;
@@ -15,10 +19,9 @@ class MainLayout extends StatelessWidget {
     if (location.startsWith('/home')) return 2;
     if (location.startsWith('/reminder')) return 3;
     if (location.startsWith('/profile')) return 4;
-    return 2; // Home by default
+    return 2;
   }
 
-  // دالة التنقل لما اليوزر يدوس على أيقونة تحت
   void _onItemTapped(int index, BuildContext context) {
     switch (index) {
       case 0:
@@ -42,11 +45,13 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child, // هنا بتتعرض الشاشة (Home, Profile, etc..)
-      bottomNavigationBar: CustomBottomNav(
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (index) => _onItemTapped(index, context),
-      ),
+      body: child,
+      bottomNavigationBar: showBottomNav
+          ? CustomBottomNav(
+              currentIndex: _calculateSelectedIndex(context),
+              onTap: (index) => _onItemTapped(index, context),
+            )
+          : null,
     );
   }
 }
