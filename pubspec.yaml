@@ -13,7 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # Networking
-  dio: ^5.4.0
+  dio: ^5.9.2
 
   # State Management
   provider: ^6.1.2
@@ -23,6 +23,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   image_picker: ^1.2.1
   google_fonts: ^8.0.2
+  intl: ^0.20.2
   flutter_secure_storage: ^10.0.0
   table_calendar: ^3.2.0
   device_preview: ^1.3.1
@@ -32,6 +33,12 @@ dependencies:
   easy_localization: ^3.0.8
   go_router: ^17.2.3
   flutter_bloc: ^9.1.1
+  share_plus: ^13.1.0
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  shimmer_animation: ^2.2.2+1
+  font_awesome_flutter: ^11.0.0
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -60,3 +67,5 @@ flutter:
     - assets/svg/payment/
     - assets/svg/order/
     - assets/translations/
+    - assets/svg/logo/
+    - assets/svg/roles/

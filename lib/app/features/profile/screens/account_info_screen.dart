@@ -1,9 +1,9 @@
 import 'package:avo_app/app/features/profile/data/account_info_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class AccountInfoScreen extends StatelessWidget {
-
   final UserProfile userData = UserProfile(
     fullName: 'Sofia Andro',
     email: 'Sofia.Andro15@gmail.com',
@@ -22,7 +22,8 @@ class AccountInfoScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+          icon: Icon(Icons.arrow_back_ios_new,
+              color: theme.colorScheme.onSurface),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -61,7 +62,11 @@ class AccountInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(BuildContext context, {required String label, required String initialValue}) {
+  Widget _buildTextField(
+    BuildContext context, {
+    required String label,
+    required String initialValue,
+  }) {
     final theme = Theme.of(context);
 
     return Column(
@@ -76,18 +81,24 @@ class AccountInfoScreen extends StatelessWidget {
         const SizedBox(height: 10),
         TextFormField(
           initialValue: initialValue,
-          style: theme.textTheme.bodyMedium,
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontSize: 16.sp,
+          ),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 15,
+            ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide(
-                color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                width: 1.5,
+                color: theme.colorScheme.onSurface,
+                width: 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide(
                 color: theme.colorScheme.primary,
                 width: 2,

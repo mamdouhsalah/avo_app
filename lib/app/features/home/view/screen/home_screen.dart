@@ -10,7 +10,7 @@ import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
 import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/medicine_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
-import 'package:avo_app/app/features/home/view/widget/section_header.dart';
+import 'package:avo_app/app/core/shared/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

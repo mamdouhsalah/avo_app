@@ -38,15 +38,15 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(AppSpacing.h24),
+          padding: EdgeInsets.all(AppSpacing.h16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Image.asset(
-                  AppImgs.logo,
+                child: SvgPicture.asset(
+                  'assets/svg/logo/logo.svg',
                   height: 80.h,
-                  fit: BoxFit.contain,
+                  color: colorScheme.primary,
                 ),
               ),
               SizedBox(height: 40.h),
@@ -64,43 +64,6 @@ class _LoginScreenState extends State<LoginScreen>
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              SizedBox(height: 32.h),
-              Container(
-                height: 50.h,
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: colorScheme.outlineVariant),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  labelPadding: EdgeInsets.symmetric(horizontal: 16.w),
-                  indicator: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelColor: Colors.white,
-                  unselectedLabelColor:
-                      colorScheme.onSurface.withValues(alpha: 0.6),
-                  labelStyle:
-                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
-                  dividerColor: Colors.transparent,
-                  tabs: const [
-                    Tab(text: 'Patient'),
-                    Tab(text: 'Doctor'),
-                    Tab(text: 'Pharmacy'),
-                    Tab(text: 'Hospital'),
-                    Tab(text: 'Store'),
-                    Tab(text: 'Sharity'),
-                    Tab(text: 'Admin'),
-                  ],
                 ),
               ),
               SizedBox(height: 32.h),
@@ -138,6 +101,12 @@ class _LoginScreenState extends State<LoginScreen>
               ElevatedButton(
                 onPressed: () {},
                 child: const Text('Login'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 56.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                ),
               ),
               SizedBox(height: 32.h),
               Row(
@@ -160,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen>
                           color: colorScheme.outlineVariant, thickness: 1)),
                 ],
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 12.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -215,12 +184,6 @@ class _SocialButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 80.w,
-        height: 56.h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: colorScheme.outlineVariant),
-        ),
         child: Center(
           child: SvgPicture.asset(
             icon,

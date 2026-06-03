@@ -1,19 +1,13 @@
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
-// import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
-// import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/home/data/home_repository.dart';
 import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
-import 'package:avo_app/app/core/constants/app_strings.dart';
-
-import 'package:easy_localization/easy_localization.dart';
-import 'package:avo_app/app/core/routing/app_router.dart';
 
 class MyApp extends StatelessWidget {
   final FirebaseConsumer firebaseConsumer;

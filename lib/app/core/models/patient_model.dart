@@ -6,6 +6,7 @@ class PatientModel {
   final String? image;
   final String role;
   final bool isVerified;
+  final String? diagnosis; // إضافة حقل التشخيص
 
   const PatientModel({
     required this.id,
@@ -15,6 +16,7 @@ class PatientModel {
     this.image,
     required this.role,
     this.isVerified = false,
+    this.diagnosis, // تهيئة حقل التشخيص
   });
 
   factory PatientModel.fromJson(Map<String, dynamic>? json) {

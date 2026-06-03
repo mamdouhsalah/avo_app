@@ -13,13 +13,14 @@ class AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: 252.w,
       height: 158.h,
       margin: EdgeInsets.only(right: 33.w),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: theme.colorScheme.primary,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Column(
@@ -35,7 +36,7 @@ class AppointmentCard extends StatelessWidget {
                                decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: theme.colorScheme.surface,
                     width: 2,
                   ),
                 ),
@@ -56,7 +57,7 @@ class AppointmentCard extends StatelessWidget {
                     Text(
                       appointment.doctor.name,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.w500,
                         fontSize: 16.sp,
                       ),

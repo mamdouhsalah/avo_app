@@ -1,9 +1,11 @@
 import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/timerange_model.dart';
 
 class AppointmentModel {
   final String id;
   final DoctorModel doctor;
+  final PatientModel? patient;
   final double rating;
   final bool isFavorite;
   final TimeRange timeRange;
@@ -16,6 +18,7 @@ class AppointmentModel {
     required this.isFavorite,
     required this.timeRange,
     required this.date,
+    this.patient
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic>? json) {
