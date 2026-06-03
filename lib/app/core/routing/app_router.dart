@@ -72,7 +72,7 @@ class AppRouter {
   static const String scheduleAppointment = '/schedule-appointment';
 
   static final GoRouter router = GoRouter(
-    initialLocation: dashboard,
+    initialLocation: splash,
     routes: [
       // ==================== Auth Routes ====================
       GoRoute(path: splash, builder: (context, state) => const SplashScreen()),

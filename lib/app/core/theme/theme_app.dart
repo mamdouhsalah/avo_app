@@ -12,7 +12,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      
+
       // light color scheme
       colorScheme: const ColorScheme.light(
         brightness: Brightness.light,
@@ -29,9 +29,9 @@ class AppTheme {
         shadow: AppColors.lightShadow,
       ),
 
-      // light scaffold 
+      // light scaffold
       scaffoldBackgroundColor: AppColors.lightBackground,
-      
+
       // app bar theme
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.lightBackground,
@@ -45,7 +45,6 @@ class AppTheme {
           fontSize: 24.sp,
           fontWeight: FontWeight.bold,
         ),
-        
         iconTheme: IconThemeData(
           color: AppColors.lightIcon,
           size: 24.sp,
@@ -70,8 +69,10 @@ class AppTheme {
         elevation: 8,
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        selectedLabelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w400),
+        selectedLabelStyle:
+            TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
+        unselectedLabelStyle:
+            TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w400),
       ),
 
       // light navigation bar theme
@@ -82,7 +83,8 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return IconThemeData(color: AppColors.lightPrimary, size: 24.sp);
           }
-          return IconThemeData(color: AppColors.lightSecondaryText, size: 48.sp);
+          return IconThemeData(
+              color: AppColors.lightSecondaryText, size: 48.sp);
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -110,7 +112,8 @@ class AppTheme {
           elevation: 0,
           shadowColor: Colors.transparent,
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          minimumSize: Size(0, 52.h), // 🔥 تم التعديل لمنع الـ Overflow جوه الـ Rows
+          minimumSize:
+              Size(0, 52.h), // 🔥 تم التعديل لمنع الـ Overflow جوه الـ Rows
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),
@@ -141,7 +144,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // light text button theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
@@ -174,7 +177,8 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.lightBorder, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.lightBorder, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
@@ -184,8 +188,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
-        hintStyle: TextStyle(color: AppColors.lightSecondaryText, fontSize: 14.sp),
-        labelStyle: TextStyle(color: AppColors.lightSecondaryText, fontSize: 14.sp),
+        hintStyle:
+            TextStyle(color: AppColors.lightSecondaryText, fontSize: 14.sp),
+        labelStyle:
+            TextStyle(color: AppColors.lightSecondaryText, fontSize: 14.sp),
         floatingLabelStyle: TextStyle(
           color: AppColors.lightPrimary,
           fontSize: 12.sp,
@@ -256,13 +262,14 @@ class AppTheme {
   // ====== DARK THEME ======
   static ThemeData get darkTheme {
     const darkBg = AppColors.darkBackground;
-    const darkSurface = Color(0xFF1E1E1E); // لتبطين الكروت والقوائم في الدارك مودي
-    
+    const darkSurface =
+        Color(0xFF1E1E1E); // لتبطين الكروت والقوائم في الدارك مودي
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: darkBg,
-      
+
       // dark color scheme
       colorScheme: const ColorScheme.dark(
         brightness: Brightness.dark,
@@ -313,14 +320,16 @@ class AppTheme {
         elevation: 8,
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        selectedLabelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w400),
+        selectedLabelStyle:
+            TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
+        unselectedLabelStyle:
+            TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w400),
       ),
 
       // dark navigation bar theme
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: darkBg,
-        indicatorColor: AppColors.darkPrimary.withOpacity(0.15),
+        indicatorColor: AppColors.darkPrimary.withValues(alpha: 0.15),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return IconThemeData(color: AppColors.darkPrimary, size: 24.sp);
@@ -417,7 +426,8 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.darkPrimary, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.darkPrimary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
@@ -427,8 +437,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
-        hintStyle: TextStyle(color: AppColors.darkSecondaryText, fontSize: 14.sp),
-        labelStyle: TextStyle(color: AppColors.darkSecondaryText, fontSize: 14.sp),
+        hintStyle:
+            TextStyle(color: AppColors.darkSecondaryText, fontSize: 14.sp),
+        labelStyle:
+            TextStyle(color: AppColors.darkSecondaryText, fontSize: 14.sp),
         floatingLabelStyle: TextStyle(
           color: AppColors.darkPrimary,
           fontSize: 12.sp,
@@ -487,7 +499,7 @@ class AppTheme {
 
       // dark floating action button theme
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AppColors.darkPrimary.withOpacity(0.15),
+        backgroundColor: AppColors.darkPrimary.withValues(alpha: 0.15),
         foregroundColor: AppColors.darkPrimary,
         elevation: 4,
         highlightElevation: 8,

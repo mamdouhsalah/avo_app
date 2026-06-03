@@ -16,7 +16,7 @@ class CancelAppointmentCard extends StatelessWidget {
         // insted of using box shadow
         color: colorScheme.surface,
         elevation: 10,
-        shadowColor: colorScheme.onSurface.withOpacity(.1),
+        shadowColor: colorScheme.onSurface.withValues(alpha: .1),
         borderRadius: BorderRadius.circular(16.r),
 
         child: Container(
@@ -38,10 +38,10 @@ class CancelAppointmentCard extends StatelessWidget {
                   ),
                 ),
               ),
-        
+
               SizedBox(height: 16.h),
               // cancel appointment text
-        
+
               Text(
                 'Cancel Appointment',
                 style: TextStyle(
@@ -49,25 +49,35 @@ class CancelAppointmentCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface),
               ),
-        
+
               SizedBox(height: 24.h),
-        
+
               // are you sure message
               Text(
                 'Are You sure you want to cancel appointment  of D. $doctorName ?',
-
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16.sp, color: Colors.grey),
               ),
-        
+
               SizedBox(height: 60.h),
-        
+
               // yes and no buttons
               Row(
                 children: [
-                  MainButton(text: 'Yes', onPressed:(){} ,width: 161.w, height: 48.h,),
+                  MainButton(
+                    text: 'Yes',
+                    onPressed: () {},
+                    width: 161.w,
+                    height: 48.h,
+                  ),
                   SizedBox(width: 21.w),
-                  MainButton(text: 'No', onPressed:(){} ,isNo: true, width: 161.w, height: 48.h,),
+                  MainButton(
+                    text: 'No',
+                    onPressed: () {},
+                    isNo: true,
+                    width: 161.w,
+                    height: 48.h,
+                  ),
                 ],
               )
             ],

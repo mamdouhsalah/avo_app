@@ -8,12 +8,11 @@ class TimelineItem extends StatelessWidget {
   final bool isLast;
   final String svgPath;
 
-  const TimelineItem({
-    super.key,
-    required this.step,
-    required this.isLast,
-    required this.svgPath
-  });
+  const TimelineItem(
+      {super.key,
+      required this.step,
+      required this.isLast,
+      required this.svgPath});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,13 @@ class TimelineItem extends StatelessWidget {
                   color: circleColor,
                   shape: BoxShape.circle,
                 ),
-                child: Center(child: SvgPicture.asset(svgPath,width: 35.w, height: 35.h, fit: BoxFit.contain,)),
+                child: Center(
+                    child: SvgPicture.asset(
+                  svgPath,
+                  width: 35.w,
+                  height: 35.h,
+                  fit: BoxFit.contain,
+                )),
               ),
 
               /// Line
@@ -91,7 +96,8 @@ class TimelineItem extends StatelessWidget {
                   Text(
                     step.date,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                      color: theme.textTheme.bodySmall?.color
+                          ?.withValues(alpha: 0.7),
                     ),
                   ),
                   SizedBox(height: 24.h),

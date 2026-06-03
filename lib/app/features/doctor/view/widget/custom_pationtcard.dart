@@ -38,12 +38,12 @@ class CustomPatientCard extends StatelessWidget {
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: flagColor.withOpacity(0.3),
+            color: flagColor.withValues(alpha: 0.3),
             width: 1.2.sp,
           ),
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.08),
+              color: theme.shadowColor.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -75,7 +75,8 @@ class CustomPatientCard extends StatelessWidget {
                   Text(
                     patient.diagnosis ?? patient.email,
                     style: TextStyle(
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.75),
+                      color: theme.textTheme.bodyMedium?.color
+                          ?.withValues(alpha: 0.75),
                       fontSize: 13.5.sp,
                     ),
                   ),
@@ -93,7 +94,8 @@ class CustomPatientCard extends StatelessWidget {
                       if (patient.isVerified)
                         Padding(
                           padding: EdgeInsets.only(left: 8.w),
-                          child: Icon(Icons.verified, color: Colors.green, size: 18.sp),
+                          child: Icon(Icons.verified,
+                              color: Colors.green, size: 18.sp),
                         ),
                     ],
                   ),
@@ -123,8 +125,10 @@ class CustomPatientCard extends StatelessWidget {
                             onTap: () => Navigator.pop(context),
                           ),
                           ListTile(
-                            leading: const Icon(Icons.delete_outline, color: Colors.red),
-                            title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                            leading: const Icon(Icons.delete_outline,
+                                color: Colors.red),
+                            title: const Text('Delete',
+                                style: TextStyle(color: Colors.red)),
                             onTap: () => Navigator.pop(context),
                           ),
                         ],
@@ -133,14 +137,15 @@ class CustomPatientCard extends StatelessWidget {
                   },
                   icon: Icon(
                     Icons.more_vert,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodyMedium?.color
+                        ?.withValues(alpha: 0.7),
                     size: 24.sp,
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.all(8.sp),
                   decoration: BoxDecoration(
-                    color: flagColor.withOpacity(0.15),
+                    color: flagColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Icon(

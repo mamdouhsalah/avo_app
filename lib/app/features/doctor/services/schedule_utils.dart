@@ -5,11 +5,11 @@ class ScheduleUtils {
   /// Get event color based on index
   static Color getEventColor(int index) {
     final colors = [
-      Colors.blue.withOpacity(0.2),
-      Colors.teal.withOpacity(0.2),
-      Colors.purple.withOpacity(0.2),
-      Colors.orange.withOpacity(0.2),
-      Colors.pink.withOpacity(0.2),
+      Colors.blue.withValues(alpha: 0.2),
+      Colors.teal.withValues(alpha: 0.2),
+      Colors.purple.withValues(alpha: 0.2),
+      Colors.orange.withValues(alpha: 0.2),
+      Colors.pink.withValues(alpha: 0.2),
     ];
     return colors[index % colors.length];
   }

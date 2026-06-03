@@ -58,7 +58,7 @@ class CustomAppointmentCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.08),
+            color: theme.shadowColor.withValues(alpha: 0.08),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -89,7 +89,8 @@ class CustomAppointmentCard extends StatelessWidget {
                 Text(
                   displaySubtitle,
                   style: TextStyle(
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodyMedium?.color
+                        ?.withValues(alpha: 0.7),
                     fontSize: 13.5.sp,
                   ),
                 ),
@@ -150,14 +151,15 @@ class CustomAppointmentCard extends StatelessWidget {
                 },
                 icon: Icon(
                   Icons.more_vert,
-                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  color:
+                      theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                   size: 24.sp,
                 ),
               ),
               Container(
                 padding: EdgeInsets.all(9.sp),
                 decoration: BoxDecoration(
-                  color: flagColor.withOpacity(0.2),
+                  color: flagColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
@@ -218,7 +220,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 5),
           ),
@@ -265,7 +267,8 @@ class CustomGridAppointmentCard extends StatelessWidget {
                 },
                 icon: Icon(
                   Icons.more_vert,
-                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  color:
+                      theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                   size: 22.sp,
                 ),
                 constraints: const BoxConstraints(),
@@ -293,7 +296,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
             displaySubtitle,
             style: TextStyle(
               fontSize: 13.5.sp,
-              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.75),
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.75),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -313,16 +316,16 @@ class CustomGridAppointmentCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
-                      color:
-                          theme.textTheme.bodyMedium?.color?.withOpacity(0.9),
+                      color: theme.textTheme.bodyMedium?.color
+                          ?.withValues(alpha: 0.9),
                     ),
                   ),
                   Text(
                     displayRoom,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color:
-                          theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      color: theme.textTheme.bodyMedium?.color
+                          ?.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

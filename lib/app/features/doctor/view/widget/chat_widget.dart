@@ -35,7 +35,7 @@ class ChatSearchBar extends StatelessWidget {
             size: 20.sp,
           ),
           filled: true,
-          fillColor: Colors.grey.withOpacity(0.1),
+          fillColor: Colors.grey.withValues(alpha: 0.1),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
             borderSide: BorderSide.none,
@@ -43,7 +43,7 @@ class ChatSearchBar extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
             borderSide: BorderSide(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
               width: 0.5,
             ),
           ),
@@ -82,10 +82,10 @@ class ChatTile extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
+        color: Colors.white.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.1),
           width: 0.5,
         ),
       ),
@@ -128,7 +128,7 @@ class ChatTile extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: theme.colorScheme.primary.withOpacity(0.3),
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -153,7 +153,7 @@ class ChatTile extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.4),
+                    color: Colors.green.withValues(alpha: 0.4),
                     blurRadius: 4,
                     spreadRadius: 1,
                   ),
@@ -333,7 +333,7 @@ class ChatListHeader extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Text(

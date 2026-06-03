@@ -34,29 +34,26 @@ class SelectedAppointmentCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.onSurface.withOpacity(.1),
-                    blurRadius: 5.r,
-                    offset: Offset(0, 1),
-                    spreadRadius: 1.r
-                  ),
+                      color: colorScheme.onSurface.withValues(alpha: .1),
+                      blurRadius: 5.r,
+                      offset: Offset(0, 1),
+                      spreadRadius: 1.r),
                 ],
-                
               ),
               child: Stack(children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // the top line
                     Center(
                       child: Container(
-                      width: 134.w,
-                      height: 5.h,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10.r),
+                        width: 134.w,
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
                       ),
-                                        ),
                     ),
 
                     SizedBox(height: 24.h),
@@ -144,9 +141,8 @@ class SelectedAppointmentCard extends StatelessWidget {
                     SizedBox(height: 42.h),
                     // call , message and video icons
                     CallMessageChatRow(),
-                    
-                     SizedBox(height: 24.h),
 
+                    SizedBox(height: 24.h),
 
                     // Selected date
                     Column(
@@ -193,9 +189,14 @@ class SelectedAppointmentCard extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 24.h),
+
                     /// button
 
-                    MainButton(text: "Cancel Appointment", onPressed: () {}, width: 343, height: 48)
+                    MainButton(
+                        text: "Cancel Appointment",
+                        onPressed: () {},
+                        width: 343,
+                        height: 48)
                   ],
                 ),
                 Positioned(

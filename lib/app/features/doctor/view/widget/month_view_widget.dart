@@ -23,7 +23,8 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
   @override
   void initState() {
     super.initState();
-    selectedMonth = DateTime(widget.initialDate.year, widget.initialDate.month, 1);
+    selectedMonth =
+        DateTime(widget.initialDate.year, widget.initialDate.month, 1);
     selectedWeekStart = _getWeekStart(widget.initialDate);
   }
 
@@ -37,13 +38,13 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
     DateTime lastDay = DateTime(month.year, month.month + 1, 0);
 
     DateTime currentDate = _getWeekStart(firstDay);
-    
-    while (currentDate.isBefore(lastDay) || 
-           currentDate.month == lastDay.month) {
+
+    while (
+        currentDate.isBefore(lastDay) || currentDate.month == lastDay.month) {
       weeks.add(currentDate);
       currentDate = currentDate.add(const Duration(days: 7));
     }
-    
+
     return weeks;
   }
 
@@ -66,7 +67,8 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(24.r),
                 topRight: Radius.circular(24.r),
@@ -184,7 +186,7 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.withOpacity(0.3)),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: Row(
@@ -267,13 +269,16 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                      : Colors.grey.withOpacity(0.05),
+                      ? Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(10.r),
                   border: Border.all(
                     color: isSelected
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.grey.withOpacity(0.2),
+                        : Colors.grey.withValues(alpha: 0.2),
                     width: isSelected ? 2 : 1,
                   ),
                 ),
@@ -285,7 +290,7 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? Theme.of(context).colorScheme.primary
-                            : Colors.grey.withOpacity(0.3),
+                            : Colors.grey.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),

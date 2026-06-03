@@ -6,7 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class CancelSuccessfullyAppointmentCard extends StatelessWidget {
   final String doctorName;
-  const CancelSuccessfullyAppointmentCard({super.key, required this.doctorName});
+  const CancelSuccessfullyAppointmentCard(
+      {super.key, required this.doctorName});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
         // insted of using box shadow
         color: colorScheme.surface,
         elevation: 10,
-        shadowColor: colorScheme.onSurface.withOpacity(.1),
+        shadowColor: colorScheme.onSurface.withValues(alpha: .1),
         borderRadius: BorderRadius.circular(16.r),
 
         child: Container(
@@ -42,13 +43,17 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
               ),
 
               SizedBox(height: 21.h),
-              
+
               // canceled successfully icon
-              SvgPicture.asset(AppSvg.doneSuccessfully, width: 55.w, height: 55.h,),
+              SvgPicture.asset(
+                AppSvg.doneSuccessfully,
+                width: 55.w,
+                height: 55.h,
+              ),
 
               SizedBox(height: 16.h),
               // cancel appointment text
-        
+
               Text(
                 'Cancel Successfully',
                 style: TextStyle(
@@ -56,25 +61,35 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface),
               ),
-        
+
               SizedBox(height: 24.h),
-        
+
               // are you sure message
               Text(
                 'Your appointment  with $doctorName is canceled successfully',
-
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16.sp, color: Colors.grey),
               ),
-        
+
               SizedBox(height: 60.h),
-        
+
               // yes and no buttons
               Row(
                 children: [
-                  MainButton(text: 'Yes', onPressed:(){} ,width: 161.w, height: 48.h,),
+                  MainButton(
+                    text: 'Yes',
+                    onPressed: () {},
+                    width: 161.w,
+                    height: 48.h,
+                  ),
                   SizedBox(width: 21.w),
-                  MainButton(text: 'No', onPressed:(){} ,isNo: true, width: 161.w, height: 48.h,),
+                  MainButton(
+                    text: 'No',
+                    onPressed: () {},
+                    isNo: true,
+                    width: 161.w,
+                    height: 48.h,
+                  ),
                 ],
               )
             ],

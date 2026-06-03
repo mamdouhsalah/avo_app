@@ -209,7 +209,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         borderRadius: BorderRadius.circular(18.r),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.05),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -223,7 +223,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             title,
             style: TextStyle(
               fontSize: 13.sp,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -241,7 +241,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               Container(
                 padding: EdgeInsets.all(8.w),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
@@ -286,7 +286,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         borderRadius: BorderRadius.circular(22.r),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.05),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -304,7 +304,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface.withOpacity(0.8),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ),
               ),
@@ -348,7 +348,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 child: Container(
                   padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
-                    color: primary.withOpacity(0.1),
+                    color: primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Icon(
@@ -404,7 +404,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             fontWeight: FontWeight.bold,
             color: isSelected
                 ? Colors.white
-                : theme.colorScheme.onSurface.withOpacity(0.5),
+                : theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
       ),
@@ -418,7 +418,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     ChartViewType viewType,
   ) {
     final primary = theme.colorScheme.primary;
-    final textColor = theme.colorScheme.onSurface.withOpacity(0.5);
+    final textColor = theme.colorScheme.onSurface.withValues(alpha: 0.5);
 
     return LineChartData(
       minY: 0,
@@ -429,7 +429,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         horizontalInterval: 25,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: theme.dividerColor.withOpacity(0.2),
+            color: theme.dividerColor.withValues(alpha: 0.2),
             strokeWidth: 1,
           );
         },
@@ -485,7 +485,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           barWidth: 3.w,
           belowBarData: BarAreaData(
             show: true,
-            color: primary.withOpacity(0.08),
+            color: primary.withValues(alpha: 0.08),
           ),
           dotData: FlDotData(show: false),
         ),
@@ -510,7 +510,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         horizontalInterval: 20,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: theme.dividerColor.withOpacity(0.2),
+            color: theme.dividerColor.withValues(alpha: 0.2),
             strokeWidth: 1,
           );
         },
@@ -537,7 +537,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   labels[value.toInt()],
                   style: TextStyle(
                     fontSize: 11.sp,
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               );

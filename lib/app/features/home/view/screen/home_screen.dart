@@ -382,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     opacity: isVisible ? 1 : 0.8,
                     child: GestureDetector(
                       onTap: () {
-                        context.push(AppRouter.chat);
+                        context.push(AppRouter.chatBot);
                       },
                       child: Container(
                         width: 86.w,

@@ -17,7 +17,8 @@ class WeekViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weekAppointments = ScheduleController.getAppointmentsForWeek(weekStart);
+    final weekAppointments =
+        ScheduleController.getAppointmentsForWeek(weekStart);
 
     return SingleChildScrollView(
       child: Column(
@@ -44,7 +45,7 @@ class WeekViewWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
@@ -95,7 +96,7 @@ class WeekViewWidget extends StatelessWidget {
   Widget _buildTimeline(List<AppointmentModel> appointments) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: SingleChildScrollView(
@@ -118,7 +119,8 @@ class WeekViewWidget extends StatelessWidget {
       String timeLabel = '${hour.toString().padLeft(2, '0')}:00';
 
       // Get appointments for this hour
-      List<AppointmentModel> appointmentsThisHour = allAppointments.where((apt) {
+      List<AppointmentModel> appointmentsThisHour =
+          allAppointments.where((apt) {
         return apt.timeRange.start.hour == hour;
       }).toList();
 
@@ -128,7 +130,7 @@ class WeekViewWidget extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 width: 0.5,
               ),
             ),
@@ -191,7 +193,8 @@ class WeekViewWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: borderColor.withOpacity(0.5), width: 0.5),
+        border:
+            Border.all(color: borderColor.withValues(alpha: 0.5), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +284,7 @@ class WeekViewWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: borderColor.withOpacity(0.3)),
+          border: Border.all(color: borderColor.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -316,7 +319,8 @@ class WeekViewWidget extends StatelessWidget {
                   SizedBox(height: 6.h),
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 12.sp, color: Colors.grey),
+                      Icon(Icons.calendar_today,
+                          size: 12.sp, color: Colors.grey),
                       SizedBox(width: 4.w),
                       Text(
                         DateFormat('MMM dd, yyyy').format(apt.date),

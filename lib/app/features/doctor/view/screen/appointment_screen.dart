@@ -201,7 +201,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     isGridView
                         ? Icons.view_list_rounded
                         : Icons.grid_view_rounded,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+                    color: theme.textTheme.bodyMedium?.color
+                        ?.withValues(alpha: 0.5),
                     size: 26.sp,
                   ),
                 ),
@@ -263,10 +264,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

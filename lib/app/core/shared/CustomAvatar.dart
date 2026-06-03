@@ -23,7 +23,7 @@ class CustomAvatar extends StatelessWidget {
     final double avatarSize = size ?? 48.r;
 
     final Color bgColor =
-        backgroundColor ?? theme.colorScheme.primary.withOpacity(0.1);
+        backgroundColor ?? theme.colorScheme.primary.withValues(alpha: 0.1);
 
     return Container(
       width: avatarSize,

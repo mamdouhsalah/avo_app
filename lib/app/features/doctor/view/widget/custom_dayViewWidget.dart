@@ -48,7 +48,7 @@ class DayViewWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
@@ -100,9 +100,9 @@ class DayViewWidget extends StatelessWidget {
       return Container(
         padding: EdgeInsets.all(32.w),
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.05),
+          color: Colors.grey.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         child: Center(
           child: Column(
@@ -129,7 +129,7 @@ class DayViewWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -158,7 +158,7 @@ class DayViewWidget extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 width: 0.5,
               ),
             ),
@@ -221,7 +221,8 @@ class DayViewWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: borderColor.withOpacity(0.5), width: 0.5),
+        border:
+            Border.all(color: borderColor.withValues(alpha: 0.5), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,7 +321,7 @@ class DayViewWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: borderColor.withOpacity(0.3)),
+          border: Border.all(color: borderColor.withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,7 +347,7 @@ class DayViewWidget extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: borderColor.withOpacity(0.2),
+                    color: borderColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                   child: Text(
@@ -366,7 +367,7 @@ class DayViewWidget extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Column(

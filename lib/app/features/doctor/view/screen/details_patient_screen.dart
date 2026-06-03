@@ -48,7 +48,7 @@ class DetailsPatientScreen extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 20,
-                    color: theme.colorScheme.shadow.withOpacity(0.08),
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.08),
                     offset: const Offset(0, 8),
                   ),
                 ],
@@ -87,7 +87,7 @@ class DetailsPatientScreen extends StatelessWidget {
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -130,7 +130,7 @@ class DetailsPatientScreen extends StatelessWidget {
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(24.r),
                 border: Border.all(
-                    color: theme.colorScheme.outline.withOpacity(0.1)),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.1)),
               ),
               child: Column(
                 children: [
@@ -162,7 +162,8 @@ class DetailsPatientScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -186,14 +187,16 @@ class DetailsPatientScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surface,
                       border: Border.all(
-                          color: theme.colorScheme.outline.withOpacity(0.2)),
+                          color:
+                              theme.colorScheme.outline.withValues(alpha: 0.2)),
                       borderRadius: BorderRadius.circular(16.r),
                     ),
                     child: Center(
                       child: Text(
                         "Past",
                         style: TextStyle(
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
                           fontWeight: FontWeight.w600,
                           fontSize: 14.sp,
                         ),
@@ -230,7 +233,7 @@ class DetailsPatientScreen extends StatelessWidget {
   Widget _buildDivider() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 12.h),
-      child: Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+      child: Divider(height: 1, color: Colors.grey.withValues(alpha: 0.2)),
     );
   }
 
@@ -273,10 +276,11 @@ class DetailsPatientScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.08)),
+        border: Border.all(
+            color: theme.colorScheme.outline.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.04),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -288,7 +292,7 @@ class DetailsPatientScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.08),
+              color: theme.colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
@@ -302,7 +306,7 @@ class DetailsPatientScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.primary.withOpacity(0.7),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
                     )),
               ],
             ),
@@ -341,8 +345,8 @@ class DetailsPatientScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
             decoration: BoxDecoration(
               color: isConfirmed
-                  ? Colors.green.withOpacity(0.1)
-                  : Colors.orange.withOpacity(0.1),
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Text(
