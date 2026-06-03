@@ -17,15 +17,38 @@ class AuthResponseModel {
     required this.expiresIn,
   });
 
-  factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
+  factory AuthResponseModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return AuthResponseModel(
+        id: '',
+        email: '',
+        fullName: '',
+        token: '',
+        role: '',
+        gender: '',
+        expiresIn: 0,
+      );
+    }
     return AuthResponseModel(
-      id: json['id'],
-      email: json['email'],
-      fullName: json['fullName'],
-      token: json['token'],
-      role: json['role'],
-      gender: json['gender'],
-      expiresIn: json['expires_in'],
+      id: json['id']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      fullName: json['fullName']?.toString() ?? '',
+      token: json['token']?.toString() ?? '',
+      role: json['role']?.toString() ?? '',
+      gender: json['gender']?.toString() ?? '',
+      expiresIn: (json['expires_in'] as num?)?.toInt() ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'fullName': fullName,
+      'token': token,
+      'role': role,
+      'gender': gender,
+      'expires_in': expiresIn,
+    };
   }
 }

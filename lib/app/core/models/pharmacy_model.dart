@@ -35,17 +35,29 @@ class PharmacyModel {
     );
   }
 
-  factory PharmacyModel.fromJson(Map<String, dynamic> json) {
+  factory PharmacyModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const PharmacyModel(
+        id: '',
+        name: '',
+        type: '',
+        rating: 0.0,
+        reviews: 0,
+        openTime: '',
+        closeTime: '',
+        isFavorite: false,
+      );
+    }
     return PharmacyModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      type: json['type'] ?? '',
-      rating: (json['rating'] ?? 0.0).toDouble(),
-      reviews: json['reviews'] ?? 0,
-      openTime: json['open_time'] ?? '',
-      closeTime: json['close_time'] ?? '',
-      imageUrl: json['image_url'],
-      isFavorite: json['is_favorite'] ?? false,
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      reviews: (json['reviews'] as num?)?.toInt() ?? 0,
+      openTime: json['open_time']?.toString() ?? '',
+      closeTime: json['close_time']?.toString() ?? '',
+      imageUrl: json['image_url']?.toString(),
+      isFavorite: json['is_favorite'] as bool? ?? false,
     );
   }
 

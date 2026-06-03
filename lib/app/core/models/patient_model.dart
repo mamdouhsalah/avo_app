@@ -19,15 +19,25 @@ class PatientModel {
     this.diagnosis, // تهيئة حقل التشخيص
   });
 
-  factory PatientModel.fromJson(Map<String, dynamic> json) {
+  factory PatientModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const PatientModel(
+        id: '',
+        name: '',
+        email: '',
+        phone: '',
+        role: 'patient',
+        isVerified: false,
+      );
+    }
     return PatientModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      phone: json['phone'] ?? '',
-      image: json['image'],
-      role: json['role'] ?? 'patient',
-      isVerified: json['isVerified'] ?? false,
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      image: json['image']?.toString(),
+      role: json['role']?.toString() ?? 'patient',
+      isVerified: json['isVerified'] as bool? ?? false,
     );
   }
 

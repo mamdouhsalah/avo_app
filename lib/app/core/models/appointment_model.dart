@@ -20,4 +20,38 @@ class AppointmentModel {
     required this.date,
     this.patient
   });
+
+  factory AppointmentModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return AppointmentModel(
+        id: '',
+        doctor: DoctorModel.fromJson(null),
+        rating: 0.0,
+        isFavorite: false,
+        timeRange: TimeRange.fromJson(null),
+        date: DateTime.now(),
+      );
+    }
+    return AppointmentModel(
+      id: json['id']?.toString() ?? '',
+      doctor: DoctorModel.fromJson(json['doctor'] as Map<String, dynamic>?),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      isFavorite: json['isFavorite'] as bool? ?? false,
+      timeRange: TimeRange.fromJson(json['timeRange'] as Map<String, dynamic>?),
+      date: json['date'] != null
+          ? DateTime.tryParse(json['date'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'doctor': doctor.toJson(),
+      'rating': rating,
+      'isFavorite': isFavorite,
+      'timeRange': timeRange.toJson(),
+      'date': date.toIso8601String(),
+    };
+  }
 }

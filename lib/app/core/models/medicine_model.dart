@@ -26,14 +26,23 @@ class MedicineModel {
     );
   }
 
-  factory MedicineModel.fromJson(Map<String, dynamic> json) {
+  factory MedicineModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const MedicineModel(
+        id: '',
+        name: '',
+        dosage: '',
+        time: '',
+        isTaken: false,
+      );
+    }
     return MedicineModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      dosage: json['dosage'] ?? '',
-      time: json['time'] ?? '',
-      isTaken: json['is_taken'] ?? false,
-      imageUrl: json['image_url'],
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      dosage: json['dosage']?.toString() ?? '',
+      time: json['time']?.toString() ?? '',
+      isTaken: json['is_taken'] as bool? ?? false,
+      imageUrl: json['image_url']?.toString(),
     );
   }
 
