@@ -1,0 +1,169 @@
+import 'dart:developer';
+
+import 'package:avo_app/app/core/errors/database_exception.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+
+class FirebaseConsumerImpl implements FirebaseConsumer {
+  late final FirebaseDatabase _database;
+
+  @override
+  Future<void> init() async {
+    try {
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp();
+      }
+      _database = FirebaseDatabase.instance;
+      _database.setPersistenceEnabled(true);
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  Query _getQuery(String path, FirebaseQueryParams? queryParams) {
+    final ref = _database.ref(path);
+    return queryParams?.buildQuery(ref) ?? ref;
+  }
+
+  @override
+  Future<T> get<T>(String path,
+      {FirebaseQueryParams? queryParams,
+      required T Function(Map<String, dynamic> json) fromJson}) async {
+    try {
+      final ref = _getQuery(path, queryParams);
+      final snapshot = await ref.get();
+      if (snapshot.exists) {
+        final rawValue = snapshot.value;
+        if (rawValue is Map) {
+          final data = _castMap(rawValue);
+          data['id'] = snapshot.key;
+          return fromJson(data);
+        } else {
+          throw DatabaseException(
+            'Expected Map data at path: $path, but found: ${rawValue.runtimeType}',
+            'invalid-data-type',
+          );
+        }
+      } else {
+        throw DatabaseException('No data found at path: $path', 'not-found');
+      }
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<List<T>> getList<T>(String path,
+      {FirebaseQueryParams? queryParams,
+      required T Function(Map<String, dynamic> json) fromJson}) async {
+    try {
+      final ref = _getQuery(path, queryParams);
+      final snapshot = await ref.get();
+      return _parseListSnapshot(snapshot, fromJson);
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Stream<List<T>> streamList<T>(String path,
+      {FirebaseQueryParams? queryParams,
+      required T Function(Map<String, dynamic> json) fromJson}) {
+    try {
+      final ref = _getQuery(path, queryParams);
+      return ref.onValue.map((event) {
+        return _parseListSnapshot(event.snapshot, fromJson);
+      });
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<void> set(String path, {required Map<String, dynamic> data}) async {
+    try {
+      await _database.ref(path).set(data);
+      log("Successfully set data at $path");
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<String> push(String path, {required Map<String, dynamic> data}) async {
+    try {
+      final newRef = _database.ref(path).push();
+      await newRef.set(data);
+      log("Successfully pushed data to ${newRef.path}");
+      return newRef.key!;
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<void> update(String path, {required Map<String, dynamic> data}) async {
+    try {
+      await _database.ref(path).update(data);
+      log("Successfully updated data at $path");
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<void> delete(String path) async {
+    try {
+      await _database.ref(path).remove();
+      log("Successfully deleted data at $path");
+    } catch (e) {
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
+
+  List<T> _parseListSnapshot<T>(
+      DataSnapshot snapshot, T Function(Map<String, dynamic> json) fromJson) {
+    if (!snapshot.exists || snapshot.value == null) return [];
+
+    final List<T> results = [];
+    final rawValue = snapshot.value;
+
+    if (rawValue is Map) {
+      rawValue.forEach((key, value) {
+        if (value is Map) {
+          final data = _castMap(value);
+          data['id'] = key.toString();
+          results.add(fromJson(data));
+        }
+      });
+    } else if (rawValue is List) {
+      for (int i = 0; i < rawValue.length; i++) {
+        final value = rawValue[i];
+        if (value is Map) {
+          final data = _castMap(value);
+          data['id'] = i.toString();
+          results.add(fromJson(data));
+        }
+      }
+    }
+
+    return results;
+  }
+
+  dynamic _castValue(dynamic value) {
+    if (value is Map) {
+      return _castMap(value);
+    } else if (value is List) {
+      return value.map((item) => _castValue(item)).toList();
+    }
+    return value;
+  }
+
+  Map<String, dynamic> _castMap(Map<dynamic, dynamic> map) {
+    return map.map((key, value) {
+      return MapEntry(key.toString(), _castValue(value));
+    });
+  }
+}

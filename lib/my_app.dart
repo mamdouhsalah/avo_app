@@ -1,13 +1,21 @@
 import 'package:avo_app/app/core/constants/app_strings.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
-import 'package:avo_app/app/features/onboard/screens/onboard_screen.dart';
+import 'package:avo_app/app/features/home/data/home_repository.dart';
+import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
+import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final FirebaseConsumer firebaseConsumer;
+
+  const MyApp({super.key, required this.firebaseConsumer});
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +25,38 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return DevicePreview(
-          enabled: !kReleaseMode,
-          builder: (context) => MaterialApp(
-            debugShowCheckedModeBanner: true,
-            title: AppStrings.appName,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.system,
-            home: const OnboardScreen(),
-            locale: DevicePreview.locale(context),
-            builder: DevicePreview.appBuilder,
-            useInheritedMediaQuery: true,
+          enabled: false,
+          builder: (context) => MultiProvider(
+            providers: [
+              Provider<FirebaseConsumer>.value(value: firebaseConsumer),
+              Provider<HomeRepository>(
+                create: (context) => HomeRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
+              BlocProvider<HomeCubit>(
+                create: (context) => HomeCubit(
+                  repository: context.read<HomeRepository>(),
+                )..loadDashboard('1'),
+              ),
+            ],
+            child: MaterialApp.router(
+              // --- إعدادات اللغات بتاعتك ---
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+
+              debugShowCheckedModeBanner: false,
+              title: AppStrings.appName,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.system,
+              
+              // --- شاشة البداية ---
+              routerConfig: AppRouter.router,
+              
+              builder: DevicePreview.appBuilder,
+            ),
           ),
         );
       },
