@@ -1,6 +1,8 @@
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/core/shared/custom_text_form_field.dart';
+import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:avo_app/app/features/auth/screens/widgets/header_auth_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -10,9 +12,6 @@ class ResetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -27,24 +26,12 @@ class ResetPasswordScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 24.h),
-              Text(
-                'Forgot your password?',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
+              HeaderAuthSection(
+                title: "Forgot your password?",
+                subtitle:
+                    "Enter the email address associated with your account and we will send you a verification code.",
               ),
-              SizedBox(height: 12.h),
-              Text(
-                'Enter the email address associated with your account and we will send you a verification code.',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              SizedBox(height: 40.h),
+              SizedBox(height: 32.h),
               const CustomTextFormField(
                 labelText: 'Email Address',
                 hintText: 'Enter your email',
@@ -53,12 +40,13 @@ class ResetPasswordScreen extends StatelessWidget {
                 textInputAction: TextInputAction.done,
               ),
               SizedBox(height: 40.h),
-              ElevatedButton(
+              Center(
+                  child: MainButton(
+                text: 'Send Code',
                 onPressed: () {
                   context.push(AppRouter.validationCode);
                 },
-                child: const Text('Send Code'),
-              ),
+              )),
             ],
           ),
         ),

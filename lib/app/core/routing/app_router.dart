@@ -1,7 +1,6 @@
 import 'package:avo_app/app/core/layout/main_layout.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:avo_app/app/features/auth/screens/create_account_screen.dart';
 import 'package:avo_app/app/features/auth/screens/create_account_type_screen.dart';
 import 'package:avo_app/app/features/auth/screens/login_screen.dart';
 import 'package:avo_app/app/features/auth/screens/reset_password_screen.dart';
@@ -82,9 +81,6 @@ class AppRouter {
       GoRoute(
           path: createAccountType,
           builder: (context, state) => const CreateAccountTypeScreen()),
-      GoRoute(
-          path: createAccount,
-          builder: (context, state) => const CreateAccountScreen()),
       GoRoute(
           path: validationCode,
           builder: (context, state) => const ValidationCodeScreen()),

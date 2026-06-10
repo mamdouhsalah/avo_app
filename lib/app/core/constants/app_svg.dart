@@ -1,4 +1,6 @@
 class AppSvg {
+  // app logo svg
+  static const String logo = 'assets/svg/logo/logo.svg';
   // appointment svg
   static const String doneSuccessfully =
       'assets/svg/appointment/done_successfully.svg';

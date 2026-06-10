@@ -1,5 +1,7 @@
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
+import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:avo_app/app/features/auth/screens/widgets/header_auth_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,24 +57,11 @@ class _ValidationCodeScreenState extends State<ValidationCodeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 24.h),
-              Text(
-                'Verify your email',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
+              const HeaderAuthSection(
+                title: "Verify your email",
+                subtitle: "Please enter the 4-digit code sent to your email address.",
               ),
-              SizedBox(height: 12.h),
-              Text(
-                'Please enter the 4-digit code sent to your email address.',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              SizedBox(height: 48.h),
+              SizedBox(height: 32.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(
@@ -119,11 +108,13 @@ class _ValidationCodeScreenState extends State<ValidationCodeScreen> {
                 ),
               ),
               SizedBox(height: 40.h),
-              ElevatedButton(
-                onPressed: () {
-                  context.push(AppRouter.setPassword);
-                },
-                child: const Text('Verify'),
+              Center(
+                child: MainButton(
+                  text: 'Verify',
+                  onPressed: () {
+                    context.push(AppRouter.setPassword);
+                  },
+                ),
               ),
               SizedBox(height: 32.h),
               Row(

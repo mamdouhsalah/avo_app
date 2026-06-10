@@ -26,7 +26,7 @@ class MainButton extends StatelessWidget {
         onTap: onPressed,
         child: Container(
            width: width??311.w,
-            height: height??32.h,
+            height: height??48.h,
             decoration: BoxDecoration(
               border: isNo!? Border.all(color: Theme.of(context).colorScheme.primary , width: 1.w) : null,
               borderRadius: BorderRadius.circular(8.r),
