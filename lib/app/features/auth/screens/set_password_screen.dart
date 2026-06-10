@@ -1,6 +1,8 @@
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/core/shared/custom_text_form_field.dart';
+import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:avo_app/app/features/auth/screens/widgets/header_auth_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -51,11 +53,13 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
               ),
             ),
             SizedBox(height: 32.h),
-            ElevatedButton(
-              onPressed: () {
-                context.go(AppRouter.login);
-              },
-              child: const Text('Back to Login'),
+            Center(
+              child: MainButton(
+                text: 'Back to Login',
+                onPressed: () {
+                  context.go(AppRouter.login);
+                },
+              ),
             ),
             SizedBox(height: 10.h),
           ],
@@ -66,9 +70,6 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -83,24 +84,11 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 24.h),
-              Text(
-                'New Password',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                'Please enter and confirm your new password to complete the reset process.',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              SizedBox(height: 40.h),
+              HeaderAuthSection(
+                  title: "New Password",
+                  subtitle:
+                      "Please enter and confirm your new password to complete the reset process."),
+              SizedBox(height: 32.h),
               const CustomTextFormField(
                 labelText: 'New Password',
                 hintText: 'Enter new password',

@@ -39,7 +39,9 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
         if (rawValue is Map) {
           final data = _castMap(rawValue);
           data['id'] = snapshot.key;
-          return fromJson(data);
+          final result = fromJson(data);
+          log("GET SUCCESS: Path: $path, Response: $data");
+          return result;
         } else {
           throw DatabaseException(
             'Expected Map data at path: $path, but found: ${rawValue.runtimeType}',
@@ -50,6 +52,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
         throw DatabaseException('No data found at path: $path', 'not-found');
       }
     } catch (e) {
+      log("GET FAILED: Path: $path, Error: $e");
       throw DatabaseExceptionHandler.handleException(e);
     }
   }
@@ -61,8 +64,11 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
-      return _parseListSnapshot(snapshot, fromJson);
+      final result = _parseListSnapshot(snapshot, fromJson);
+      log("GET LIST SUCCESS: Path: $path, Count: ${result.length}, Response: ${snapshot.value}");
+      return result;
     } catch (e) {
+      log("GET LIST FAILED: Path: $path, Error: $e");
       throw DatabaseExceptionHandler.handleException(e);
     }
   }
@@ -85,8 +91,9 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   Future<void> set(String path, {required Map<String, dynamic> data}) async {
     try {
       await _database.ref(path).set(data);
-      log("Successfully set data at $path");
+      log("SET SUCCESS: Path: $path, Data: $data");
     } catch (e) {
+      log("SET FAILED: Path: $path, Error: $e");
       throw DatabaseExceptionHandler.handleException(e);
     }
   }
@@ -96,9 +103,11 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
     try {
       final newRef = _database.ref(path).push();
       await newRef.set(data);
-      log("Successfully pushed data to ${newRef.path}");
-      return newRef.key!;
+      final key = newRef.key!;
+      log("PUSH SUCCESS: Path: $path, Key: $key, Data: $data");
+      return key;
     } catch (e) {
+      log("PUSH FAILED: Path: $path, Error: $e");
       throw DatabaseExceptionHandler.handleException(e);
     }
   }
@@ -107,8 +116,9 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   Future<void> update(String path, {required Map<String, dynamic> data}) async {
     try {
       await _database.ref(path).update(data);
-      log("Successfully updated data at $path");
+      log("UPDATE SUCCESS: Path: $path, Data: $data");
     } catch (e) {
+      log("UPDATE FAILED: Path: $path, Error: $e");
       throw DatabaseExceptionHandler.handleException(e);
     }
   }
@@ -117,8 +127,9 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   Future<void> delete(String path) async {
     try {
       await _database.ref(path).remove();
-      log("Successfully deleted data at $path");
+      log("DELETE SUCCESS: Path: $path");
     } catch (e) {
+      log("DELETE FAILED: Path: $path, Error: $e");
       throw DatabaseExceptionHandler.handleException(e);
     }
   }

@@ -39,6 +39,7 @@ dependencies:
   shimmer_animation: ^2.2.2+1
   font_awesome_flutter: ^11.0.0
   fl_chart: ^1.2.0
+  animated_toggle_switch: ^0.8.7
 
 dev_dependencies:
   flutter_test:
@@ -63,9 +64,9 @@ flutter:
     - assets/imgs/chatbut/
     - assets/imgs/categories/
     - assets/icons/social/
+    - assets/svg/
+    - assets/svg/logo/
     - assets/svg/appointment/
     - assets/svg/payment/
     - assets/svg/order/
-    - assets/translations/
-    - assets/svg/logo/
     - assets/svg/roles/
