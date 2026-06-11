@@ -56,7 +56,19 @@ class CreateAccountTypeScreen extends StatelessWidget {
                   backgroundColor: colorScheme.primary,
                 ),
               );
-              context.push(AppRouter.validationCode);
+              if (state.response.role == "patient") {
+                context.pushReplacement(AppRouter.home);
+              } else if (state.response.role == "doctor") {
+                context.pushReplacement(AppRouter.dashboard);
+              } else if (state.response.role == "radiology_specialist") {
+                // TODO when radiologist exist
+              } else if (state.response.role == "pharmacy_specialist") {
+                // TODO when pharmacy exist
+              } else if (state.response.role == "laboratory_specialist") {
+                // TODO when laboratory exist
+              } else {
+                // TODO when any other role
+              }
             }
           },
           builder: (context, state) {
@@ -153,7 +165,6 @@ class CreateAccountTypeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   if (state is AuthLoading)
                     const Center(child: CircularProgressIndicator())
                   else

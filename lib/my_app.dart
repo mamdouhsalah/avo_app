@@ -8,6 +8,7 @@ import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository_impl.dart';
 import 'package:avo_app/app/features/auth/logic/auth_cubit.dart';
+import 'package:avo_app/app/features/splash/logic/splash_cubit.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,11 @@ class MyApp extends StatelessWidget {
                   repository: context.read<AuthRepository>(),
                 ),
               ),
+              BlocProvider<SplashCubit>(
+                create: (context) => SplashCubit(
+                  repository: context.read<AuthRepository>(),
+                ),
+              ),
             ],
             child: MaterialApp.router(
               // --- إعدادات اللغات بتاعتك ---
@@ -64,10 +70,10 @@ class MyApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: ThemeMode.system,
-              
+
               // --- شاشة البداية ---
               routerConfig: AppRouter.router,
-              
+
               builder: DevicePreview.appBuilder,
             ),
           ),

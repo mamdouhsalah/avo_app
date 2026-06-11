@@ -19,7 +19,7 @@ class AuthCubit extends Cubit<AuthState> {
   final confirmPasswordController = TextEditingController();
 
   // Selection states
-  String selectedRole = 'patient'; // Default to patient
+  String selectedRole = 'patient';
   String? selectedGender;
   DateTime? selectedDob;
   String? profileImagePath;
