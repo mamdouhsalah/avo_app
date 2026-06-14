@@ -1,15 +1,7 @@
-import 'package:avo_app/app/core/constants/app_colors.dart';
-import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/features/appointment/screens/canceled_appointments.dart';
 import 'package:avo_app/app/features/appointment/screens/completed_appointments.dart';
 import 'package:avo_app/app/features/appointment/screens/upcomming_appointments.dart';
-import 'package:avo_app/app/features/appointment/screens/widgets/appointment_card.dart';
-import 'package:avo_app/app/features/appointment/screens/widgets/cancel_appointment_card.dart';
-import 'package:avo_app/app/features/appointment/screens/widgets/canceleld_succesfully_card.dart';
-import 'package:avo_app/app/features/appointment/screens/widgets/selected_appointment_card.dart';
 import 'package:flutter/material.dart';
-import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
-import 'package:avo_app/app/features/appointment/data/mock_data.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppoiontmentScreen extends StatelessWidget {

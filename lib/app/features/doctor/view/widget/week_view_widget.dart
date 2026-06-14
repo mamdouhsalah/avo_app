@@ -212,7 +212,7 @@ class WeekViewWidget extends StatelessWidget {
 
           // Patient name
           Text(
-            appointment.patient?.name ?? 'Unknown Patient',
+            appointment.patient?.fullName ?? 'Unknown Patient',
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
@@ -302,7 +302,7 @@ class WeekViewWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    apt.patient?.name ?? 'Unknown Patient',
+                    apt.patient?.fullName ?? 'Unknown Patient',
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,

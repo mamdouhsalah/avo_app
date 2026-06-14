@@ -13,42 +13,34 @@ class ChatController {
 
   List<ChatModel> getAllChats() => _repository.getAllChats();
 
-  ChatModel? getChatById(String chatId) =>
-      _repository.getChatById(chatId);
+  ChatModel? getChatById(String chatId) => _repository.getChatById(chatId);
 
   int getTotalChatCount() => _repository.getChatCount();
 
   // ================= Filtering =================
 
   List<ChatModel> filterChats(
-      List<ChatModel> chats,
-      String query,
-      ) {
+    List<ChatModel> chats,
+    String query,
+  ) {
     if (query.isEmpty) return chats;
 
     final lowerQuery = query.toLowerCase();
 
     return chats.where((chat) {
-      return chat.patient.name
-              .toLowerCase()
-              .contains(lowerQuery) ||
-          chat.lastMessage
-              .toLowerCase()
-              .contains(lowerQuery) ||
-          chat.patient.phone
-              .toLowerCase()
-              .contains(lowerQuery);
+      return chat.patient.fullName.toLowerCase().contains(lowerQuery) ||
+          chat.lastMessage.toLowerCase().contains(lowerQuery) ||
+          chat.patient.phoneNumber.toLowerCase().contains(lowerQuery);
     }).toList();
   }
 
   List<ChatModel> sortChatsByTime(
-      List<ChatModel> chats,
-      ) {
+    List<ChatModel> chats,
+  ) {
     final sorted = List<ChatModel>.from(chats);
 
     sorted.sort(
-      (a, b) =>
-          b.lastMessageTime.compareTo(a.lastMessageTime),
+      (a, b) => b.lastMessageTime.compareTo(a.lastMessageTime),
     );
 
     return sorted;
@@ -88,9 +80,9 @@ class ChatController {
   }
 
   Future<void> updateOnlineStatus(
-      String chatId,
-      bool isOnline,
-      ) async {
+    String chatId,
+    bool isOnline,
+  ) async {
     await _repository.updateOnlineStatus(
       chatId,
       isOnline,

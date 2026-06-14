@@ -19,6 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     try {
       final responses = await Future.wait([
+        _repository.getPatientData(),
         _repository.getAppointment(patientId),
         _repository.getMedicines(patientId),
         _repository.getCategories(),
@@ -27,20 +28,12 @@ class HomeCubit extends Cubit<HomeState> {
       ]);
 
       emit(HomeLoaded(
-        currentUser: const PatientModel(
-          id: '1',
-          name: 'Static Data',
-          email: 'static@email.com',
-          phone: '+201234567890',
-          image: 'assets/imgs/profile/profile.png',
-          role: 'patient',
-          isVerified: true,
-        ),
-        appointments: responses[0] as List<AppointmentModel>,
-        medicines: responses[1] as List<MedicineModel>,
-        categories: responses[2] as List<CategoryModel>,
-        bestDoctors: responses[3] as List<DoctorModel>,
-        bestPharmacies: responses[4] as List<PharmacyModel>,
+        currentUser: responses[0] as PatientModel,
+        appointments: responses[1] as List<AppointmentModel>,
+        medicines: responses[2] as List<MedicineModel>,
+        categories: responses[3] as List<CategoryModel>,
+        bestDoctors: responses[4] as List<DoctorModel>,
+        bestPharmacies: responses[5] as List<PharmacyModel>,
       ));
     } on DatabaseException catch (e) {
       emit(HomeError(e.message));

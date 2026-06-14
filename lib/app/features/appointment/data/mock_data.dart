@@ -1,7 +1,6 @@
 
 // Sample data
 
-import 'package:avo_app/app/core/constants/app_icons.dart';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
 

@@ -1,21 +1,25 @@
 class PatientModel {
   final String id;
-  final String name;
+  final String fullName;
   final String email;
-  final String phone;
+  final String phoneNumber;
   final String? image;
   final String role;
   final bool isVerified;
+  final String dateOfBirth;
+  final String gender;
   final String? diagnosis; // إضافة حقل التشخيص
 
   const PatientModel({
     required this.id,
-    required this.name,
+    required this.fullName,
     required this.email,
-    required this.phone,
+    required this.phoneNumber,
     this.image,
     required this.role,
     this.isVerified = false,
+    this.dateOfBirth = '',
+    this.gender = '',
     this.diagnosis, // تهيئة حقل التشخيص
   });
 
@@ -23,33 +27,39 @@ class PatientModel {
     if (json == null) {
       return const PatientModel(
         id: '',
-        name: '',
+        fullName: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
         role: 'patient',
         isVerified: false,
+        dateOfBirth: '',
+        gender: '',
       );
     }
     return PatientModel(
       id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
+      fullName: json['full_name']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      phone: json['phone']?.toString() ?? '',
+      phoneNumber: json['phone_number']?.toString() ?? '',
       image: json['image']?.toString(),
       role: json['role']?.toString() ?? 'patient',
-      isVerified: json['isVerified'] as bool? ?? false,
+      isVerified: json['is_verified'] as bool? ?? false,
+      dateOfBirth: json['date_of_birth']?.toString() ?? '',
+      gender: json['gender']?.toString() ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'full_name': fullName,
       'email': email,
-      'phone': phone,
+      'phone_number': phoneNumber,
       'image': image,
       'role': role,
-      'isVerified': isVerified,
+      'is_verified': isVerified,
+      'date_of_birth': dateOfBirth,
+      'gender': gender,
     };
   }
 }

@@ -40,6 +40,8 @@ dependencies:
   font_awesome_flutter: ^11.0.0
   fl_chart: ^1.2.0
   animated_toggle_switch: ^0.8.7
+  cloudinary_api: ^1.1.1
+  cloudinary_url_gen: ^1.8.0
 
 dev_dependencies:
   flutter_test:

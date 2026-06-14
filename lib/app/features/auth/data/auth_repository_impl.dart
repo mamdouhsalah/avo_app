@@ -1,8 +1,12 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/models/auth_response_model.dart';
 import 'package:avo_app/app/core/models/login_request_model.dart';
 import 'package:avo_app/app/core/models/register_request_model.dart';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
+import 'package:avo_app/app/core/services/remote/cloudinary_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,15 +14,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseConsumer _consumer;
   final FirebaseAuth _firebaseAuth;
+  final CloudinaryService _cloudinaryService;
 
   AuthRepositoryImpl({
     required FirebaseConsumer consumer,
     FirebaseAuth? firebaseAuth,
+    CloudinaryService? cloudinaryService,
   })  : _consumer = consumer,
-        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _cloudinaryService = cloudinaryService ?? CloudinaryService();
 
   @override
-  Future<UserProfileModel> register(RegisterRequestModel registerRequestModel) async {
+  Future<UserProfileModel> register(
+      RegisterRequestModel registerRequestModel) async {
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: registerRequestModel.email,
@@ -26,10 +34,24 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       final uid = credential.user?.uid ?? '';
-      
+
       final userData = registerRequestModel.toJson();
       userData.remove('password');
-      
+
+      String imageUrl = '';
+      if (registerRequestModel.image != null &&
+          registerRequestModel.image!.isNotEmpty) {
+        log("message: ${registerRequestModel.image}");
+        try {
+          imageUrl = await _cloudinaryService
+              .uploadImage(File(registerRequestModel.image!));
+        } catch (e) {
+          log("imageurl Failed: $e");
+        }
+        log("imageurl: $imageUrl");
+      }
+      userData['image'] = imageUrl;
+
       await _consumer.set('users/$uid', data: userData);
 
       return UserProfileModel(
@@ -41,7 +63,7 @@ class AuthRepositoryImpl implements AuthRepository {
         phoneNumber: registerRequestModel.phoneNumber,
         height: registerRequestModel.height.toInt(),
         weight: registerRequestModel.weight.toInt(),
-        image: registerRequestModel.image ?? '',
+        image: imageUrl,
       );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Registration failed', e.code);
@@ -59,7 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       final uid = credential.user?.uid ?? '';
-      
+
       final userProfile = await _consumer.get<UserProfileModel>(
         'users/$uid',
         fromJson: (json) => UserProfileModel.fromJson(json),
@@ -77,7 +99,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthResponseModel> logout() async {
     try {
       await _firebaseAuth.signOut();
-      return AuthResponseModel(id: '', email: '', fullName: '', token: '', role: '', gender: '', expiresIn: 0);
+      return AuthResponseModel(
+          id: '',
+          email: '',
+          fullName: '',
+          token: '',
+          role: '',
+          gender: '',
+          expiresIn: 0);
     } catch (e) {
       throw DatabaseException(e.toString(), 'logout-failed');
     }
@@ -87,7 +116,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthResponseModel> forgetPassword(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
-      return AuthResponseModel(id: '', email: email, fullName: '', token: '', role: '', gender: '', expiresIn: 0);
+      return AuthResponseModel(
+          id: '',
+          email: email,
+          fullName: '',
+          token: '',
+          role: '',
+          gender: '',
+          expiresIn: 0);
     } catch (e) {
       throw DatabaseException(e.toString(), 'password-reset-failed');
     }
@@ -95,22 +131,52 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthResponseModel> verifyCode(String code, String email) async {
-    return AuthResponseModel(id: '', email: email, fullName: '', token: '', role: '', gender: '', expiresIn: 0);
+    return AuthResponseModel(
+        id: '',
+        email: email,
+        fullName: '',
+        token: '',
+        role: '',
+        gender: '',
+        expiresIn: 0);
   }
 
   @override
-  Future<AuthResponseModel> resetPassword(String password, String confirmPassword, String token) async {
-    return AuthResponseModel(id: '', email: '', fullName: '', token: '', role: '', gender: '', expiresIn: 0);
+  Future<AuthResponseModel> resetPassword(
+      String password, String confirmPassword, String token) async {
+    return AuthResponseModel(
+        id: '',
+        email: '',
+        fullName: '',
+        token: '',
+        role: '',
+        gender: '',
+        expiresIn: 0);
   }
 
   @override
-  Future<AuthResponseModel> changePassword(String password, String confirmPassword, String token) async {
-    return AuthResponseModel(id: '', email: '', fullName: '', token: '', role: '', gender: '', expiresIn: 0);
+  Future<AuthResponseModel> changePassword(
+      String password, String confirmPassword, String token) async {
+    return AuthResponseModel(
+        id: '',
+        email: '',
+        fullName: '',
+        token: '',
+        role: '',
+        gender: '',
+        expiresIn: 0);
   }
 
   @override
   Future<AuthResponseModel> verifyEmail(String email) async {
-    return AuthResponseModel(id: '', email: email, fullName: '', token: '', role: '', gender: '', expiresIn: 0);
+    return AuthResponseModel(
+        id: '',
+        email: email,
+        fullName: '',
+        token: '',
+        role: '',
+        gender: '',
+        expiresIn: 0);
   }
 
   @override
@@ -144,17 +210,18 @@ class AuthRepositoryImpl implements AuthRepository {
       throw DatabaseException(e.toString(), 'update-profile-failed');
     }
   }
-  
+
   @override
   Future<UserProfileModel?> checkToken() async {
     try {
       final user = _firebaseAuth.currentUser;
       if (user != null) {
-      final UserProfileModel userProfile = await _consumer.get<UserProfileModel>(
-        'users/${user.uid}',
-        fromJson: (json) => UserProfileModel.fromJson(json),
-      );
-      return userProfile;
+        final UserProfileModel userProfile =
+            await _consumer.get<UserProfileModel>(
+          'users/${user.uid}',
+          fromJson: (json) => UserProfileModel.fromJson(json),
+        );
+        return userProfile;
       } else {
         return null;
       }
