@@ -15,8 +15,6 @@ class LabResultModel {
   final String? notes;
   final String? fileUrl;
 
-    
-
   LabResultModel({
     required this.id,
     required this.title,
@@ -37,9 +35,7 @@ class LabResultModel {
   String get formattedTime =>
       "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
 
-  String get patientName => patient.name;
+  String get patientName => patient.fullName;
 
   String get doctorName => doctor.name;
-
- 
 }

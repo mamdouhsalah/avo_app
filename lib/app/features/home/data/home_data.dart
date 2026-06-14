@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 class HomeViewModel extends ChangeNotifier {
   final PatientModel currentUser = const PatientModel(
     id: '1',
-    name: 'Sofia Andro',
+    fullName: 'Sofia Andro',
     email: 'sofia@email.com',
-    phone: '+201234567890',
+    phoneNumber: '+201234567890',
     image: 'assets/imgs/profile/profile.png',
     role: 'patient',
     isVerified: true,
@@ -25,7 +25,7 @@ class HomeViewModel extends ChangeNotifier {
         id: '1',
         name: 'Jennifer Miller',
         specialty: 'Neurosurgeon',
-        hospital: 'City Hospital', 
+        hospital: 'City Hospital',
         rating: 4.4,
         reviews: 98,
         hourlyRate: 50,
@@ -39,7 +39,7 @@ class HomeViewModel extends ChangeNotifier {
       rating: 4.5,
       isFavorite: false,
       timeRange: TimeRange(
-        start: const TimeOfDay(hour: 10, minute: 30), 
+        start: const TimeOfDay(hour: 10, minute: 30),
         end: const TimeOfDay(hour: 12, minute: 30),
       ),
       date: DateTime.now().add(const Duration(days: 1)),
@@ -64,7 +64,7 @@ class HomeViewModel extends ChangeNotifier {
       rating: 4.0,
       isFavorite: true,
       timeRange: TimeRange(
-        start: const TimeOfDay(hour: 14, minute: 0), 
+        start: const TimeOfDay(hour: 14, minute: 0),
         end: const TimeOfDay(hour: 15, minute: 0),
       ),
       date: DateTime.now().add(const Duration(days: 3)),
@@ -106,19 +106,42 @@ class HomeViewModel extends ChangeNotifier {
 
   // ── Categories ─────────────────────────────
   final List<CategoryModel> categories = const [
-    CategoryModel(id: '1', name: 'Heart', image: 'assets/imgs/categories/heart.png'),
-    CategoryModel(id: '2', name: 'Dental', image: 'assets/imgs/categories/Dental.png'),
-    CategoryModel(id: '3', name: 'Kidney', image: 'assets/imgs/categories/Kidney.png'),
-    CategoryModel(id: '4', name: 'Stomach', image: 'assets/imgs/categories/Stomach.png'),
-    CategoryModel(id: '5', name: 'Lung', image: 'assets/imgs/categories/Lung.png'),
-    CategoryModel(id: '6', name: 'Brain', image: 'assets/imgs/categories/brain.png'),
-    CategoryModel(id: '7', name: 'Pediatrics', image: 'assets/imgs/categories/Pediatrics.png'),
-    CategoryModel(id: '8', name: 'Liver', image: 'assets/imgs/categories/Liver.png'),
-    CategoryModel(id: '9', name: 'ENT', image: 'assets/imgs/categories/ENT.png'),
-    CategoryModel(id: '10', name: 'Ophthalmology', image: 'assets/imgs/categories/Ophthalmology.png'),
-    CategoryModel(id: '11', name: 'Orthopedics', image: 'assets/imgs/categories/Orthopedics.png'),
-    CategoryModel(id: '12', name: 'Gynecology', image: 'assets/imgs/categories/Gynecology.png'),
-    CategoryModel(id: '13', name: 'Dermatology', image: 'assets/imgs/categories/Dermatology.png'),
+    CategoryModel(
+        id: '1', name: 'Heart', image: 'assets/imgs/categories/heart.png'),
+    CategoryModel(
+        id: '2', name: 'Dental', image: 'assets/imgs/categories/Dental.png'),
+    CategoryModel(
+        id: '3', name: 'Kidney', image: 'assets/imgs/categories/Kidney.png'),
+    CategoryModel(
+        id: '4', name: 'Stomach', image: 'assets/imgs/categories/Stomach.png'),
+    CategoryModel(
+        id: '5', name: 'Lung', image: 'assets/imgs/categories/Lung.png'),
+    CategoryModel(
+        id: '6', name: 'Brain', image: 'assets/imgs/categories/brain.png'),
+    CategoryModel(
+        id: '7',
+        name: 'Pediatrics',
+        image: 'assets/imgs/categories/Pediatrics.png'),
+    CategoryModel(
+        id: '8', name: 'Liver', image: 'assets/imgs/categories/Liver.png'),
+    CategoryModel(
+        id: '9', name: 'ENT', image: 'assets/imgs/categories/ENT.png'),
+    CategoryModel(
+        id: '10',
+        name: 'Ophthalmology',
+        image: 'assets/imgs/categories/Ophthalmology.png'),
+    CategoryModel(
+        id: '11',
+        name: 'Orthopedics',
+        image: 'assets/imgs/categories/Orthopedics.png'),
+    CategoryModel(
+        id: '12',
+        name: 'Gynecology',
+        image: 'assets/imgs/categories/Gynecology.png'),
+    CategoryModel(
+        id: '13',
+        name: 'Dermatology',
+        image: 'assets/imgs/categories/Dermatology.png'),
   ];
 
   // ── Best Doctors ───────────────────────────

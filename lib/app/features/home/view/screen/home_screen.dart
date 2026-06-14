@@ -61,7 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onNotification: (notification) {
                     if (notification.direction == ScrollDirection.reverse) {
                       if (isVisible) setState(() => isVisible = false);
-                    } else if (notification.direction == ScrollDirection.forward) {
+                    } else if (notification.direction ==
+                        ScrollDirection.forward) {
                       if (!isVisible) setState(() => isVisible = true);
                     }
                     return false;
@@ -94,8 +95,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12.w, vertical: 1.h),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12.w, vertical: 1.h),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -108,24 +109,39 @@ class _HomeScreenState extends State<HomeScreen> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         width: 2,
                                       ),
                                     ),
                                     child: ClipOval(
-                                      child: user.image != null && user.image!.isNotEmpty
-                                          ? Image.asset(
-                                              user.image.toString(),
-                                              width: 55.r,
-                                              height: 55.r,
-                                              fit: BoxFit.cover,
-                                            )
+                                      child: user.image != null &&
+                                              user.image!.isNotEmpty
+                                          ? (user.image!.startsWith('http')
+                                              ? Image.network(
+                                                  user.image!,
+                                                  width: 55.r,
+                                                  height: 55.r,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      Icon(Icons.person,
+                                                          size: 30.r),
+                                                )
+                                              : Image.asset(
+                                                  user.image!,
+                                                  width: 55.r,
+                                                  height: 55.r,
+                                                  fit: BoxFit.cover,
+                                                ))
                                           : Icon(Icons.person, size: 30.r),
                                     ),
                                   ),
                                   SizedBox(width: 8.w),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "Welcome",
@@ -137,12 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                       Text(
-                                        user.name,
+                                        user.fullName,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14.sp,
-                                          color:
-                                              Theme.of(context).colorScheme.onSurface,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
                                         ),
                                       ),
                                     ],
@@ -150,14 +167,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const Spacer(),
                                   Icon(
                                     Icons.favorite_border,
-                                    color:
-                                        Theme.of(context).colorScheme.outlineVariant,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outlineVariant,
                                   ),
                                 ],
                               ),
-
                               SizedBox(height: 24.h),
-
                               InkWell(
                                 borderRadius: BorderRadius.circular(12.r),
                                 onTap: () {
@@ -173,7 +189,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .colorScheme
                                           .outlineVariant,
                                     ),
-                                    color: Theme.of(context).colorScheme.surface,
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
                                     borderRadius: BorderRadius.circular(12.r),
                                   ),
                                   child: Row(
@@ -204,15 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-
                               SizedBox(height: 25.h),
-
                               SectionHeader(
                                 title: 'Upcoming Appointments',
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
-
                               SizedBox(
                                 height: 158.h,
                                 child: state.appointments.isEmpty
@@ -220,7 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text(
                                           "No upcoming appointments",
                                           style: TextStyle(
-                                            color: Theme.of(context).colorScheme.outline,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline,
                                             fontSize: 13.sp,
                                           ),
                                         ),
@@ -235,15 +251,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                       ),
                               ),
-
                               SizedBox(height: 24.h),
-
                               SectionHeader(
                                 title: "Upcoming Medicine",
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
-
                               SizedBox(
                                 height: 200.h,
                                 child: state.medicines.isEmpty
@@ -251,7 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text(
                                           "No medicines scheduled",
                                           style: TextStyle(
-                                            color: Theme.of(context).colorScheme.outline,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline,
                                             fontSize: 13.sp,
                                           ),
                                         ),
@@ -266,24 +281,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                       ),
                               ),
-
                               SizedBox(height: 24.h),
-
                               SectionHeader(
                                 title: 'Categories',
                                 routePath: AppRouter.search,
                               ),
-
                               state.categories.isEmpty
                                   ? Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 20.h),
                                       child: Center(
                                         child: Text("No categories available"),
                                       ),
                                     )
                                   : GridView.builder(
                                       shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.only(top: 16.h),
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
@@ -297,7 +311,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       itemBuilder: (_, index) {
                                         return CategoryItem(
                                           category: state.categories[index],
-                                          isSelected: selectedCategoryIndex == index,
+                                          isSelected:
+                                              selectedCategoryIndex == index,
                                           onTap: () {
                                             setState(() {
                                               selectedCategoryIndex = index;
@@ -311,19 +326,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       },
                                     ),
-
                               SizedBox(height: 24.h),
-
                               SectionHeader(
                                 title: "Best Doctors",
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
-
                               state.bestDoctors.isEmpty
                                   ? Center(
                                       child: Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 20.h),
                                         child: Text("No doctors available"),
                                       ),
                                     )
@@ -337,24 +350,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       }).toList(),
                                     ),
-
                               SizedBox(height: 16.h),
-
                               SectionHeader(
                                 title: "Best Pharmacies",
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
-
                               state.bestPharmacies.isEmpty
                                   ? Center(
                                       child: Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 20.h),
                                         child: Text("No pharmacies available"),
                                       ),
                                     )
                                   : Column(
-                                      children: state.bestPharmacies.map((pharmacy) {
+                                      children:
+                                          state.bestPharmacies.map((pharmacy) {
                                         return BestPharmacyCard(
                                           key: ValueKey(pharmacy.id),
                                           pharmacy: pharmacy,
@@ -363,7 +375,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       }).toList(),
                                     ),
-
                               SizedBox(height: 100.h),
                             ],
                           ),

@@ -36,7 +36,7 @@ class CustomAppointmentCard extends StatelessWidget {
     final flagColor = flagColors[random.nextInt(flagColors.length)];
 
     final patient = appointment.patient;
-    final displayName = patient?.name ?? appointment.doctor.name;
+    final displayName = patient?.fullName ?? appointment.doctor.name;
     final displaySubtitle =
         subtitle ?? patient?.diagnosis ?? appointment.doctor.specialty;
     final displayHoure = time ?? appointment.timeRange.start.format(context);
@@ -189,7 +189,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     final patient = appointment.patient;
-    final displayName = patient?.name ?? appointment.doctor.name;
+    final displayName = patient?.fullName ?? appointment.doctor.name;
     final displaySubtitle =
         patient?.diagnosis ?? appointment.doctor.specialty ?? "Checkup";
 

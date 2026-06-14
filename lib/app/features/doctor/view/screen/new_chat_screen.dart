@@ -24,9 +24,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if (_searchQuery.isEmpty) return _allPatients;
     final query = _searchQuery.toLowerCase();
     return _allPatients.where((patient) {
-      return patient.name.toLowerCase().contains(query) ||
+      return patient.fullName.toLowerCase().contains(query) ||
           patient.email.toLowerCase().contains(query) ||
-          patient.phone.toLowerCase().contains(query) ||
+          patient.phoneNumber.toLowerCase().contains(query) ||
           (patient.diagnosis?.toLowerCase().contains(query) ?? false);
     }).toList();
   }
@@ -46,7 +46,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       // Navigate to existing chat
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Chat with ${patient.name} already exists'),
+          content: Text('Chat with ${patient.fullName} already exists'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -70,7 +70,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Chat started with ${patient.name}'),
+        content: Text('Chat started with ${patient.fullName}'),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
@@ -229,7 +229,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                             : null,
                         child: patient.image == null
                             ? Text(
-                                patient.name[0].toUpperCase(),
+                                patient.fullName[0].toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 18.sp,
                                   fontWeight: FontWeight.bold,
@@ -273,7 +273,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        patient.name,
+                        patient.fullName,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14.sp,
@@ -313,7 +313,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            patient.phone,
+                            patient.phoneNumber,
                             style: TextStyle(
                               fontSize: 11.sp,
                               color: Colors.grey[500],

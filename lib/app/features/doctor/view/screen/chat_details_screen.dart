@@ -1,4 +1,3 @@
-import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/shared/CustomAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -146,7 +145,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text(
-                  "Call ${widget.chat.patient.name}?",
+                  "Call ${widget.chat.patient.fullName}?",
                 ),
                 content: const Text(
                   "Do you want to start an audio call?",

@@ -15,7 +15,8 @@ class PatientSearchBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<PatientSearchBottomSheet> createState() => _PatientSearchBottomSheetState();
+  State<PatientSearchBottomSheet> createState() =>
+      _PatientSearchBottomSheetState();
 }
 
 class _PatientSearchBottomSheetState extends State<PatientSearchBottomSheet> {
@@ -25,9 +26,15 @@ class _PatientSearchBottomSheetState extends State<PatientSearchBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final filteredPatients = widget.patients.where((patient) {
-      return patient.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (patient.email?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
-          (patient.phone?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+      return patient.fullName
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          (patient.email?.toLowerCase().contains(_searchQuery.toLowerCase()) ??
+              false) ||
+          (patient.phoneNumber
+                  ?.toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ??
+              false);
     }).toList();
 
     return Padding(
@@ -73,7 +80,8 @@ class _PatientSearchBottomSheetState extends State<PatientSearchBottomSheet> {
                     itemCount: filteredPatients.length,
                     itemBuilder: (context, index) {
                       final patient = filteredPatients[index];
-                      final isSelected = widget.selectedPatient?.id == patient.id;
+                      final isSelected =
+                          widget.selectedPatient?.id == patient.id;
 
                       return ListTile(
                         leading: CircleAvatar(
@@ -81,13 +89,15 @@ class _PatientSearchBottomSheetState extends State<PatientSearchBottomSheet> {
                               ? NetworkImage(patient.image!)
                               : null,
                           child: patient.image == null
-                              ? Text(patient.name[0].toUpperCase())
+                              ? Text(patient.fullName[0].toUpperCase())
                               : null,
                         ),
-                        title: Text(patient.name),
-                        subtitle: Text(patient.email ?? patient.phone ?? ''),
+                        title: Text(patient.fullName),
+                        subtitle:
+                            Text(patient.email ?? patient.phoneNumber ?? ''),
                         trailing: isSelected
-                            ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+                            ? Icon(Icons.check_circle,
+                                color: Theme.of(context).colorScheme.primary)
                             : null,
                         onTap: () => widget.onPatientSelected(patient),
                       );

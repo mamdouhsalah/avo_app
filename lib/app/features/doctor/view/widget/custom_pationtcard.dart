@@ -65,7 +65,7 @@ class CustomPatientCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    patient.name,
+                    patient.fullName,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16.sp,
@@ -84,7 +84,7 @@ class CustomPatientCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        patient.phone,
+                        patient.phoneNumber,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14.sp,

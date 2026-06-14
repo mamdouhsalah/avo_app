@@ -372,7 +372,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
                       SizedBox(width: 12.w),
                       Expanded(
                         child: Text(
-                          _selectedPatient?.name ?? "Choose Patient",
+                          _selectedPatient?.fullName ?? "Choose Patient",
                           style: TextStyle(
                             fontSize: 15.sp,
                             color: _selectedPatient == null
@@ -395,7 +395,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
                       Icon(Icons.phone, size: 12.sp, color: Colors.grey[600]),
                       SizedBox(width: 4.w),
                       Text(
-                        _selectedPatient!.phone,
+                        _selectedPatient!.phoneNumber,
                         style:
                             TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                       ),

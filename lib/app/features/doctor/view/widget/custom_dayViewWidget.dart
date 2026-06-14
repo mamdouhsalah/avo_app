@@ -240,7 +240,7 @@ class DayViewWidget extends StatelessWidget {
 
           // Patient name
           Text(
-            appointment.patient?.name ?? 'Unknown Patient',
+            appointment.patient?.fullName ?? 'Unknown Patient',
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
@@ -380,7 +380,7 @@ class DayViewWidget extends StatelessWidget {
                       SizedBox(width: 8.w),
                       Expanded(
                         child: Text(
-                          appointment.patient?.name ?? 'Unknown Patient',
+                          appointment.patient?.fullName ?? 'Unknown Patient',
                           style: TextStyle(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w600,
@@ -408,7 +408,7 @@ class DayViewWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (appointment.patient?.phone != null) ...[
+                  if (appointment.patient?.phoneNumber != null) ...[
                     SizedBox(height: 8.h),
                     Row(
                       children: [
@@ -416,7 +416,7 @@ class DayViewWidget extends StatelessWidget {
                         SizedBox(width: 8.w),
                         Expanded(
                           child: Text(
-                            appointment.patient!.phone,
+                            appointment.patient!.phoneNumber,
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.grey[700],

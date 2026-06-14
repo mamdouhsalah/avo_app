@@ -83,7 +83,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(chat.patient.name,
+                      Text(chat.patient.fullName,
                           style: TextStyle(
                               fontSize: 16.sp, fontWeight: FontWeight.bold)),
                       Text(
@@ -137,7 +137,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Chat?'),
-        content: Text('Delete chat with ${chat.patient.name}?'),
+        content: Text('Delete chat with ${chat.patient.fullName}?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),

@@ -162,7 +162,7 @@ class AppRouter {
         builder: (context, state) {
           final chat = state.extra as ChatModel;
           return AudioCallScreen(
-            name: chat.patient.name,
+            name: chat.patient.fullName,
             imageUrl: chat.patient.image ?? '',
           );
         },
