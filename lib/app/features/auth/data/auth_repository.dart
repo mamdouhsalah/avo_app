@@ -1,14 +1,16 @@
 import 'package:avo_app/app/core/models/auth_response_model.dart';
 import 'package:avo_app/app/core/models/login_request_model.dart';
 import 'package:avo_app/app/core/models/register_request_model.dart';
+import 'package:avo_app/app/core/models/user_profile_model.dart';
 
 abstract class AuthRepository {
-  Future<AuthResponseModel> login(
+  Future<UserProfileModel> login(
     LoginRequestModel loginRequestModel
   );
-  Future<AuthResponseModel> register(
+  Future<UserProfileModel> register(
     RegisterRequestModel registerRequestModel
   );
+  Future<UserProfileModel?> checkToken();
   Future<AuthResponseModel> forgetPassword(
     String email
   );

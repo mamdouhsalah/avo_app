@@ -29,12 +29,10 @@ class _PatientSearchBottomSheetState extends State<PatientSearchBottomSheet> {
       return patient.fullName
               .toLowerCase()
               .contains(_searchQuery.toLowerCase()) ||
-          (patient.email?.toLowerCase().contains(_searchQuery.toLowerCase()) ??
-              false) ||
+          (patient.email.toLowerCase().contains(_searchQuery.toLowerCase())) ||
           (patient.phoneNumber
-                  ?.toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ??
-              false);
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()));
     }).toList();
 
     return Padding(
@@ -94,7 +92,7 @@ class _PatientSearchBottomSheetState extends State<PatientSearchBottomSheet> {
                         ),
                         title: Text(patient.fullName),
                         subtitle:
-                            Text(patient.email ?? patient.phoneNumber ?? ''),
+                            Text(patient.email),
                         trailing: isSelected
                             ? Icon(Icons.check_circle,
                                 color: Theme.of(context).colorScheme.primary)

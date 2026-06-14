@@ -1,6 +1,5 @@
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
-import 'package:avo_app/app/core/utils/is_today.dart';
 import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/call_message_chat_row.dart';
 import 'package:flutter/material.dart';

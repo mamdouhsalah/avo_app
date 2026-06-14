@@ -1,6 +1,5 @@
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:flutter/material.dart';
 
 class LabResultModel {
   final String id;

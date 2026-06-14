@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/Language/locale_keys.g.dart';
+import 'package:avo_app/app/core/models/user_role.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
@@ -41,7 +42,19 @@ class LoginScreen extends StatelessWidget {
                   backgroundColor: colorScheme.primary,
                 ),
               );
-              context.pushReplacement(AppRouter.home);
+              if (state.response.role == UserRole.patient) {
+                context.pushReplacement(AppRouter.home);
+              } else if (state.response.role == UserRole.doctor) {
+                context.pushReplacement(AppRouter.dashboard);
+              } else if (state.response.role == UserRole.radiologySpecialist) {
+                // TODO when radiologist exist
+              } else if (state.response.role == UserRole.pharmacySpecialist) {
+                // TODO when pharmacy exist
+              } else if (state.response.role == UserRole.laboratorySpecialist) {
+                // TODO when laboratory exist
+              } else {
+                // TODO when any other role
+              }
             }
           },
           builder: (context, state) {

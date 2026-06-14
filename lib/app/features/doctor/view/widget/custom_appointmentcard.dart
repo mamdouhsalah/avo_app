@@ -191,7 +191,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
     final patient = appointment.patient;
     final displayName = patient?.fullName ?? appointment.doctor.name;
     final displaySubtitle =
-        patient?.diagnosis ?? appointment.doctor.specialty ?? "Checkup";
+        patient?.diagnosis ?? appointment.doctor.specialty;
 
     final displayTime = appointment.timeRange.start.format(context);
     final displayRoom = "Room ${appointment.id.hashCode % 400 + 100}";
