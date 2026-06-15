@@ -27,9 +27,9 @@ class _PatientScreenState extends State<PatientScreen> {
     final theme = Theme.of(context);
 
     final filteredPatients = DataRepository.patients.where((patient) {
-      return patient.name.toLowerCase().contains(query.toLowerCase()) ||
+      return patient.fullName.toLowerCase().contains(query.toLowerCase()) ||
           patient.email.toLowerCase().contains(query.toLowerCase()) ||
-          patient.phone.contains(query);
+          patient.phoneNumber.contains(query);
     }).toList();
 
     return Scaffold(
@@ -125,7 +125,7 @@ class _PatientScreenState extends State<PatientScreen> {
                           child: CustomPatientCard(
                             patient: filteredPatients[index],
                             onTap: () {
-                              context.go(
+                              context.push(
                                 '/patient-details',
                                 extra: filteredPatients[index],
                               );

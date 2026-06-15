@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/features/doctor/data/data.dart';
@@ -38,10 +39,10 @@ class LabResultServiceAdvanced {
         },
       );
 
-      print('✓ Downloaded to: $filePath');
+      log('✓ Downloaded to: $filePath');
       return true;
     } catch (e) {
-      print('✗ Download error: $e');
+      log('✗ Download error: $e');
       rethrow;
     }
   }
@@ -62,10 +63,10 @@ class LabResultServiceAdvanced {
         filePath,
       );
 
-      print('✓ File downloaded: $filePath');
+      log('✓ File downloaded: $filePath');
       return true;
     } catch (e) {
-      print('✗ Error: $e');
+      log('✗ Error: $e');
       rethrow;
     }
   }
@@ -91,9 +92,9 @@ class LabResultServiceAdvanced {
         );
       }
 
-      print('✓ Shared: ${result.title}');
+      log('✓ Shared: ${result.title}');
     } catch (e) {
-      print('✗ Share error: $e');
+      log('✗ Share error: $e');
       rethrow;
     }
   }
@@ -108,12 +109,12 @@ class LabResultServiceAdvanced {
       final wasDeleted = DataRepository.labResults.length < initialLength;
 
       if (wasDeleted) {
-        print('✓ Deleted: ${result.id}');
+        log('✓ Deleted: ${result.id}');
       }
 
       return wasDeleted;
     } catch (e) {
-      print('✗ Delete error: $e');
+      log('✗ Delete error: $e');
       rethrow;
     }
   }
@@ -252,10 +253,10 @@ class LabResultServiceAdvanced {
       );
       await file.writeAsString(buffer.toString());
 
-      print('✓ Exported to: ${file.path}');
+      log('✓ Exported to: ${file.path}');
       return file.path;
     } catch (e) {
-      print('✗ Export error: $e');
+      log('✗ Export error: $e');
       rethrow;
     }
   }

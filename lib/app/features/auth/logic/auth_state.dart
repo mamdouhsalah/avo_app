@@ -1,4 +1,4 @@
-import 'package:avo_app/app/core/models/auth_response_model.dart';
+import 'package:avo_app/app/core/models/user_profile_model.dart';
 
 abstract class AuthState {}
 
@@ -7,7 +7,7 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {
-  final AuthResponseModel response;
+  final UserProfileModel response;
   AuthSuccess(this.response);
 }
 

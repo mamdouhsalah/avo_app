@@ -177,12 +177,12 @@ class _LabresultDetailScreenState extends State<LabresultDetailScreen> {
               color: Colors.teal,
               theme: theme,
               children: [
-                _infoRow(
-                    Icons.badge_outlined, 'Name', result.patient.name, theme),
+                _infoRow(Icons.badge_outlined, 'Name', result.patient.fullName,
+                    theme),
                 _infoRow(
                     Icons.email_outlined, 'Email', result.patient.email, theme),
-                _infoRow(
-                    Icons.phone_outlined, 'Phone', result.patient.phone, theme),
+                _infoRow(Icons.phone_outlined, 'Phone',
+                    result.patient.phoneNumber, theme),
                 if (result.patient.diagnosis != null)
                   _infoRow(Icons.medical_information_outlined, 'Diagnosis',
                       result.patient.diagnosis!, theme),

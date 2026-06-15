@@ -289,8 +289,9 @@ class _LabresultScreenState extends State<LabresultScreen>
               Navigator.pop(ctx);
               final XFile? image =
                   await _picker.pickImage(source: ImageSource.camera);
-              if (image != null && mounted)
+              if (image != null && mounted) {
                 _handleFileSelected(image, isAI: isAI);
+              }
             },
           ),
           ListTile(
@@ -300,8 +301,9 @@ class _LabresultScreenState extends State<LabresultScreen>
               Navigator.pop(ctx);
               final XFile? image =
                   await _picker.pickImage(source: ImageSource.gallery);
-              if (image != null && mounted)
+              if (image != null && mounted) {
                 _handleFileSelected(image, isAI: isAI);
+              }
             },
           ),
           SizedBox(height: 8.h),

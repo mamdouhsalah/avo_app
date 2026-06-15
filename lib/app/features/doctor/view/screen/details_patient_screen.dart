@@ -66,7 +66,7 @@ class DetailsPatientScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          patient.name,
+                          patient.fullName,
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class DetailsPatientScreen extends StatelessWidget {
                   _buildDivider(),
                   _buildInfoRow("Insurance", "Delta Tech"),
                   _buildDivider(),
-                  _buildInfoRow("Phone Number", patient.phone),
+                  _buildInfoRow("Phone Number", patient.phoneNumber),
                 ],
               ),
             ),

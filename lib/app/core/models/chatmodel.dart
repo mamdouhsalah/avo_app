@@ -4,12 +4,12 @@ import 'package:avo_app/app/core/models/doctor_model.dart';
 class ChatModel {
   final String id;
   final PatientModel patient;
-  final DoctorModel? doctor;           // قد يكون الدكتور هو اللي بيتكلم أو المريض
+  final DoctorModel? doctor; // قد يكون الدكتور هو اللي بيتكلم أو المريض
   final String lastMessage;
   final DateTime lastMessageTime;
   final int unreadCount;
   final bool isOnline;
-  final String? lastMessageSender;     // "patient" or "doctor"
+  final String? lastMessageSender; // "patient" or "doctor"
 
   ChatModel({
     required this.id,
@@ -22,7 +22,7 @@ class ChatModel {
     this.lastMessageSender,
   });
 
-  String get patientName => patient.name;
+  String get patientName => patient.fullName;
 
   String? get patientImage => patient.image;
 

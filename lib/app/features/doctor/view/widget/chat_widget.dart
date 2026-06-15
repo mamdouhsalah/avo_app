@@ -172,7 +172,7 @@ class ChatTile extends StatelessWidget {
       children: [
         // Patient name
         Text(
-          chat.patient.name,
+          chat.patient.fullName,
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14.sp,

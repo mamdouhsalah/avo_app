@@ -133,9 +133,9 @@ class DataRepository {
   static final List<PatientModel> patients = [
     PatientModel(
       id: 'p1',
-      name: 'Ahmed Mohamed Ali',
+      fullName: 'Ahmed Mohamed Ali',
       email: 'ahmed.mohamed@gmail.com',
-      phone: '+20 112 345 6789',
+      phoneNumber: '+20 112 345 6789',
       image: 'https://i.pravatar.cc/150?img=64',
       role: 'patient',
       isVerified: true,
@@ -143,9 +143,9 @@ class DataRepository {
     ),
     PatientModel(
       id: 'p2',
-      name: 'Sara Ahmed Hassan',
+      fullName: 'Sara Ahmed Hassan',
       email: 'sara.hassan@gmail.com',
-      phone: '+20 100 987 6543',
+      phoneNumber: '+20 100 987 6543',
       image: 'https://i.pravatar.cc/150?img=65',
       role: 'patient',
       isVerified: true,
@@ -153,9 +153,9 @@ class DataRepository {
     ),
     PatientModel(
       id: 'p3',
-      name: 'Mohamed Khaled Ibrahim',
+      fullName: 'Mohamed Khaled Ibrahim',
       email: 'mohamed.khaled@gmail.com',
-      phone: '+20 155 667 8899',
+      phoneNumber: '+20 155 667 8899',
       image: 'https://i.pravatar.cc/150?img=33',
       role: 'patient',
       isVerified: false,
@@ -163,9 +163,9 @@ class DataRepository {
     ),
     PatientModel(
       id: 'p4',
-      name: 'Nour El-Din Hassan',
+      fullName: 'Nour El-Din Hassan',
       email: 'nour.hassan@gmail.com',
-      phone: '+20 122 334 4556',
+      phoneNumber: '+20 122 334 4556',
       image: 'https://i.pravatar.cc/150?img=44',
       role: 'patient',
       isVerified: true,
@@ -173,9 +173,9 @@ class DataRepository {
     ),
     PatientModel(
       id: 'p5',
-      name: 'Fatma Ali Mahmoud',
+      fullName: 'Fatma Ali Mahmoud',
       email: 'fatma.ali@gmail.com',
-      phone: '+20 109 876 5432',
+      phoneNumber: '+20 109 876 5432',
       image: 'https://i.pravatar.cc/150?img=48',
       role: 'patient',
       isVerified: true,
@@ -183,9 +183,9 @@ class DataRepository {
     ),
     PatientModel(
       id: 'p6',
-      name: 'Omar Youssef Reda',
+      fullName: 'Omar Youssef Reda',
       email: 'omar.youssef@gmail.com',
-      phone: '+20 114 567 8901',
+      phoneNumber: '+20 114 567 8901',
       image: 'https://i.pravatar.cc/150?img=55',
       role: 'patient',
       isVerified: false,
@@ -193,9 +193,9 @@ class DataRepository {
     ),
     PatientModel(
       id: 'p7',
-      name: 'Laila Mostafa Kamal',
+      fullName: 'Laila Mostafa Kamal',
       email: 'laila.mostafa@gmail.com',
-      phone: '+20 101 234 5678',
+      phoneNumber: '+20 101 234 5678',
       image: 'https://i.pravatar.cc/150?img=66',
       role: 'patient',
       isVerified: true,
@@ -209,9 +209,9 @@ class DataRepository {
       title: "Prescription for Stomach Inflammation",
       patient: PatientModel(
         id: "p1",
-        name: "Bedroo Mommes",
+        fullName: "Bedroo Mommes",
         email: "bedroo@example.com",
-        phone: "+20123456789",
+        phoneNumber: "+20123456789",
         role: "patient",
         diagnosis: "Stomach inflammation",
       ),
@@ -236,9 +236,9 @@ class DataRepository {
       title: "full body scan",
       patient: PatientModel(
         id: "p2",
-        name: "Marvien Smoth",
+        fullName: "Marvien Smoth",
         email: "marvien@example.com",
-        phone: "+20109876543",
+        phoneNumber: "+20109876543",
         role: "patient",
       ),
       doctor: DoctorModel(
@@ -261,9 +261,9 @@ class DataRepository {
       title: "Urine Analysis",
       patient: PatientModel(
         id: "p3",
-        name: "Farhat Tegahr",
+        fullName: "Farhat Tegahr",
         email: "farhat@example.com",
-        phone: "+20111223344",
+        phoneNumber: "+20111223344",
         role: "patient",
       ),
       doctor: DoctorModel(
@@ -285,9 +285,9 @@ class DataRepository {
       title: "collagen percentage",
       patient: PatientModel(
         id: "p4",
-        name: "Eproo Areif",
+        fullName: "Eproo Areif",
         email: "eproo@example.com",
-        phone: "+20155667788",
+        phoneNumber: "+20155667788",
         role: "patient",
         diagnosis: "Skin analysis",
       ),
@@ -311,9 +311,9 @@ class DataRepository {
       title: "X-Ray Report",
       patient: PatientModel(
         id: "p5",
-        name: "Jan Louse",
+        fullName: "Jan Louse",
         email: "jan@example.com",
-        phone: "+20199887766",
+        phoneNumber: "+20199887766",
         role: "patient",
       ),
       doctor: DoctorModel(
