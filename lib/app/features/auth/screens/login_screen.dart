@@ -35,6 +35,14 @@ class LoginScreen extends StatelessWidget {
                   backgroundColor: colorScheme.error,
                 ),
               );
+            } else if (state is AuthNeedVerification) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(LocaleKeys.auth_error_need_verification.tr()),
+                  backgroundColor: colorScheme.error,
+                ),
+              );
+              context.pushReplacement(AppRouter.login);
             } else if (state is AuthSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

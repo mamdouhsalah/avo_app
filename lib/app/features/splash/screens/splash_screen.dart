@@ -32,9 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
         listener: (context, state) {
           if (state is SplashSuccess) {
             if (state.role == UserRole.patient) {
-              context.pushReplacement(AppRouter.home);
+              context.go(AppRouter.home);
             } else if (state.role == UserRole.doctor) {
-              context.pushReplacement(AppRouter.dashboard);
+              context.go(AppRouter.dashboard);
             } else if (state.role == UserRole.radiologySpecialist) {
               // TODO when radiologist exist
             } else if (state.role == UserRole.pharmacySpecialist) {
@@ -46,6 +46,8 @@ class _SplashScreenState extends State<SplashScreen> {
             }
           } else if (state is SplashFailure) {
             context.go(AppRouter.onboard);
+          } else if (state is SplashUnverified) {
+            context.go(AppRouter.login);
           }
         },
         child: Scaffold(

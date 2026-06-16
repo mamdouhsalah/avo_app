@@ -13,4 +13,8 @@ class SplashSuccess extends SplashState{
   final String role;
   SplashSuccess(this.role);
 }
+class SplashUnverified extends SplashState{
+  final String role;
+  SplashUnverified(this.role);
+}
 

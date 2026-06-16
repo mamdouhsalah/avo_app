@@ -72,7 +72,9 @@ class CodegenLoader extends AssetLoader{
     "error_invalid_weight": "يرجى إدخال وزن صحيح",
     "error_select_dob": "يرجى تحديد تاريخ ميلادك",
     "error_invalid_password": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
-    "error_password_mismatch": "كلمتا المرور غير متطابقتين"
+    "error_password_mismatch": "كلمتا المرور غير متطابقتين",
+    "error_need_verification": "حسابك غير مفعل، يرجى التحقق من بريدك الإلكتروني أولاً",
+    "reset_email_sent": "تم إرسال بريد إعادة تعيين كلمة المرور بنجاح، يرجى التحقق من بريدك الإلكتروني"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -133,7 +135,9 @@ static const Map<String,dynamic> _en = {
     "error_invalid_weight": "Please enter a valid weight",
     "error_select_dob": "Please select your date of birth",
     "error_invalid_password": "Password must be at least 6 characters",
-    "error_password_mismatch": "Passwords do not match"
+    "error_password_mismatch": "Passwords do not match",
+    "error_need_verification": "Your account is not verified. check your email to verify.",
+    "reset_email_sent": "Reset Password Email Sent Successfully, check your email to reset your password"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};

@@ -58,6 +58,12 @@ abstract class  LocaleKeys {
   static const auth_error_select_dob = 'auth.error_select_dob';
   static const auth_error_invalid_password = 'auth.error_invalid_password';
   static const auth_error_password_mismatch = 'auth.error_password_mismatch';
+  static const auth_error_need_verification = 'auth.error_need_verification';
+  static const auth_reset_email_sent = 'auth.reset_email_sent';
+  static const auth_forgot_password_appbar = 'auth.forgot_password_appbar';
+  static const auth_forgot_password_title = 'auth.forgot_password_title';
+  static const auth_forgot_password_subtitle = 'auth.forgot_password_subtitle';
+  static const auth_send_code = 'auth.send_code';
   static const auth = 'auth';
 
 }
