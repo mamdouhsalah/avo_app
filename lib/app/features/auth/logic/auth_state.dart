@@ -20,3 +20,7 @@ class AuthStepChanged extends AuthState {
   final int step;
   AuthStepChanged(this.step);
 }
+
+class AuthNeedVerification extends AuthState {}
+
+class AuthResetPasswordSuccessfully extends AuthState {}

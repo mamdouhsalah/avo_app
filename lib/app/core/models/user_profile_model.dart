@@ -8,6 +8,7 @@ class UserProfileModel {
   final int height;
   final int weight;
   final String image;
+  final bool isVerified;
 
   UserProfileModel({
     required this.email,
@@ -19,6 +20,7 @@ class UserProfileModel {
     required this.height,
     required this.weight,
     required this.image,
+    required this.isVerified,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class UserProfileModel {
       height: json['height'],
       weight: json['weight'],
       image: json['image'] ?? '',
+      isVerified: json['is_verified'] ?? false,
     );
   }
 
@@ -46,6 +49,7 @@ class UserProfileModel {
       'height': height,
       'weight': weight,
       'image': image,
+      'is_verified': isVerified,
     };
   }
 }

@@ -8,6 +8,9 @@ import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository_impl.dart';
 import 'package:avo_app/app/features/auth/logic/auth_cubit.dart';
+import 'package:avo_app/app/features/profile/data/profile_repository.dart';
+import 'package:avo_app/app/features/profile/data/profile_repository_impl.dart';
+import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/splash/logic/splash_cubit.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -43,6 +46,11 @@ class MyApp extends StatelessWidget {
                   consumer: context.read<FirebaseConsumer>(),
                 ),
               ),
+              Provider<ProfileRepository>(
+                create: (context) => ProfileRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
               BlocProvider<HomeCubit>(
                 create: (context) => HomeCubit(
                   repository: context.read<HomeRepository>(),
@@ -52,6 +60,11 @@ class MyApp extends StatelessWidget {
                 create: (context) => AuthCubit(
                   repository: context.read<AuthRepository>(),
                 ),
+              ),
+              BlocProvider<ProfileCubit>(
+                create: (context) => ProfileCubit(
+                  context.read<ProfileRepository>(),
+                )..getProfile(),
               ),
               BlocProvider<SplashCubit>(
                 create: (context) => SplashCubit(

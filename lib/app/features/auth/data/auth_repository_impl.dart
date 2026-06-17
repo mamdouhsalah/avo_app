@@ -54,6 +54,11 @@ class AuthRepositoryImpl implements AuthRepository {
       userData['image'] = imageUrl;
 
       await _consumer.set('users/$uid', data: userData);
+      final isVerified = credential.user?.emailVerified ?? false;
+
+      if (!isVerified) {
+        await _firebaseAuth.currentUser!.sendEmailVerification();
+      }
 
       return UserProfileModel(
         email: registerRequestModel.email,
@@ -65,6 +70,7 @@ class AuthRepositoryImpl implements AuthRepository {
         height: registerRequestModel.height.toInt(),
         weight: registerRequestModel.weight.toInt(),
         image: imageUrl,
+        isVerified: isVerified,
       );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Registration failed', e.code);
@@ -88,7 +94,24 @@ class AuthRepositoryImpl implements AuthRepository {
         fromJson: (json) => UserProfileModel.fromJson(json),
       );
 
-      return userProfile;
+      final isVerified = _firebaseAuth.currentUser!.emailVerified;
+
+      if (!isVerified) {
+        await _firebaseAuth.currentUser!.sendEmailVerification();
+      }
+
+      return UserProfileModel(
+        email: userProfile.email,
+        fullName: userProfile.fullName,
+        role: userProfile.role,
+        gender: userProfile.gender,
+        dateOfBirth: userProfile.dateOfBirth,
+        phoneNumber: userProfile.phoneNumber,
+        height: userProfile.height,
+        weight: userProfile.weight,
+        image: userProfile.image,
+        isVerified: isVerified,
+      );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Login failed', e.code);
     } catch (e) {
@@ -228,6 +251,15 @@ class AuthRepositoryImpl implements AuthRepository {
       }
     } catch (e) {
       throw DatabaseException(e.toString(), 'check-token-failed');
+    }
+  }
+
+  @override
+  Future<void> reresetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw DatabaseException(e.toString(), 'reset-password-failed');
     }
   }
 }
