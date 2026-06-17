@@ -1,4 +1,7 @@
+import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
+import 'package:avo_app/app/features/profile/logic/profile_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
@@ -11,30 +14,22 @@ class PersonalInfoScreen extends StatefulWidget {
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   bool isEditMode = false;
 
-  final TextEditingController _heightController =
-      TextEditingController(text: '179.50');
-  final TextEditingController _weightController =
-      TextEditingController(text: '120.50');
-  final TextEditingController _dobController =
-      TextEditingController(text: '11 / 05 / 2006');
-  final TextEditingController _bloodTypeController =
-      TextEditingController(text: 'O+');
-  final TextEditingController _chronicController =
-      TextEditingController(text: 'Chronic Diseases');
-
-  String selectedGender = 'Male';
-
   static const Color maleBlue = Color(0xFF00A3FF);
   static const Color femalePink = Color(0xFFFD778D);
 
-  @override
-  void dispose() {
-    _heightController.dispose();
-    _weightController.dispose();
-    _dobController.dispose();
-    _bloodTypeController.dispose();
-    _chronicController.dispose();
-    super.dispose();
+  Future<void> _selectDateOfBirth(
+      BuildContext context, ProfileCubit cubit) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      final formatted =
+          "${picked.day.toString().padLeft(2, '0')} / ${picked.month.toString().padLeft(2, '0')} / ${picked.year}";
+      cubit.dobController.text = formatted;
+    }
   }
 
   @override
@@ -58,115 +53,158 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Gender',
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                _buildGenderCard(context, 'Male', Icons.person, maleBlue,
-                    selectedGender == 'Male'),
-                const SizedBox(width: 20),
-                _buildGenderCard(context, 'Female', Icons.person_3, femalePink,
-                    selectedGender == 'Female'),
-              ],
-            ),
-            const SizedBox(height: 25),
-            Row(
-              children: [
-                Expanded(
-                    child: _buildEditableField(
-                        context, 'Height (CM)', _heightController,
-                        isNumeric: true, showEditIcon: false)),
-                const SizedBox(width: 15),
-                Expanded(
-                    child: _buildEditableField(
-                        context, 'Weight (KG)', _weightController,
-                        isNumeric: true, showEditIcon: false)),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildEditableField(context, 'Date of Birth', _dobController,
-                isDropdown: true),
-            const SizedBox(height: 20),
-            _buildEditableField(context, 'Blood Type', _bloodTypeController,
-                isDropdown: true),
-            const SizedBox(height: 25),
-            Text('Chronic Diseases',
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            _buildEditableField(context, '', _chronicController,
-                isDropdown: true, isHint: true),
-            const SizedBox(height: 25),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Surgical History',
-                    style: theme.textTheme.bodyLarge
-                        ?.copyWith(fontWeight: FontWeight.bold)),
-                IconButton(
-                  icon: Icon(Icons.add,
-                      color: isEditMode
-                          ? theme.iconTheme.color
-                          : theme.disabledColor),
-                  onPressed: isEditMode ? () {} : null,
+      body: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state is ProfileFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: theme.colorScheme.error,
+              ),
+            );
+          } else if (state is ProfileSuccess && isEditMode) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Personal information updated successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            setState(() {
+              isEditMode = false;
+            });
+          }
+        },
+        builder: (context, state) {
+          final cubit = context.read<ProfileCubit>();
+
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Gender',
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        _buildGenderCard(context, 'Male', Icons.person,
+                            maleBlue, cubit.selectedGender == 'Male', cubit),
+                        const SizedBox(width: 20),
+                        _buildGenderCard(
+                            context,
+                            'Female',
+                            Icons.person_3,
+                            femalePink,
+                            cubit.selectedGender == 'Female',
+                            cubit),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: _buildEditableField(
+                                context, 'Height (CM)', cubit.heightController,
+                                isNumeric: true, showEditIcon: false)),
+                        const SizedBox(width: 15),
+                        Expanded(
+                            child: _buildEditableField(
+                                context, 'Weight (KG)', cubit.weightController,
+                                isNumeric: true, showEditIcon: false)),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    _buildEditableField(
+                        context, 'Date of Birth', cubit.dobController,
+                        isDropdown: true,
+                        onTap: () => _selectDateOfBirth(context, cubit)),
+                    const SizedBox(height: 25),
+                    // Text('Chronic Diseases',
+                    //     style: theme.textTheme.bodyLarge
+                    //         ?.copyWith(fontWeight: FontWeight.bold)),
+                    // const SizedBox(height: 25),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text('Surgical History',
+                    //         style: theme.textTheme.bodyLarge
+                    //             ?.copyWith(fontWeight: FontWeight.bold)),
+                    //     IconButton(
+                    //       icon: Icon(Icons.add,
+                    //           color: isEditMode
+                    //               ? theme.iconTheme.color
+                    //               : theme.disabledColor),
+                    //       onPressed: isEditMode ? () {} : null,
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 8),
+                    // _buildSurgicalHistoryItem(context, 'Bidding process', '08/10/2026'),
+                    // const SizedBox(height: 100),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            _buildSurgicalHistoryItem(context, 'Bidding process', '08/10/2026'),
-            const SizedBox(height: 100),
-          ],
-        ),
+              ),
+              if (state is ProfileLoading)
+                const Center(child: CircularProgressIndicator()),
+            ],
+          );
+        },
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        color: theme.scaffoldBackgroundColor,
-        child: SizedBox(
-          width: double.infinity,
-          height: 55,
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                isEditMode = !isEditMode;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isEditMode
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.2),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
-            ),
-            child: Text(
-              isEditMode ? 'Save' : 'Edit',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isEditMode
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurface,
+      bottomNavigationBar: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            color: theme.scaffoldBackgroundColor,
+            child: SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (isEditMode) {
+                    context.read<ProfileCubit>().updateProfile();
+                  } else {
+                    setState(() {
+                      isEditMode = true;
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isEditMode
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                child: Text(
+                  isEditMode ? 'Save' : 'Edit',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isEditMode
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurface,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildGenderCard(BuildContext context, String title, IconData icon,
-      Color color, bool isSelected) {
+      Color color, bool isSelected, ProfileCubit cubit) {
     final theme = Theme.of(context);
     return Expanded(
       child: GestureDetector(
-        onTap: isEditMode ? () => setState(() => selectedGender = title) : null,
+        onTap: isEditMode
+            ? () => setState(() => cubit.selectedGender = title)
+            : null,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
@@ -201,7 +239,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       {bool isNumeric = false,
       bool isDropdown = false,
       bool isHint = false,
-      bool showEditIcon = true}) {
+      bool showEditIcon = true,
+      VoidCallback? onTap}) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,6 +258,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               ? const TextInputType.numberWithOptions(decimal: true)
               : TextInputType.text,
           readOnly: isDropdown,
+          onTap: isEditMode && isDropdown ? onTap : null,
           decoration: InputDecoration(
             suffixIcon: isEditMode && showEditIcon
                 ? Icon(
