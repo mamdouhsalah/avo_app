@@ -56,6 +56,12 @@
     "error_invalid_weight": "Please enter a valid weight",
     "error_select_dob": "Please select your date of birth",
     "error_invalid_password": "Password must be at least 6 characters",
-    "error_password_mismatch": "Passwords do not match"
+    "error_password_mismatch": "Passwords do not match",
+    "error_need_verification": "Your account is not verified. check your email to verify.",
+    "reset_email_sent": "Reset Password Email Sent Successfully, check your email to reset your password",
+    "forgot_password_appbar": "Forgot Password",
+    "forgot_password_title": "Forgot your password?",
+    "forgot_password_subtitle": "Enter the email address associated with your account and we will send you a verification code.",
+    "send_code": "Send Code"
   }
 }

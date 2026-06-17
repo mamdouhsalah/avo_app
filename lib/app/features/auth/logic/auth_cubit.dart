@@ -125,7 +125,11 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       final response = await repository.register(request);
-      emit(AuthSuccess(response));
+      if (response.isVerified == true) {
+        emit(AuthSuccess(response));
+      } else {
+        emit(AuthNeedVerification());
+      }
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
@@ -150,7 +154,26 @@ class AuthCubit extends Cubit<AuthState> {
         password: passwordController.text,
       );
       final response = await repository.login(request);
-      emit(AuthSuccess(response));
+      if (response.isVerified == true) {
+        emit(AuthSuccess(response));
+      } else {
+        emit(AuthNeedVerification());
+      }
+    } catch (e) {
+      emit(AuthFailure(e.toString()));
+    }
+  }
+
+  Future<void> resetPassword() async {
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    if (!emailRegex.hasMatch(emailController.text.trim())) {
+      emit(AuthFailure(LocaleKeys.auth_error_invalid_email));
+      return;
+    }
+    emit(AuthLoading());
+    try {
+      await repository.reresetPassword(emailController.text.trim());
+      emit(AuthResetPasswordSuccessfully());
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }

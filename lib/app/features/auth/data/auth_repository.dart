@@ -37,4 +37,8 @@ abstract class AuthRepository {
     String dateOfBirth,
   );
   Future<AuthResponseModel> logout();
+
+  Future<void> reresetPassword(
+    String email
+  );
 }
