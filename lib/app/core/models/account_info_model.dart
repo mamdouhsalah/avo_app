@@ -1,9 +1,9 @@
-class UserProfile {
+class AccountInfoModel {
   final String fullName;
   final String email;
   final String phoneNumber;
 
-  UserProfile({
+  AccountInfoModel({
     required this.fullName, 
     required this.email, 
     required this.phoneNumber,
@@ -17,8 +17,8 @@ class UserProfile {
     };
   }
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) {
-    return UserProfile(
+  factory AccountInfoModel.fromJson(Map<String, dynamic> json) {
+    return AccountInfoModel(
       fullName: json['fullName'],
       email: json['email'],
       phoneNumber: json['phoneNumber'],

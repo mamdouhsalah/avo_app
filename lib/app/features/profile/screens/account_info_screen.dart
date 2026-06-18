@@ -1,24 +1,20 @@
-import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
-import 'package:avo_app/app/features/profile/logic/profile_state.dart';
+import 'package:avo_app/app/core/models/account_info_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class AccountInfoScreen extends StatefulWidget {
-  const AccountInfoScreen({super.key});
+class AccountInfoScreen extends StatelessWidget {
+  final AccountInfoModel userData =AccountInfoModel(
+    fullName: 'Sofia Andro',
+    email: 'Sofia.Andro15@gmail.com',
+    phoneNumber: '+201057892010',
+  );
 
-  @override
-  State<AccountInfoScreen> createState() => _AccountInfoScreenState();
-}
-
-class _AccountInfoScreenState extends State<AccountInfoScreen> {
-  bool isEditMode = false;
+  AccountInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -38,100 +34,30 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
         ),
         centerTitle: true,
       ),
-      body: BlocConsumer<ProfileCubit, ProfileState>(
-        listener: (context, state) {
-          if (state is ProfileFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: colorScheme.error,
-              ),
-            );
-          } else if (state is ProfileSuccess && isEditMode) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account information updated successfully'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            setState(() {
-              isEditMode = false;
-            });
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<ProfileCubit>();
-
-          return Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTextField(
-                      context,
-                      label: 'Full Name',
-                      controller: cubit.fullNameController,
-                      enabled: isEditMode,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      context,
-                      label: 'Phone',
-                      controller: cubit.phoneController,
-                      enabled: isEditMode,
-                      keyboardType: TextInputType.phone,
-                    ),
-                  ],
-                ),
-              ),
-              if (state is ProfileLoading)
-                const Center(child: CircularProgressIndicator()),
-            ],
-          );
-        },
-      ),
-      bottomNavigationBar: BlocBuilder<ProfileCubit, ProfileState>(
-        builder: (context, state) {
-          return Container(
-            padding: const EdgeInsets.all(20),
-            color: theme.scaffoldBackgroundColor,
-            child: SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (isEditMode) {
-                    context.read<ProfileCubit>().updateProfile();
-                  } else {
-                    setState(() {
-                      isEditMode = true;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isEditMode
-                      ? colorScheme.primary
-                      : colorScheme.onSurface.withValues(alpha: 0.2),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
-                child: Text(
-                  isEditMode ? 'Save' : 'Edit',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isEditMode
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurface,
-                  ),
-                ),
-              ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTextField(
+              context,
+              label: 'Full Name',
+              initialValue: userData.fullName,
             ),
-          );
-        },
+            const SizedBox(height: 20),
+            _buildTextField(
+              context,
+              label: 'Email',
+              initialValue: userData.email,
+            ),
+            const SizedBox(height: 20),
+            _buildTextField(
+              context,
+              label: 'Phone',
+              initialValue: userData.phoneNumber,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -139,9 +65,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
   Widget _buildTextField(
     BuildContext context, {
     required String label,
-    required TextEditingController controller,
-    required bool enabled,
-    TextInputType keyboardType = TextInputType.text,
+    required String initialValue,
   }) {
     final theme = Theme.of(context);
 
@@ -156,9 +80,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
         ),
         const SizedBox(height: 10),
         TextFormField(
-          controller: controller,
-          enabled: enabled,
-          keyboardType: keyboardType,
+          initialValue: initialValue,
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontSize: 16.sp,
@@ -167,13 +89,6 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 15,
               vertical: 15,
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                width: 1,
-              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
@@ -190,9 +105,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               ),
             ),
             filled: true,
-            fillColor: enabled
-                ? theme.cardColor
-                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            fillColor: theme.cardColor,
           ),
         ),
       ],
