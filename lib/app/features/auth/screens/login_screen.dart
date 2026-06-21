@@ -131,38 +131,38 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 32.h),
 
                   // Divider
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Divider(
-                              color: colorScheme.outlineVariant, thickness: 1)),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: Text(
-                          LocaleKeys.auth_or_continue_with.tr(),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: colorScheme.onSurface.withValues(alpha: 0.5),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          child: Divider(
-                              color: colorScheme.outlineVariant, thickness: 1)),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //         child: Divider(
+                  //             color: colorScheme.outlineVariant, thickness: 1)),
+                  //     Padding(
+                  //       padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  //       child: Text(
+                  //         LocaleKeys.auth_or_continue_with.tr(),
+                  //         style: TextStyle(
+                  //           fontSize: 14.sp,
+                  //           color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Expanded(
+                  //         child: Divider(
+                  //             color: colorScheme.outlineVariant, thickness: 1)),
+                  //   ],
+                  // ),
+                  // SizedBox(height: 12.h),
 
-                  // Social Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _SocialButton(icon: AppImgs.google, onTap: () {}),
-                      _SocialButton(icon: AppImgs.facebook, onTap: () {}),
-                      _SocialButton(icon: AppImgs.apple, onTap: () {}),
-                    ],
-                  ),
-                  SizedBox(height: 32.h),
+                  // // Social Buttons
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     _SocialButton(icon: AppImgs.google, onTap: () {}),
+                  //     _SocialButton(icon: AppImgs.facebook, onTap: () {}),
+                  //     _SocialButton(icon: AppImgs.apple, onTap: () {}),
+                  //   ],
+                  // ),
+                  // SizedBox(height: 32.h),
 
                   // Navigation Link to Signup
                   Row(
