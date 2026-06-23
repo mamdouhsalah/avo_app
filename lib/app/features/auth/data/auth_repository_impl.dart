@@ -57,10 +57,15 @@ class AuthRepositoryImpl implements AuthRepository {
       final isVerified = credential.user?.emailVerified ?? false;
 
       if (!isVerified) {
-        await _firebaseAuth.currentUser!.sendEmailVerification();
+        try {
+          await _firebaseAuth.currentUser!.sendEmailVerification();
+        } catch (e) {
+          log("Email verification failed: $e");
+        }
       }
 
       return UserProfileModel(
+        id: uid,
         email: registerRequestModel.email,
         fullName: registerRequestModel.fullName,
         role: registerRequestModel.role,
@@ -70,7 +75,7 @@ class AuthRepositoryImpl implements AuthRepository {
         height: registerRequestModel.height.toInt(),
         weight: registerRequestModel.weight.toInt(),
         image: imageUrl,
-        isVerified: isVerified,
+        isVerified: false, // Admin needs to approve
       );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Registration failed', e.code);
@@ -91,16 +96,22 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final userProfile = await _consumer.get<UserProfileModel>(
         'users/$uid',
-        fromJson: (json) => UserProfileModel.fromJson(json),
+        fromJson: (json) => UserProfileModel.fromJson(json, id: uid),
       );
 
-      final isVerified = _firebaseAuth.currentUser!.emailVerified;
-
-      if (!isVerified) {
-        await _firebaseAuth.currentUser!.sendEmailVerification();
+      final isEmailVerified = _firebaseAuth.currentUser!.emailVerified;
+      if (!isEmailVerified) {
+        try {
+          await _firebaseAuth.currentUser!.sendEmailVerification();
+        } catch (e) {
+          log("Email verification failed: $e");
+        }
       }
 
+      final isAdminVerified = userProfile.isVerified == true || userProfile.role == 'admin';
+
       return UserProfileModel(
+        id: uid,
         email: userProfile.email,
         fullName: userProfile.fullName,
         role: userProfile.role,
@@ -110,7 +121,7 @@ class AuthRepositoryImpl implements AuthRepository {
         height: userProfile.height,
         weight: userProfile.weight,
         image: userProfile.image,
-        isVerified: isVerified,
+        isVerified: isAdminVerified,
       );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Login failed', e.code);
@@ -243,7 +254,7 @@ class AuthRepositoryImpl implements AuthRepository {
         final UserProfileModel userProfile =
             await _consumer.get<UserProfileModel>(
           'users/${user.uid}',
-          fromJson: (json) => UserProfileModel.fromJson(json),
+          fromJson: (json) => UserProfileModel.fromJson(json, id: user.uid),
         );
         return userProfile;
       } else {

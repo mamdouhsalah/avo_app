@@ -12,5 +12,8 @@ class DatabasePaths {
   static const String reports = 'reports';
   static const String messages = 'messages';
   static const String chatrooms = 'chatrooms';
-  
+
+  // Admin
+  static const String logs = 'logs';
+  static const String pendingApprovals = 'pending_approvals';
 }
