@@ -65,6 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return UserProfileModel(
+        id: uid,
         email: registerRequestModel.email,
         fullName: registerRequestModel.fullName,
         role: registerRequestModel.role,
@@ -74,7 +75,7 @@ class AuthRepositoryImpl implements AuthRepository {
         height: registerRequestModel.height.toInt(),
         weight: registerRequestModel.weight.toInt(),
         image: imageUrl,
-        isVerified: isVerified,
+        isVerified: false, // Admin needs to approve
       );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Registration failed', e.code);
@@ -95,7 +96,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final userProfile = await _consumer.get<UserProfileModel>(
         'users/$uid',
-        fromJson: (json) => UserProfileModel.fromJson(json),
+        fromJson: (json) => UserProfileModel.fromJson(json, id: uid),
       );
 
       final user = credential.user;
@@ -108,7 +109,10 @@ class AuthRepositoryImpl implements AuthRepository {
         await user.sendEmailVerification();
       }
 
+      final isAdminVerified = userProfile.isVerified == true || userProfile.role == 'admin';
+
       return UserProfileModel(
+        id: uid,
         email: userProfile.email,
         fullName: userProfile.fullName,
         role: userProfile.role,
@@ -118,7 +122,7 @@ class AuthRepositoryImpl implements AuthRepository {
         height: userProfile.height,
         weight: userProfile.weight,
         image: userProfile.image,
-        isVerified: isVerified,
+        isVerified: isAdminVerified,
       );
     } on FirebaseAuthException catch (e) {
       throw DatabaseException(e.message ?? 'Login failed', e.code);
@@ -185,7 +189,7 @@ class AuthRepositoryImpl implements AuthRepository {
         final UserProfileModel userProfile =
             await _consumer.get<UserProfileModel>(
           'users/${user.uid}',
-          fromJson: (json) => UserProfileModel.fromJson(json),
+          fromJson: (json) => UserProfileModel.fromJson(json, id: user.uid),
         );
         return userProfile;
       } else {

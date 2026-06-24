@@ -2,6 +2,10 @@ import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
+import 'package:avo_app/app/core/theme/theme_cubit.dart';
+import 'package:avo_app/app/features/admin/data/admin_repository.dart';
+import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
+import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
 import 'package:avo_app/app/features/home/data/home_repository.dart';
 import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
@@ -51,6 +55,9 @@ class MyApp extends StatelessWidget {
                   consumer: providerContext.read<FirebaseConsumer>(),
                 ),
               ),
+              Provider<AdminRepository>(
+                create: (context) => AdminRepositoryImpl(),
+              ),
               BlocProvider<HomeCubit>(
                 create: (providerContext) => HomeCubit(
                   repository: providerContext.read<HomeRepository>(),
@@ -71,27 +78,37 @@ class MyApp extends StatelessWidget {
                   repository: providerContext.read<AuthRepository>(),
                 ),
               ),
+              BlocProvider<AdminCubit>(
+                create: (context) => AdminCubit(
+                  repository: context.read<AdminRepository>(),
+                ),
+              ),
+              BlocProvider<ThemeCubit>(
+                create: (context) => ThemeCubit(),
+              ),
             ],
-            child: Builder(
-              builder: (builderContext) {
-                final isLocalizationInitialized = EasyLocalization.of(builderContext) != null;
+            // 🔥 دمجنا الـ BlocBuilder للـ Theme مع حماية الـ EasyLocalization
+            child: BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, themeMode) {
+                final isLocalizationInitialized = EasyLocalization.of(context) != null;
+                
                 return MaterialApp.router(
                   // --- إعدادات اللغات بتاعتك ---
                   localizationsDelegates: isLocalizationInitialized
-                      ? builderContext.localizationDelegates
+                      ? context.localizationDelegates
                       : null,
                   supportedLocales: isLocalizationInitialized
-                      ? builderContext.supportedLocales
+                      ? context.supportedLocales
                       : const [Locale('en')],
                   locale: isLocalizationInitialized
-                      ? builderContext.locale
+                      ? context.locale
                       : const Locale('en'),
 
                   debugShowCheckedModeBanner: false,
                   title: AppStrings.appName,
                   theme: AppTheme.lightTheme,
                   darkTheme: AppTheme.darkTheme,
-                  themeMode: ThemeMode.system,
+                  themeMode: themeMode,
 
                   // --- شاشة البداية ---
                   routerConfig: AppRouter.router,

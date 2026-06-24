@@ -1,6 +1,7 @@
 import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/models/login_request_model.dart';
 import 'package:avo_app/app/core/models/register_request_model.dart';
+import 'package:avo_app/app/core/services/admin_log_service.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository.dart';
 import 'package:avo_app/app/features/auth/logic/auth_state.dart';
 import 'package:flutter/material.dart';
@@ -125,12 +126,31 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       final response = await repository.register(request);
-      if (response.isVerified == true) {
-        emit(AuthSuccess(response));
-      } else {
-        emit(AuthNeedVerification());
-      }
+
+      // Always log registration and send pending approval to admin
+      await AdminLogService.instance.logUserRegistration(
+        userId: response.id,
+        email: response.email,
+        fullName: response.fullName,
+        role: response.role,
+      );
+      await AdminLogService.instance.sendPendingApproval(
+        userId: response.id,
+        email: response.email,
+        fullName: response.fullName,
+        role: response.role,
+        profileImage: profileImagePath,
+      );
+
+      // Emit NeedVerification to inform user they must wait for admin approval
+      emit(AuthNeedVerification());
     } catch (e) {
+      await AdminLogService.instance.logError(
+        type: 'register_error',
+        userId: '',
+        email: emailController.text.trim(),
+        error: e.toString(),
+      );
       emit(AuthFailure(e.toString()));
     }
   }
@@ -155,11 +175,23 @@ class AuthCubit extends Cubit<AuthState> {
       );
       final response = await repository.login(request);
       if (response.isVerified == true) {
+        // Log successful login
+        await AdminLogService.instance.logUserLogin(
+          userId: response.id,
+          email: response.email,
+          role: response.role,
+        );
         emit(AuthSuccess(response));
       } else {
         emit(AuthNeedVerification());
       }
     } catch (e) {
+      await AdminLogService.instance.logError(
+        type: 'login_error',
+        userId: '',
+        email: emailController.text.trim(),
+        error: e.toString(),
+      );
       emit(AuthFailure(e.toString()));
     }
   }

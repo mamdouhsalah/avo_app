@@ -5,6 +5,12 @@ import 'package:easy_localization/easy_localization.dart';
 
 import 'app/core/Language/codegen_loader.g.dart';
 
+import 'package:avo_app/app/core/services/local/hive_service.dart';
+import 'package:avo_app/app/core/services/local/points_service.dart';
+import 'package:avo_app/app/core/services/local/health_metrics_service.dart';
+import 'package:avo_app/app/core/services/local/hive_medical_analysis_service.dart';
+import 'package:avo_app/app/core/services/local/notification_service.dart';
+
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +19,13 @@ void main() async {
   // for firebase initialization
   final firebaseConsumer = FirebaseConsumerImpl();
   await firebaseConsumer.init();
+
+  // Initialize Local Services
+  await HiveService.init();
+  await PointsService.init();
+  await HealthMetricsService.init();
+  await MedicalAnalysisService().init();
+  await NotificationService.init();
 
   runApp(
     EasyLocalization(

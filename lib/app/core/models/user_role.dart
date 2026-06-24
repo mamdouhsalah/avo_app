@@ -5,6 +5,7 @@ class UserRole {
   static const radiologySpecialist = 'radiology_specialist';
   static const pharmacySpecialist = 'pharmacy_specialist';
   static const laboratorySpecialist = 'laboratory_specialist';
+  static const admin = 'admin';
 }
 
 
