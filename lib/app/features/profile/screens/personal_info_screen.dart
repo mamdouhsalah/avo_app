@@ -1,8 +1,15 @@
+import 'dart:math';
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
+// أو لو بتعمل import لـ intl مباشرة:
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui' as ui;
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class PersonalInfoScreen extends StatefulWidget {
   const PersonalInfoScreen({super.key});
@@ -41,13 +48,19 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => context.pop(),
+          icon: Transform.flip(
+            flipX: context.locale.languageCode == 'ar',
+            child: Icon(
+              Icons.arrow_back,
+              color: theme.iconTheme.color,
+            ),
+          ),
         ),
         title: Text(
-          'Personal Information',
+          LocaleKeys.personal_info_title.tr(),
           style:
-              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -64,8 +77,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             );
           } else if (state is ProfileSuccess && isEditMode) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Personal information updated successfully'),
+              SnackBar(
+                content: Text(LocaleKeys.personal_info_update_success.tr()), // 🔥 ترجمة النجاح
                 backgroundColor: Colors.green,
               ),
             );
@@ -84,22 +97,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Gender',
+                    Text(LocaleKeys.personal_info_gender.tr(), // 🔥 ترجمة النوع
                         style: theme.textTheme.bodyLarge
                             ?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 15),
                     Row(
                       children: [
-                        _buildGenderCard(context, 'Male', Icons.person,
-                            maleBlue, cubit.selectedGender == 'Male', cubit),
+                        _buildGenderCard(context, LocaleKeys.personal_info_malee.tr(), Icons.person, // 🔥 ترجمة
+                            maleBlue, cubit.selectedGender == 'Male' || cubit.selectedGender == 'ذكر', cubit, 'Male'),
                         const SizedBox(width: 20),
                         _buildGenderCard(
                             context,
-                            'Female',
+                            LocaleKeys.personal_info_femalee.tr(), // 🔥 ترجمة
                             Icons.person_3,
                             femalePink,
-                            cubit.selectedGender == 'Female',
-                            cubit),
+                            cubit.selectedGender == 'Female' || cubit.selectedGender == 'أنثى',
+                            cubit, 'Female'),
                       ],
                     ),
                     const SizedBox(height: 25),
@@ -107,43 +120,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       children: [
                         Expanded(
                             child: _buildEditableField(
-                                context, 'Height (CM)', cubit.heightController,
-                                isNumeric: true, showEditIcon: false)),
+                                context, LocaleKeys.personal_info_height.tr(), cubit.heightController, // 🔥 ترجمة
+                                isNumeric: true, showEditIcon: false, textDirection: ui.TextDirection.ltr)), // 🔥 LTR للأرقام
                         const SizedBox(width: 15),
                         Expanded(
                             child: _buildEditableField(
-                                context, 'Weight (KG)', cubit.weightController,
-                                isNumeric: true, showEditIcon: false)),
+                                context, LocaleKeys.personal_info_weight.tr(), cubit.weightController, // 🔥 ترجمة
+                                isNumeric: true, showEditIcon: false, textDirection: ui.TextDirection.ltr,)), // 🔥 LTR للأرقام
                       ],
                     ),
                     const SizedBox(height: 20),
                     _buildEditableField(
-                        context, 'Date of Birth', cubit.dobController,
+                        context, LocaleKeys.personal_info_dob.tr(), cubit.dobController, // 🔥 ترجمة
                         isDropdown: true,
+                        textDirection: ui.TextDirection.ltr,
                         onTap: () => _selectDateOfBirth(context, cubit)),
                     const SizedBox(height: 25),
-                    // Text('Chronic Diseases',
-                    //     style: theme.textTheme.bodyLarge
-                    //         ?.copyWith(fontWeight: FontWeight.bold)),
-                    // const SizedBox(height: 25),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     Text('Surgical History',
-                    //         style: theme.textTheme.bodyLarge
-                    //             ?.copyWith(fontWeight: FontWeight.bold)),
-                    //     IconButton(
-                    //       icon: Icon(Icons.add,
-                    //           color: isEditMode
-                    //               ? theme.iconTheme.color
-                    //               : theme.disabledColor),
-                    //       onPressed: isEditMode ? () {} : null,
-                    //     ),
-                    //   ],
-                    // ),
-                    // const SizedBox(height: 8),
-                    // _buildSurgicalHistoryItem(context, 'Bidding process', '08/10/2026'),
-                    // const SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -180,7 +172,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   elevation: 0,
                 ),
                 child: Text(
-                  isEditMode ? 'Save' : 'Edit',
+                  isEditMode ? LocaleKeys.general_save.tr() : LocaleKeys.general_edit.tr(), // 🔥 استخدام الكلمات المشتركة
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -197,13 +189,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
+  // 💡 ضفنا value عشان نبعت القيمة بالإنجليزي للـ Cubit بغض النظر عن لغة العرض
   Widget _buildGenderCard(BuildContext context, String title, IconData icon,
-      Color color, bool isSelected, ProfileCubit cubit) {
+      Color color, bool isSelected, ProfileCubit cubit, String value) {
     final theme = Theme.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: isEditMode
-            ? () => setState(() => cubit.selectedGender = title)
+            ? () => setState(() => cubit.selectedGender = value)
             : null,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -223,9 +216,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               Text(title,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
+                    isSelected ? FontWeight.bold : FontWeight.normal,
                     color:
-                        isSelected ? color : theme.textTheme.bodyMedium?.color,
+                    isSelected ? color : theme.textTheme.bodyMedium?.color,
                   )),
             ],
           ),
@@ -234,13 +227,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
+  // 💡 ضفنا TextDirection عشان نظبط الأرقام والتواريخ
   Widget _buildEditableField(
       BuildContext context, String label, TextEditingController controller,
       {bool isNumeric = false,
-      bool isDropdown = false,
-      bool isHint = false,
-      bool showEditIcon = true,
-      VoidCallback? onTap}) {
+        bool isDropdown = false,
+        bool isHint = false,
+        bool showEditIcon = true,
+        TextDirection? textDirection,
+        VoidCallback? onTap}) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,6 +248,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         TextField(
           controller: controller,
           enabled: isEditMode,
+          textDirection: ui.TextDirection.ltr,
           style: theme.textTheme.bodyMedium,
           keyboardType: isNumeric
               ? const TextInputType.numberWithOptions(decimal: true)
@@ -262,19 +258,19 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           decoration: InputDecoration(
             suffixIcon: isEditMode && showEditIcon
                 ? Icon(
-                    isDropdown
-                        ? Icons.keyboard_arrow_down
-                        : Icons.edit_outlined,
-                    size: 20,
-                    color: theme.iconTheme.color)
+                isDropdown
+                    ? Icons.keyboard_arrow_down
+                    : Icons.edit_outlined,
+                size: 20,
+                color: theme.iconTheme.color)
                 : null,
             filled: true,
             fillColor: isEditMode
                 ? theme.cardColor
                 : theme.colorScheme.surfaceContainerHighest
-                    .withValues(alpha: 0.3),
+                .withValues(alpha: 0.3),
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: theme.dividerColor),
@@ -289,7 +285,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide:
-                  BorderSide(color: theme.colorScheme.primary, width: 1.5),
+              BorderSide(color: theme.colorScheme.primary, width: 1.5),
             ),
           ),
         ),
@@ -297,30 +293,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
-  Widget _buildSurgicalHistoryItem(
-      BuildContext context, String title, String date) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
-      decoration: BoxDecoration(
-        border:
-            Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.5)),
-        borderRadius: BorderRadius.circular(10),
-        color: isEditMode
-            ? theme.cardColor
-            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w500)),
-          Text(date,
-              style:
-                  theme.textTheme.bodySmall?.copyWith(color: theme.hintColor)),
-        ],
-      ),
-    );
-  }
+// Widget _buildSurgicalHistoryItem(
+//     BuildContext context, String title, String date) { ... }
 }

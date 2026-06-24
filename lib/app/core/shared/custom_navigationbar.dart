@@ -1,5 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../Language/locale_keys.g.dart';
+
 
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -14,11 +18,11 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      {"icon": Icons.map_outlined, "label": "Maps"},
-      {"icon": Icons.calendar_today, "label": "Schedule"},
-      {"icon": Icons.medical_services_outlined, "label": "Home"},
-      {"icon": Icons.access_time_outlined, "label": "Reminder"},
-      {"icon": Icons.person_outline, "label": "Profile"},
+      {"icon": Icons.map_outlined, "label": LocaleKeys.bottom_nav_maps.tr()},
+      {"icon": Icons.calendar_today, "label": LocaleKeys.bottom_nav_schedule.tr()},
+      {"icon": Icons.medical_services_outlined, "label": LocaleKeys.bottom_nav_home.tr()},
+      {"icon": Icons.access_time_outlined, "label": LocaleKeys.bottom_nav_reminder.tr()},
+      {"icon": Icons.person_outline, "label": LocaleKeys.bottom_nav_profile.tr()},
     ];
 
     return Container(

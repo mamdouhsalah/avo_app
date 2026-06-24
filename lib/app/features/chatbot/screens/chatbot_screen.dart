@@ -23,18 +23,17 @@ class ChatBotScreen extends StatelessWidget {
         time: "10:00 AM",
       ),
       ChatMessageModel(
-        text: "I need to set a reminder for my Amoxicillin.",
+        text: LocaleKeys.chatbot_dummy_msg_1.tr(),
         isUser: true,
         time: "10:01 AM",
       ),
       ChatMessageModel(
-        text:
-            "Sure! What is the dosage and when would you like to be reminded?",
+        text: LocaleKeys.chatbot_dummy_msg_2.tr(),
         isUser: false,
         time: "10:01 AM",
       ),
       ChatMessageModel(
-        text: "500mg, every day at 9:00 AM.",
+        text: LocaleKeys.chatbot_dummy_msg_3.tr(),
         isUser: true,
         time: "10:02 AM",
       ),
@@ -70,8 +69,14 @@ class ChatBotScreen extends StatelessWidget {
       elevation: 0,
       leadingWidth: 50.w,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded,
-            size: 20.sp, color: theme.colorScheme.onSurface),
+        icon: Transform.flip(
+          flipX: context.locale.languageCode == 'ar',
+          child: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20.sp,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
         onPressed: () => context.pop(),
       ),
       titleSpacing: 0,
@@ -88,8 +93,7 @@ class ChatBotScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                // "AVO Assistant",
-                LocaleKeys.chatbot_chatbot_title.tr(), // 👈 ترجمة اسم البوت
+                LocaleKeys.chatbot_chatbot_title.tr(),
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -97,12 +101,11 @@ class ChatBotScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                LocaleKeys.chatbot_chatbot_online.tr(), 
+                LocaleKeys.chatbot_chatbot_online.tr(),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: Colors
-                      .green, 
+                  color: Colors.green,
                 ),
               ),
             ],

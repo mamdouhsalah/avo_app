@@ -1,8 +1,11 @@
 import 'package:avo_app/app/core/constants/app_svg.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
 
 class CancelSuccessfullyAppointmentCard extends StatelessWidget {
   final String doctorName;
@@ -16,12 +19,10 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
 
     return Center(
       child: Material(
-        // insted of using box shadow
         color: colorScheme.surface,
         elevation: 10,
         shadowColor: colorScheme.onSurface.withValues(alpha: .1),
         borderRadius: BorderRadius.circular(16.r),
-
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.r),
@@ -52,10 +53,10 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
               ),
 
               SizedBox(height: 16.h),
-              // cancel appointment text
 
+              // cancel appointment text
               Text(
-                'Cancel Successfully',
+                  LocaleKeys.appointment_cancel_success_title.tr(),
                 style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
@@ -65,32 +66,26 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
               SizedBox(height: 24.h),
 
               // are you sure message
-              Text(
-                'Your appointment  with $doctorName is canceled successfully',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Text(
+                  'appointment.cancel_success_msg'.tr(namedArgs: {
+                    'doctorName': doctorName,
+                  }),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                ),
               ),
 
               SizedBox(height: 60.h),
 
-              // yes and no buttons
-              Row(
-                children: [
-                  MainButton(
-                    text: 'Yes',
-                    onPressed: () {},
-                    width: 161.w,
-                    height: 48.h,
-                  ),
-                  SizedBox(width: 21.w),
-                  MainButton(
-                    text: 'No',
-                    onPressed: () {},
-                    isNo: true,
-                    width: 161.w,
-                    height: 48.h,
-                  ),
-                ],
+              MainButton(
+                text: LocaleKeys.general_done.tr(),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                width: 327.w, // عرض مناسب للكارت
+                height: 48.h,
               )
             ],
           ),

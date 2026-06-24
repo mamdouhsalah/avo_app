@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class RatingStars extends StatelessWidget {
   final double rating;
 
@@ -29,7 +28,7 @@ class RatingStars extends StatelessWidget {
         }
 
         return Padding(
-          padding: EdgeInsets.only(right: 4.w),
+          padding: EdgeInsetsDirectional.only(end: 4.w),
           child: Icon(
             icon,
             color: color,

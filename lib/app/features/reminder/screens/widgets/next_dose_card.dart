@@ -1,6 +1,12 @@
+import 'dart:ui' as ui;
+
 import 'package:avo_app/app/core/constants/app_spacing.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
+
 
 class NextDoseCard extends StatelessWidget {
   const NextDoseCard({super.key});
@@ -33,7 +39,7 @@ class NextDoseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Next dose in",
+                    LocaleKeys.reminder_next_dose_in.tr(), // 🔥 ترجمة
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -42,7 +48,8 @@ class NextDoseCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    "08 min",
+                    "08 min", // 💡 دي لو جاية من داتابيز هتتساب زي ما هي بس نديها ltr عشان الأرقام
+                    textDirection: ui.TextDirection.ltr,
                     style: TextStyle(
                       fontSize: 32.sp,
                       fontWeight: FontWeight.bold,
@@ -67,7 +74,10 @@ class NextDoseCard extends StatelessWidget {
                   children: [
                     Text("Amoxicillin", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
                     SizedBox(height: 2.h),
-                    Text("500mg • 1 pill", style: TextStyle(fontSize: 13.sp, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
+                    // 🔥 ترجمة كلمة pill ودمجها مع الداتا
+                    Text("500mg • 1 ${LocaleKeys.reminder_pill.tr()}",
+                        textDirection: ui.TextDirection.ltr,
+                        style: TextStyle(fontSize: 13.sp, color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
                   ],
                 ),
               ),
@@ -80,9 +90,9 @@ class NextDoseCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                 ),
                 child: Text(
-                  "Take",
+                  LocaleKeys.reminder_take.tr(), // 🔥 ترجمة
                   style: TextStyle(
-                    inherit: false, // 👈 دي اللي هتمنع الكراش
+                    inherit: false,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,

@@ -1,10 +1,14 @@
 import 'package:avo_app/app/core/constants/app_spacing.dart';
-import 'package:avo_app/app/features/reminder/screens/widgets/custom_analog_clock.dart'; // مسار الساعة الجديد
+import 'package:avo_app/app/features/reminder/screens/widgets/custom_analog_clock.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/wave_header_painter.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui' as ui;
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class AddMedicationScreen extends StatefulWidget {
   const AddMedicationScreen({super.key});
@@ -14,11 +18,9 @@ class AddMedicationScreen extends StatefulWidget {
 }
 
 class _AddMedicationScreenState extends State<AddMedicationScreen> {
-  // === متغيرات الساعة التفاعلية ===
   TimeOfDay selectedTime = const TimeOfDay(hour: 2, minute: 0);
-  bool isSelectingHour = true; // للتبديل بين الساعات والدقائق
+  bool isSelectingHour = true;
 
-  // === باقي المتغيرات ===
   bool soundNotification = true;
   bool smartReminder = false;
   String selectedFrequency = 'Daily';
@@ -26,7 +28,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
   DateTime? fromDate;
   DateTime? toDate;
 
-  // دالة لتغيير AM / PM
   void _setAMPM(bool isPM) {
     int h = selectedTime.hour;
     if (isPM && h < 12) {
@@ -36,7 +37,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     }
   }
 
-  // باقي دالة التاريخ كما هي
   Future<void> _pickDate(BuildContext context, {required Function(DateTime) onPicked}) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -62,7 +62,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // تظبيط شكل الساعة الرقمية عشان تظهر بصيغة 12 ساعة
     int displayHour = selectedTime.hourOfPeriod;
     if (displayHour == 0) displayHour = 12;
     String hourStr = displayHour.toString().padLeft(2, '0');
@@ -92,11 +91,15 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20.sp),
+                        icon: Transform.flip(
+                          flipX: context.locale.languageCode == 'ar', // 🔥 قلب السهم
+                          child: Icon(Icons.arrow_back_ios_new_rounded, size: 20.sp),
+                        ),
                         onPressed: () => context.pop(),
                       ),
                       const Spacer(),
-                      Text("Reminder", style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold)),
+                      Text(LocaleKeys.reminder_title.tr(), // 🔥 ترجمة العنوان
+                          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold)),
                       const Spacer(),
                       SizedBox(width: 40.w),
                     ],
@@ -112,6 +115,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         onTap: () => setState(() => isSelectingHour = true),
                         child: Text(
                             hourStr,
+                            textDirection: ui.TextDirection.ltr,
                             style: TextStyle(
                               fontSize: 52.sp,
                               fontWeight: isSelectingHour ? FontWeight.bold : FontWeight.w300,
@@ -125,6 +129,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         onTap: () => setState(() => isSelectingHour = false),
                         child: Text(
                             minuteStr,
+                            textDirection: ui.TextDirection.ltr,
                             style: TextStyle(
                               fontSize: 52.sp,
                               fontWeight: !isSelectingHour ? FontWeight.bold : FontWeight.w300,
@@ -148,7 +153,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         ],
                       ),
                       const Spacer(),
-                      // زر الحفظ ADD
                       ElevatedButton(
                         onPressed: () {
                           // TODO: حفظ البيانات في قاعدة البيانات
@@ -159,13 +163,13 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
                           minimumSize: Size.zero,
                         ),
-                        child: const Text("ADD", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: Text(LocaleKeys.reminder_add.tr(), // 🔥 ترجمة
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                   SizedBox(height: AppSpacing.v32),
 
-                  // === دايرة الساعة التفاعلية ===
                   Center(
                     child: InteractiveAnalogClock(
                       time: selectedTime,
@@ -179,10 +183,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   ),
                   SizedBox(height: AppSpacing.v40),
 
-                  // باقي الواجهة (الاسم، التواريخ، التردد، الإعدادات)
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "Medication Name",
+                      hintText: LocaleKeys.reminder_medication_name.tr(), // 🔥 ترجمة
                       prefixIcon: Icon(Icons.medication_rounded, color: theme.colorScheme.primary),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.h),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r), borderSide: BorderSide(color: Colors.grey.shade300)),
@@ -193,14 +196,14 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
 
                   Row(
                     children: [
-                      Expanded(child: _buildDateSection("From", fromDate, (date) => setState(() => fromDate = date))),
+                      Expanded(child: _buildDateSection(LocaleKeys.reminder_from.tr(), fromDate, (date) => setState(() => fromDate = date))), // 🔥 ترجمة
                       SizedBox(width: AppSpacing.h24),
-                      Expanded(child: _buildDateSection("To", toDate, (date) => setState(() => toDate = date))),
+                      Expanded(child: _buildDateSection(LocaleKeys.reminder_to.tr(), toDate, (date) => setState(() => toDate = date))), // 🔥 ترجمة
                     ],
                   ),
                   SizedBox(height: AppSpacing.v24),
 
-                  Text("Frequency", style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700)),
+                  Text(LocaleKeys.reminder_frequency.tr(), style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700)), // 🔥 ترجمة
                   SizedBox(height: AppSpacing.v12),
                   _buildFrequencyRow(theme),
                   SizedBox(height: AppSpacing.v32),
@@ -215,11 +218,11 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Reminder Settings", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                        Text(LocaleKeys.reminder_reminder_settings.tr(), style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)), // 🔥 ترجمة
                         SizedBox(height: AppSpacing.v16),
-                        _buildSwitchRow("Sound notifications", soundNotification, (val) => setState(() => soundNotification = val), theme),
+                        _buildSwitchRow(LocaleKeys.reminder_sound_notifications.tr(), soundNotification, (val) => setState(() => soundNotification = val), theme), // 🔥
                         SizedBox(height: AppSpacing.v12),
-                        _buildSwitchRow("Smart reminders", smartReminder, (val) => setState(() => smartReminder = val), theme),
+                        _buildSwitchRow(LocaleKeys.reminder_smart_reminders.tr(), smartReminder, (val) => setState(() => smartReminder = val), theme), // 🔥
                       ],
                     ),
                   ),
@@ -233,7 +236,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     );
   }
 
-  // === ويدجت مساعدة: قسم التاريخ (DD MM YY) ===
   Widget _buildDateSection(String title, DateTime? selectedDate, Function(DateTime) onPicked) {
     final theme = Theme.of(context);
     return Column(
@@ -246,6 +248,8 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
           borderRadius: BorderRadius.circular(8.r),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // 💡 إجبار الـ Row ده إنه يكون من الشمال لليمين (LTR) في الحالتين عشان التواريخ
+            textDirection: ui.TextDirection.ltr,
             children: [
               _buildDateBox(selectedDate != null ? selectedDate.day.toString().padLeft(2, '0') : "DD"),
               _buildDateBox(selectedDate != null ? selectedDate.month.toString().padLeft(2, '0') : "MM"),
@@ -257,7 +261,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     );
   }
 
-  // === ويدجت مساعدة: المربع الصغير للتاريخ ===
   Widget _buildDateBox(String text) {
     final theme = Theme.of(context);
     final bool isPlaceholder = text == "DD" || text == "MM" || text == "YY";
@@ -276,6 +279,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
       ),
       child: Text(
         text,
+        textDirection: ui.TextDirection.ltr,
         style: TextStyle(
           color: isPlaceholder ? Colors.grey.shade400 : theme.colorScheme.primary,
           fontSize: 12.sp,
@@ -285,30 +289,39 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     );
   }
 
-  // === ويدجت مساعدة: صف التردد (Frequency) ===
   Widget _buildFrequencyRow(ThemeData theme) {
+    // 💡 بنربط الكلمة بالإنجليزي (كقيمة برمجية) مع الكلمة المترجمة للـ UI
+    final Map<String, String> frequencies = {
+      'Daily': LocaleKeys.reminder_daily.tr(),
+      'Weekly': LocaleKeys.reminder_weekly.tr(),
+      'Custom': LocaleKeys.reminder_custom.tr(),
+    };
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          children: ['Daily', 'Weekly', 'Custom'].map((freq) {
-            final isSelected = selectedFrequency == freq;
+          children: frequencies.entries.map((entry) {
+            final freqKey = entry.key;   // ده اللي بيتسجل في الكود
+            final freqValue = entry.value; // ده اللي بيتعرض للمستخدم
+            final isSelected = selectedFrequency == freqKey;
+
             return GestureDetector(
               onTap: () {
-                setState(() => selectedFrequency = freq);
-                if (freq == 'Custom') {
+                setState(() => selectedFrequency = freqKey);
+                if (freqKey == 'Custom') {
                   _pickDate(context, onPicked: (date) => setState(() => customDate = date));
                 }
               },
               child: Container(
-                margin: EdgeInsets.only(right: 12.w),
+                margin: EdgeInsetsDirectional.only(end: 12.w), // 💡 دعم الـ RTL
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 decoration: BoxDecoration(
                   color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  freq,
+                  freqValue, // 🔥 الكلمة المترجمة
                   style: TextStyle(
                     color: isSelected ? Colors.white : theme.colorScheme.onSurface,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -318,7 +331,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             );
           }).toList(),
         ),
-        // كارت الـ Custom Date بيظهر بس لو اختار Custom
         if (selectedFrequency == 'Custom') ...[
           SizedBox(height: AppSpacing.v16),
           GestureDetector(
@@ -336,8 +348,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   SizedBox(width: 12.w),
                   Text(
                     customDate == null
-                        ? "Select Custom Date"
-                        : "Selected Date: ${customDate!.day}/${customDate!.month}/${customDate!.year}",
+                        ? LocaleKeys.reminder_select_custom_date.tr() // 🔥 ترجمة
+                        : LocaleKeys.reminder_selected_date.tr(namedArgs: {'date': '${customDate!.day}/${customDate!.month}/${customDate!.year}'}), // 🔥 ترجمة مع التاريخ
+                    textDirection: ui.TextDirection.ltr,
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -353,7 +366,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     );
   }
 
-  // === ويدجت مساعدة: صف الـ Switch ===
   Widget _buildSwitchRow(String title, bool value, Function(bool) onChanged, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

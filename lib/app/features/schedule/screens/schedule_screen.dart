@@ -1,6 +1,9 @@
 import 'package:avo_app/app/features/schedule/widgets/calender_section.dart';
 import 'package:avo_app/app/features/schedule/widgets/scheduale_header.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 class ScheduleScreen extends StatelessWidget {
   const ScheduleScreen({super.key});
@@ -8,9 +11,9 @@ class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
-      title: Text('Scheduale'),
-     ),
+      appBar: AppBar(
+        title: Text(LocaleKeys.schedule_title.tr()),
+      ),
       body: SafeArea(
         child: Column(
           children: [

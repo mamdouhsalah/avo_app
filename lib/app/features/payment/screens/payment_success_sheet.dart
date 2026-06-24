@@ -1,6 +1,10 @@
 import 'package:avo_app/app/features/payment/data/payment_summary_model.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui' as ui;
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class PaymentSuccessSheet extends StatelessWidget {
   const PaymentSuccessSheet({super.key});
@@ -48,12 +52,12 @@ class PaymentSuccessSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 25),
                 Text(
-                  "Payment Successful",
+                  LocaleKeys.payment_success_title.tr(), // 🔥 ترجمة العنوان
                   style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Your payment has been processed",
+                  LocaleKeys.payment_success_desc.tr(), // 🔥 ترجمة الوصف
                   style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
                 ),
                 const SizedBox(height: 40),
@@ -67,11 +71,13 @@ class PaymentSuccessSheet extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _buildRow(context, "Amount", "\$${summary.amount.toStringAsFixed(2)}"),
+                      // 🔥 خلينا المبلغ والكارت يقراوا من الشمال لليمين LTR
+                      _buildRow(context, LocaleKeys.payment_amount.tr(), "\$${summary.amount.toStringAsFixed(2)}", textDirection: ui.TextDirection.ltr),
                       const SizedBox(height: 15),
-                      _buildRow(context, "Card", summary.formattedCard),
+                      _buildRow(context, LocaleKeys.payment_card.tr(), summary.formattedCard, textDirection: ui.TextDirection.ltr,),
                       const SizedBox(height: 15),
-                      _buildRow(context, "Date", summary.formattedDate),
+                      // التاريخ بيترجم لوحده فمش محتاج LTR
+                      _buildRow(context, LocaleKeys.payment_date.tr(), summary.formattedDate),
                     ],
                   ),
                 ),
@@ -93,7 +99,7 @@ class PaymentSuccessSheet extends StatelessWidget {
                       ),
                       onPressed: () => context.pop(),
                       child: Text(
-                        "Done",
+                        LocaleKeys.general_done.tr(), // 🔥 استخدام الكلمة المشتركة
                         style: TextStyle(
                             color: theme.colorScheme.onPrimary,
                             fontSize: 16,
@@ -111,13 +117,18 @@ class PaymentSuccessSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(BuildContext context, String label, String value) {
+  // 💡 التعديل هنا: ضفنا textDirection اختياري للتحكم في الأرقام
+  Widget _buildRow(BuildContext context, String label, String value, {TextDirection? textDirection}) {
     final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
-        Text(value, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+          textDirection: textDirection, // 💡 تمرير الاتجاه
+        ),
       ],
     );
   }

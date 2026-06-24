@@ -46,7 +46,7 @@ class LoginScreen extends StatelessWidget {
             } else if (state is AuthSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(LocaleKeys.shared_done.tr()),
+                  content: Text(LocaleKeys.general_done.tr()),
                   backgroundColor: colorScheme.primary,
                 ),
               );

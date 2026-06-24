@@ -1,26 +1,38 @@
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class CalendarSection extends StatelessWidget {
   const CalendarSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = context.locale.languageCode == 'ar';
     return Column(
       children: [
-        /// Month + Arrows
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Icon(Icons.chevron_left),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // سهم الرجوع (يقلب في العربي)
+            Transform.flip(
+              flipX: isRtl,
+              child: const Icon(Icons.chevron_left),
+            ),
             Column(
               children: [
-                Text("January",
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text("2024", style: TextStyle(color: Colors.grey)),
+                Text(
+                  LocaleKeys.schedule_january.tr(),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const Text("2024", style: TextStyle(color: Colors.grey)),
               ],
             ),
-            Icon(Icons.chevron_right),
+            // سهم التقدم (يقلب في العربي)
+            Transform.flip(
+              flipX: isRtl,
+              child: const Icon(Icons.chevron_right),
+            ),
           ],
         ),
 

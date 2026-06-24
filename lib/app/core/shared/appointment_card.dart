@@ -17,7 +17,8 @@ class AppointmentCard extends StatelessWidget {
     return Container(
       width: 252.w,
       height: 158.h,
-      margin: EdgeInsets.only(right: 33.w),
+      // 🔥 استخدمنا EdgeInsetsDirectional عشان الـ end يقلب أوتوماتيك مع العربي
+      margin: EdgeInsetsDirectional.only(end: 33.w),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
@@ -32,8 +33,8 @@ class AppointmentCard extends StatelessWidget {
               Container(
                 width: 55.r,
                 height: 55.r,
-                padding: const EdgeInsets.all(0), 
-                               decoration: BoxDecoration(
+                padding: const EdgeInsets.all(0),
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: theme.colorScheme.surface,
@@ -90,7 +91,8 @@ class AppointmentCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                padding: EdgeInsets.only(left: 30.w),
+                // 🔥 استخدمنا EdgeInsetsDirectional عشان الـ start يقلب أوتوماتيك مع العربي
+                padding: EdgeInsetsDirectional.only(start: 30.w),
                 onPressed: () {},
                 icon: Icon(
                   Icons.more_vert,

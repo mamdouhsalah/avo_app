@@ -1,3 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
+import '../../../core/Language/locale_keys.g.dart';
+
 class PaymentSummary {
   final double amount;
   final String cardType;
@@ -11,17 +14,12 @@ class PaymentSummary {
     required this.date,
   });
 
-  String get formattedCard => "$cardType **** $lastFourDigits";
+  String get formattedCard => LocaleKeys.payment_formatted_card.tr(namedArgs: {
+    'cardType': cardType,
+    'digits': lastFourDigits,
+  });
 
   String get formattedDate {
-    return "${_getMonthName(date.month)} ${date.day.toString().padLeft(2, '0')}, ${date.year}";
-  }
-
-  String _getMonthName(int month) {
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    return months[month - 1];
+    return DateFormat('MMM dd, yyyy').format(date);
   }
 }

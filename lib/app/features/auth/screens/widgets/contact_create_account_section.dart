@@ -94,7 +94,7 @@ class _ContactCreateAccountSectionState
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          LocaleKeys.auth_male.tr(),
+                          LocaleKeys.auth_malee.tr(),
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
@@ -142,7 +142,7 @@ class _ContactCreateAccountSectionState
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          LocaleKeys.auth_female.tr(),
+                          LocaleKeys.auth_femalee.tr(),
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,

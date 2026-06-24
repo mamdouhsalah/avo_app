@@ -4,6 +4,7 @@ import 'package:avo_app/app/features/home/logic/home_state.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avo_app/app/core/shared/appointment_card.dart';
 import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
@@ -14,6 +15,9 @@ import 'package:avo_app/app/core/shared/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -74,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         floating: true,
                         elevation: 0,
                         title: Text(
-                          "Home",
+                          LocaleKeys.home_title.tr(),
                           style: TextStyle(
                             fontSize: 24.sp,
                             fontWeight: FontWeight.bold,
@@ -117,34 +121,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: ClipOval(
                                       child: user.image != null &&
-                                              user.image!.isNotEmpty
+                                          user.image!.isNotEmpty
                                           ? (user.image!.startsWith('http')
-                                              ? Image.network(
-                                                  user.image!,
-                                                  width: 55.r,
-                                                  height: 55.r,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      Icon(Icons.person,
-                                                          size: 30.r),
-                                                )
-                                              : Image.asset(
-                                                  user.image!,
-                                                  width: 55.r,
-                                                  height: 55.r,
-                                                  fit: BoxFit.cover,
-                                                ))
+                                          ? Image.network(
+                                        user.image!,
+                                        width: 55.r,
+                                        height: 55.r,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error,
+                                            stackTrace) =>
+                                            Icon(Icons.person,
+                                                size: 30.r),
+                                      )
+                                          : Image.asset(
+                                        user.image!,
+                                        width: 55.r,
+                                        height: 55.r,
+                                        fit: BoxFit.cover,
+                                      ))
                                           : Icon(Icons.person, size: 30.r),
                                     ),
                                   ),
                                   SizedBox(width: 8.w),
                                   Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Welcome",
+                                        LocaleKeys.home_welcome.tr(),
                                         style: TextStyle(
                                           fontSize: 12.sp,
                                           color: Theme.of(context)
@@ -190,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .outlineVariant,
                                     ),
                                     color:
-                                        Theme.of(context).colorScheme.surface,
+                                    Theme.of(context).colorScheme.surface,
                                     borderRadius: BorderRadius.circular(12.r),
                                   ),
                                   child: Row(
@@ -203,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       SizedBox(width: 10.w),
                                       Expanded(
                                         child: Text(
-                                          "Search",
+                                          LocaleKeys.general_search.tr(),
                                           style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -223,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               SizedBox(height: 25.h),
                               SectionHeader(
-                                title: 'Upcoming Appointments',
+                                title: LocaleKeys.home_upcoming_appointments.tr(),
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
@@ -231,29 +235,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 158.h,
                                 child: state.appointments.isEmpty
                                     ? Center(
-                                        child: Text(
-                                          "No upcoming appointments",
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .outline,
-                                            fontSize: 13.sp,
-                                          ),
-                                        ),
-                                      )
+                                  child: Text(
+                                    LocaleKeys.home_no_upcoming_appointments.tr(),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .outline,
+                                      fontSize: 13.sp,
+                                    ),
+                                  ),
+                                )
                                     : ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: state.appointments.length,
-                                        itemBuilder: (_, i) {
-                                          return AppointmentCard(
-                                            appointment: state.appointments[i],
-                                          );
-                                        },
-                                      ),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.appointments.length,
+                                  itemBuilder: (_, i) {
+                                    return AppointmentCard(
+                                      appointment: state.appointments[i],
+                                    );
+                                  },
+                                ),
                               ),
                               SizedBox(height: 24.h),
                               SectionHeader(
-                                title: "Upcoming Medicine",
+                                title: LocaleKeys.home_upcoming_medicine.tr(),
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
@@ -261,120 +265,120 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 200.h,
                                 child: state.medicines.isEmpty
                                     ? Center(
-                                        child: Text(
-                                          "No medicines scheduled",
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .outline,
-                                            fontSize: 13.sp,
-                                          ),
-                                        ),
-                                      )
+                                  child: Text(
+                                    LocaleKeys.home_no_medicines_scheduled.tr(),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .outline,
+                                      fontSize: 13.sp,
+                                    ),
+                                  ),
+                                )
                                     : ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: state.medicines.length,
-                                        itemBuilder: (_, i) {
-                                          return MedicineCard(
-                                            medicine: state.medicines[i],
-                                          );
-                                        },
-                                      ),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.medicines.length,
+                                  itemBuilder: (_, i) {
+                                    return MedicineCard(
+                                      medicine: state.medicines[i],
+                                    );
+                                  },
+                                ),
                               ),
                               SizedBox(height: 24.h),
                               SectionHeader(
-                                title: 'Categories',
+                                title: LocaleKeys.home_categories.tr(),
                                 routePath: AppRouter.search,
                               ),
                               state.categories.isEmpty
                                   ? Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 20.h),
-                                      child: Center(
-                                        child: Text("No categories available"),
-                                      ),
-                                    )
+                                padding:
+                                EdgeInsets.symmetric(vertical: 20.h),
+                                child: Center(
+                                  child: Text(LocaleKeys.home_no_categories.tr()),
+                                ),
+                              )
                                   : GridView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      padding: EdgeInsets.only(top: 16.h),
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4,
-                                        mainAxisSpacing: 16.h,
-                                        crossAxisSpacing: 19.w,
-                                      ),
-                                      itemCount: state.categories.length > 8
-                                          ? 8
-                                          : state.categories.length,
-                                      itemBuilder: (_, index) {
-                                        return CategoryItem(
-                                          category: state.categories[index],
-                                          isSelected:
-                                              selectedCategoryIndex == index,
-                                          onTap: () {
-                                            setState(() {
-                                              selectedCategoryIndex = index;
-                                            });
-                                          },
-                                          onDoubleTap: () {
-                                            setState(() {
-                                              selectedCategoryIndex = -1;
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ),
+                                shrinkWrap: true,
+                                physics:
+                                const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.only(top: 16.h),
+                                gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  mainAxisSpacing: 16.h,
+                                  crossAxisSpacing: 19.w,
+                                ),
+                                itemCount: state.categories.length > 8
+                                    ? 8
+                                    : state.categories.length,
+                                itemBuilder: (_, index) {
+                                  return CategoryItem(
+                                    category: state.categories[index],
+                                    isSelected:
+                                    selectedCategoryIndex == index,
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategoryIndex = index;
+                                      });
+                                    },
+                                    onDoubleTap: () {
+                                      setState(() {
+                                        selectedCategoryIndex = -1;
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
                               SizedBox(height: 24.h),
                               SectionHeader(
-                                title: "Best Doctors",
+                                title: LocaleKeys.home_best_doctors.tr(),
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
                               state.bestDoctors.isEmpty
                                   ? Center(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 20.h),
-                                        child: Text("No doctors available"),
-                                      ),
-                                    )
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 20.h),
+                                  child: Text(LocaleKeys.home_no_doctors.tr()),
+                                ),
+                              )
                                   : Column(
-                                      children: state.bestDoctors.map((doc) {
-                                        return BestDoctorCard(
-                                          key: ValueKey(doc.id),
-                                          doctor: doc,
-                                          onFavoriteToggle: () {},
-                                          onBook: () {},
-                                        );
-                                      }).toList(),
-                                    ),
+                                children: state.bestDoctors.map((doc) {
+                                  return BestDoctorCard(
+                                    key: ValueKey(doc.id),
+                                    doctor: doc,
+                                    onFavoriteToggle: () {},
+                                    onBook: () {},
+                                  );
+                                }).toList(),
+                              ),
                               SizedBox(height: 16.h),
                               SectionHeader(
-                                title: "Best Pharmacies",
+                                title: LocaleKeys.home_best_pharmacies.tr(),
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
                               state.bestPharmacies.isEmpty
                                   ? Center(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 20.h),
-                                        child: Text("No pharmacies available"),
-                                      ),
-                                    )
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 20.h),
+                                  child: Text(LocaleKeys.home_no_pharmacies.tr()),
+                                ),
+                              )
                                   : Column(
-                                      children:
-                                          state.bestPharmacies.map((pharmacy) {
-                                        return BestPharmacyCard(
-                                          key: ValueKey(pharmacy.id),
-                                          pharmacy: pharmacy,
-                                          onTap: () {},
-                                          onFavoriteToggle: () {},
-                                        );
-                                      }).toList(),
-                                    ),
+                                children:
+                                state.bestPharmacies.map((pharmacy) {
+                                  return BestPharmacyCard(
+                                    key: ValueKey(pharmacy.id),
+                                    pharmacy: pharmacy,
+                                    onTap: () {},
+                                    onFavoriteToggle: () {},
+                                  );
+                                }).toList(),
+                              ),
                               SizedBox(height: 100.h),
                             ],
                           ),
@@ -383,11 +387,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                AnimatedPositioned(
+                // 🔥 التعديل السحري للـ RTL زي الداشبورد بالظبط
+                AnimatedPositionedDirectional(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                   bottom: 100.h,
-                  right: isVisible ? 16.w : -50.w,
+                  end: isVisible ? 16.w : -50.w, // 🔥 استخدام end بدل right
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 400),
                     opacity: isVisible ? 1 : 0.8,
