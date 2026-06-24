@@ -34,48 +34,48 @@ class MyApp extends StatelessWidget {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) {
+      builder: (screenUtilContext, child) {
         return DevicePreview(
           enabled: false,
-          builder: (context) => MultiProvider(
+          builder: (devicePreviewContext) => MultiProvider(
             providers: [
               Provider<FirebaseConsumer>.value(value: firebaseConsumer),
               Provider<HomeRepository>(
-                create: (context) => HomeRepositoryImpl(
-                  consumer: context.read<FirebaseConsumer>(),
+                create: (providerContext) => HomeRepositoryImpl(
+                  consumer: providerContext.read<FirebaseConsumer>(),
                 ),
               ),
               Provider<AuthRepository>(
-                create: (context) => AuthRepositoryImpl(
-                  consumer: context.read<FirebaseConsumer>(),
+                create: (providerContext) => AuthRepositoryImpl(
+                  consumer: providerContext.read<FirebaseConsumer>(),
                 ),
               ),
               Provider<ProfileRepository>(
-                create: (context) => ProfileRepositoryImpl(
-                  consumer: context.read<FirebaseConsumer>(),
+                create: (providerContext) => ProfileRepositoryImpl(
+                  consumer: providerContext.read<FirebaseConsumer>(),
                 ),
               ),
               Provider<AdminRepository>(
                 create: (context) => AdminRepositoryImpl(),
               ),
               BlocProvider<HomeCubit>(
-                create: (context) => HomeCubit(
-                  repository: context.read<HomeRepository>(),
+                create: (providerContext) => HomeCubit(
+                  repository: providerContext.read<HomeRepository>(),
                 )..loadDashboard('1'),
               ),
               BlocProvider<AuthCubit>(
-                create: (context) => AuthCubit(
-                  repository: context.read<AuthRepository>(),
+                create: (providerContext) => AuthCubit(
+                  repository: providerContext.read<AuthRepository>(),
                 ),
               ),
               BlocProvider<ProfileCubit>(
-                create: (context) => ProfileCubit(
-                  context.read<ProfileRepository>(),
+                create: (providerContext) => ProfileCubit(
+                  providerContext.read<ProfileRepository>(),
                 )..getProfile(),
               ),
               BlocProvider<SplashCubit>(
-                create: (context) => SplashCubit(
-                  repository: context.read<AuthRepository>(),
+                create: (providerContext) => SplashCubit(
+                  repository: providerContext.read<AuthRepository>(),
                 ),
               ),
               BlocProvider<AdminCubit>(
@@ -87,13 +87,22 @@ class MyApp extends StatelessWidget {
                 create: (context) => ThemeCubit(),
               ),
             ],
+            // 🔥 دمجنا الـ BlocBuilder للـ Theme مع حماية الـ EasyLocalization
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
+                final isLocalizationInitialized = EasyLocalization.of(context) != null;
+                
                 return MaterialApp.router(
                   // --- إعدادات اللغات بتاعتك ---
-                  localizationsDelegates: context.localizationDelegates,
-                  supportedLocales: context.supportedLocales,
-                  locale: context.locale,
+                  localizationsDelegates: isLocalizationInitialized
+                      ? context.localizationDelegates
+                      : null,
+                  supportedLocales: isLocalizationInitialized
+                      ? context.supportedLocales
+                      : const [Locale('en')],
+                  locale: isLocalizationInitialized
+                      ? context.locale
+                      : const Locale('en'),
 
                   debugShowCheckedModeBanner: false,
                   title: AppStrings.appName,

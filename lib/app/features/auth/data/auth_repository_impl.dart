@@ -54,14 +54,14 @@ class AuthRepositoryImpl implements AuthRepository {
       userData['image'] = imageUrl;
 
       await _consumer.set('users/$uid', data: userData);
-      final isVerified = credential.user?.emailVerified ?? false;
+      final user = credential.user;
+      if (user == null) {
+        throw DatabaseException('User not found after registration', 'user-not-found');
+      }
+      final isVerified = user.emailVerified;
 
       if (!isVerified) {
-        try {
-          await _firebaseAuth.currentUser!.sendEmailVerification();
-        } catch (e) {
-          log("Email verification failed: $e");
-        }
+        await user.sendEmailVerification();
       }
 
       return UserProfileModel(
@@ -99,13 +99,14 @@ class AuthRepositoryImpl implements AuthRepository {
         fromJson: (json) => UserProfileModel.fromJson(json, id: uid),
       );
 
-      final isEmailVerified = _firebaseAuth.currentUser!.emailVerified;
-      if (!isEmailVerified) {
-        try {
-          await _firebaseAuth.currentUser!.sendEmailVerification();
-        } catch (e) {
-          log("Email verification failed: $e");
-        }
+      final user = credential.user;
+      if (user == null) {
+        throw DatabaseException('User not found after login', 'user-not-found');
+      }
+      final isVerified = user.emailVerified;
+
+      if (!isVerified) {
+        await user.sendEmailVerification();
       }
 
       final isAdminVerified = userProfile.isVerified == true || userProfile.role == 'admin';
@@ -131,87 +132,21 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthResponseModel> logout() async {
+  Future<void> logout() async {
     try {
       await _firebaseAuth.signOut();
-      return AuthResponseModel(
-          id: '',
-          email: '',
-          fullName: '',
-          token: '',
-          role: '',
-          gender: '',
-          expiresIn: 0);
     } catch (e) {
       throw DatabaseException(e.toString(), 'logout-failed');
     }
   }
 
   @override
-  Future<AuthResponseModel> forgetPassword(String email) async {
+  Future<void> forgetPassword(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
-      return AuthResponseModel(
-          id: '',
-          email: email,
-          fullName: '',
-          token: '',
-          role: '',
-          gender: '',
-          expiresIn: 0);
     } catch (e) {
       throw DatabaseException(e.toString(), 'password-reset-failed');
     }
-  }
-
-  @override
-  Future<AuthResponseModel> verifyCode(String code, String email) async {
-    return AuthResponseModel(
-        id: '',
-        email: email,
-        fullName: '',
-        token: '',
-        role: '',
-        gender: '',
-        expiresIn: 0);
-  }
-
-  @override
-  Future<AuthResponseModel> resetPassword(
-      String password, String confirmPassword, String token) async {
-    return AuthResponseModel(
-        id: '',
-        email: '',
-        fullName: '',
-        token: '',
-        role: '',
-        gender: '',
-        expiresIn: 0);
-  }
-
-  @override
-  Future<AuthResponseModel> changePassword(
-      String password, String confirmPassword, String token) async {
-    return AuthResponseModel(
-        id: '',
-        email: '',
-        fullName: '',
-        token: '',
-        role: '',
-        gender: '',
-        expiresIn: 0);
-  }
-
-  @override
-  Future<AuthResponseModel> verifyEmail(String email) async {
-    return AuthResponseModel(
-        id: '',
-        email: email,
-        fullName: '',
-        token: '',
-        role: '',
-        gender: '',
-        expiresIn: 0);
   }
 
   @override
