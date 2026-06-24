@@ -2,6 +2,10 @@ import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
+import 'package:avo_app/app/core/theme/theme_cubit.dart';
+import 'package:avo_app/app/features/admin/data/admin_repository.dart';
+import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
+import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
 import 'package:avo_app/app/features/home/data/home_repository.dart';
 import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
@@ -51,6 +55,9 @@ class MyApp extends StatelessWidget {
                   consumer: context.read<FirebaseConsumer>(),
                 ),
               ),
+              Provider<AdminRepository>(
+                create: (context) => AdminRepositoryImpl(),
+              ),
               BlocProvider<HomeCubit>(
                 create: (context) => HomeCubit(
                   repository: context.read<HomeRepository>(),
@@ -71,23 +78,35 @@ class MyApp extends StatelessWidget {
                   repository: context.read<AuthRepository>(),
                 ),
               ),
+              BlocProvider<AdminCubit>(
+                create: (context) => AdminCubit(
+                  repository: context.read<AdminRepository>(),
+                ),
+              ),
+              BlocProvider<ThemeCubit>(
+                create: (context) => ThemeCubit(),
+              ),
             ],
-            child: MaterialApp.router(
-              // --- إعدادات اللغات بتاعتك ---
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
+            child: BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, themeMode) {
+                return MaterialApp.router(
+                  // --- إعدادات اللغات بتاعتك ---
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  locale: context.locale,
 
-              debugShowCheckedModeBanner: false,
-              title: AppStrings.appName,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.system,
+                  debugShowCheckedModeBanner: false,
+                  title: AppStrings.appName,
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode: themeMode,
 
-              // --- شاشة البداية ---
-              routerConfig: AppRouter.router,
+                  // --- شاشة البداية ---
+                  routerConfig: AppRouter.router,
 
-              builder: DevicePreview.appBuilder,
+                  builder: DevicePreview.appBuilder,
+                );
+              },
             ),
           ),
         );

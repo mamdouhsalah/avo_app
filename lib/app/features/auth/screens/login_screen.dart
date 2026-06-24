@@ -54,6 +54,8 @@ class LoginScreen extends StatelessWidget {
                 context.pushReplacement(AppRouter.home);
               } else if (state.response.role == UserRole.doctor) {
                 context.pushReplacement(AppRouter.dashboard);
+              } else if (state.response.role == UserRole.admin) {
+                context.pushReplacement(AppRouter.adminDashboard);
               } else if (state.response.role == UserRole.radiologySpecialist) {
                 // TODO when radiologist exist
               } else if (state.response.role == UserRole.pharmacySpecialist) {
