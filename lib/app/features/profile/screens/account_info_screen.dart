@@ -1,9 +1,14 @@
+import 'dart:ui' as ui;
+
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class AccountInfoScreen extends StatefulWidget {
   const AccountInfoScreen({super.key});
@@ -26,12 +31,16 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new,
-              color: theme.colorScheme.onSurface),
+          // 🔥 قلب السهم في حالة اللغة العربية
+          icon: Transform.flip(
+            flipX: context.locale.languageCode == 'ar',
+            child: Icon(Icons.arrow_back_ios_new,
+                color: theme.colorScheme.onSurface),
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Account Info',
+          LocaleKeys.account_info_title.tr(), // 🔥 ترجمة العنوان
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -49,8 +58,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
             );
           } else if (state is ProfileSuccess && isEditMode) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account information updated successfully'),
+              SnackBar(
+                content: Text(LocaleKeys.account_info_update_success.tr()), // 🔥 ترجمة رسالة النجاح
                 backgroundColor: Colors.green,
               ),
             );
@@ -71,18 +80,19 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   children: [
                     _buildTextField(
                       context,
-                      label: 'Full Name',
+                      label: LocaleKeys.account_info_full_name.tr(), // 🔥 ترجمة الاسم
                       controller: cubit.fullNameController,
                       enabled: isEditMode,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
                       context,
-                      label: 'Phone',
+                      label: LocaleKeys.account_info_phone.tr(), // 🔥 ترجمة التليفون
                       controller: cubit.phoneController,
                       enabled: isEditMode,
                       keyboardType: TextInputType.phone,
-                    ),
+                      // 🔥 يفضل نخلي أرقام التليفون تقرأ من الشمال لليمين دايماً
+                      textDirection: ui.TextDirection.ltr,                    ),
                   ],
                 ),
               ),
@@ -119,7 +129,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   elevation: 0,
                 ),
                 child: Text(
-                  isEditMode ? 'Save' : 'Edit',
+                  // 🔥 استخدام الكلمات المشتركة
+                  isEditMode ? LocaleKeys.general_save.tr() : LocaleKeys.general_edit.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -136,13 +147,15 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     );
   }
 
+  // 💡 ضفنا TextDirection للتحكم في الحقول اللي بتحتوي على أرقام زي التليفون
   Widget _buildTextField(
-    BuildContext context, {
-    required String label,
-    required TextEditingController controller,
-    required bool enabled,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+      BuildContext context, {
+        required String label,
+        required TextEditingController controller,
+        required bool enabled,
+        TextInputType keyboardType = TextInputType.text,
+        TextDirection? textDirection,
+      }) {
     final theme = Theme.of(context);
 
     return Column(
@@ -159,6 +172,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
           controller: controller,
           enabled: enabled,
           keyboardType: keyboardType,
+          textDirection: textDirection, // 💡 تمرير الاتجاه
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontSize: 16.sp,

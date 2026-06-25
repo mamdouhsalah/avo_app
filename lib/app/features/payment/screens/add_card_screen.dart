@@ -1,6 +1,9 @@
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 class AddCardScreen extends StatefulWidget {
   final Function(PaymentCardModel) onCardAdded;
@@ -36,11 +39,15 @@ class _AddCardScreenState extends State<AddCardScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => context.pop(),
+          icon: Transform.flip(
+            // لو اللغة عربي (ar) اقلب الأيقونة، لو إنجليزي سيبها زي ما هي
+            flipX: context.locale.languageCode == 'ar',
+            child: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+          ),
         ),
         title: Text(
-          "Add Card",
+          LocaleKeys.payment_add_card_title.tr(), // 🔥 ترجمة
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -51,12 +58,12 @@ class _AddCardScreenState extends State<AddCardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            Text("Name on card", style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+            Text(LocaleKeys.payment_name_on_card.tr(), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)), // 🔥 ترجمة
             const SizedBox(height: 8),
-            _buildTextField(context, controller: nameController, hint: "Enter name on card"),
+            _buildTextField(context, controller: nameController, hint: LocaleKeys.payment_name_hint.tr()), // 🔥 ترجمة
 
             const SizedBox(height: 20),
-            Text("Number on card", style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+            Text(LocaleKeys.payment_number_on_card.tr(), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)), // 🔥 ترجمة
             const SizedBox(height: 8),
             _buildTextField(
               context,
@@ -74,7 +81,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Expiry", style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+                      Text(LocaleKeys.payment_expiry.tr(), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)), // 🔥 ترجمة
                       const SizedBox(height: 8),
                       _buildTextField(context, controller: expiryController, hint: "MM / YY"),
                     ],
@@ -85,7 +92,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("CVV", style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+                      Text(LocaleKeys.payment_cvv.tr(), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)), // 🔥 ترجمة
                       const SizedBox(height: 8),
                       _buildTextField(context, controller: cvvController, hint: "000", isNumber: true, isObscure: true),
                     ],
@@ -95,7 +102,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
             ),
 
             const SizedBox(height: 25),
-            Text("Select Card Color", style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+            Text(LocaleKeys.payment_select_color.tr(), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)), // 🔥 ترجمة
             const SizedBox(height: 12),
             Row(
               children: availableColors.map((color) {
@@ -103,7 +110,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 return GestureDetector(
                   onTap: () => setState(() => selectedColor = color),
                   child: Container(
-                    margin: const EdgeInsets.only(right: 15),
+                    // 🔥 التعديل السحري لضبط المسافات في الـ RTL
+                    margin: const EdgeInsetsDirectional.only(end: 15),
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -138,13 +146,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
                       holderName: nameController.text,
                       isFront: true,
                     );
-                    widget.onCardAdded(newCard); // هنا بنبعت الكارت للشاشة الرئيسية
+                    widget.onCardAdded(newCard);
                     context.pop();
                   }
                 },
-                child: const Text(
-                  "Add Card",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                child: Text(
+                  LocaleKeys.payment_add_card_title.tr(), // 🔥 ترجمة
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),

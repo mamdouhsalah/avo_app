@@ -1,9 +1,13 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
 import 'package:avo_app/app/features/payment/screens/payment_success_sheet.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -45,11 +49,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color, size: 20),
           onPressed: () => context.pop(),
+          icon: Transform.flip(
+            flipX: context.locale.languageCode == 'ar',
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: theme.iconTheme.color,
+              size: 20,
+            ),
+          ),
         ),
         title: Text(
-          "Checkout",
+          LocaleKeys.payment_checkout.tr(), // 🔥 ترجمة
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -64,7 +75,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Your Cards",
+                    LocaleKeys.payment_your_cards.tr(), // 🔥 ترجمة
                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   TextButton.icon(
@@ -80,7 +91,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     },
                     icon: Icon(Icons.add, size: 18, color: theme.colorScheme.primary),
                     label: Text(
-                      "Add Card",
+                      LocaleKeys.payment_add_card.tr(), // 🔥 ترجمة
                       style: TextStyle(color: theme.colorScheme.primary),
                     ),
                   ),
@@ -158,13 +169,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
-                "Other Methods",
+                LocaleKeys.payment_other_methods.tr(), // 🔥 ترجمة
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            buildPaymentOption(context, "PayPal", "dailyflutterui@example.com", Icons.paypal, Colors.blue),
-            buildPaymentOption(context, "Apple Pay", "Connected", Icons.apple, theme.iconTheme.color!),
-            buildPaymentOption(context, "Bank Transfer", "085 - **** - 222", Icons.account_balance, theme.iconTheme.color!),
+            buildPaymentOption(context, LocaleKeys.payment_paypal.tr(), "dailyflutterui@example.com", Icons.paypal, Colors.blue), // 🔥 ترجمة
+            buildPaymentOption(context, LocaleKeys.payment_apple_pay.tr(), LocaleKeys.payment_connected.tr(), Icons.apple, theme.iconTheme.color!), // 🔥 ترجمة
+            buildPaymentOption(context, LocaleKeys.payment_bank_transfer.tr(), "085 - **** - 222", Icons.account_balance, theme.iconTheme.color!), // 🔥 ترجمة
             const SizedBox(height: 100),
           ],
         ),
@@ -201,14 +212,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Balance", style: TextStyle(color: Colors.white70, fontSize: 12)),
+              Text(LocaleKeys.payment_balance.tr(), style: const TextStyle(color: Colors.white70, fontSize: 12)), // 🔥 ترجمة
               Text(
                 balance,
+                // 🔥 تأكيد اتجاه الأرقام من الشمال لليمين حتى في العربي
+                textDirection: ui.TextDirection.ltr,
                 style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          Text(cardNumber, style: const TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 2)),
+          Text(
+              cardNumber,
+              textDirection: ui.TextDirection.ltr,
+              style: const TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 2)
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -241,8 +258,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: Container(
               height: 35,
               color: Colors.white70,
-              alignment: Alignment.centerRight,
-              child: const Text("CVV 123 ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+              alignment: Alignment.centerRight, // 💡 خليناها يمين عشان الـ CVV دايماً يمين
+              child: const Text("CVV 123 ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black), textDirection: ui.TextDirection.ltr),
             ),
           ),
         ],
@@ -283,7 +300,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor)),
+                  Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor), textDirection: ui.TextDirection.ltr), // 🔥
                 ],
               ),
             ),
@@ -319,34 +336,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total Price", style: TextStyle(color: theme.hintColor)),
+              Text(LocaleKeys.payment_total_price.tr(), style: TextStyle(color: theme.hintColor)), // 🔥 ترجمة
               Text(
                 "\$249.00",
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                textDirection: ui.TextDirection.ltr, // 🔥
               ),
             ],
           ),
 
-          const SizedBox(width: 20), // 🔥 مسافة أمان بين السعر والزرار
+          const SizedBox(width: 20),
 
-          // 🔥 غلفنا الزرار بـ Expanded عشان نمنع تمدده لما لا نهاية ويضرب الشاشة
           Expanded(
             child: ElevatedButton(
               onPressed: () {
-                // بنشغل نافذة التأكيد قبل ما نفتح شيت النجاح
                 _showConfirmationDialog(context);
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(0, 50), // 🔥 السطر ده بيحل التعارض مع الثيم
+                minimumSize: const Size(0, 50),
                 backgroundColor: theme.colorScheme.primary,
-                // 🔥 شيلنا الـ horizontal padding عشان الـ Expanded هيقوم بالواجب
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
               child: Text(
-                "Pay Now \u2192",
+                LocaleKeys.payment_pay_now.tr(), // 🔥 ترجمة زر الدفع وسهمه
                 style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 16),
               ),
             ),
@@ -356,7 +371,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  // الديالوج اللي كان عامله عبد الرحمن وربطناه هنا بالثيم بتاعنا
   void _showConfirmationDialog(BuildContext context) {
     final theme = Theme.of(context);
     showDialog(
@@ -365,12 +379,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         return AlertDialog(
           backgroundColor: theme.scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text("Confirm Payment", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-          content: Text("Are you sure you want to pay \$249.00?", style: theme.textTheme.bodyMedium),
+          title: Text(LocaleKeys.payment_confirm_payment.tr(), style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)), // 🔥
+          content: Text(
+              LocaleKeys.payment_confirm_msg.tr(namedArgs: {'amount': '\$249.00'}), // 🔥 ترجمة مع تمرير المبلغ
+              style: theme.textTheme.bodyMedium
+          ),
           actions: [
             TextButton(
               onPressed: () => context.pop(),
-              child: Text("Cancel", style: TextStyle(color: theme.hintColor)),
+              child: Text(LocaleKeys.general_cancel.tr(), style: TextStyle(color: theme.hintColor)), // 🔥 المشترك
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -378,10 +395,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () {
-                context.pop(); // اقفل الديالوج
-                _showSuccessSheet(context); // افتح شيت النجاح
+                context.pop();
+                _showSuccessSheet(context);
               },
-              child: Text("Confirm", style: TextStyle(color: theme.colorScheme.onPrimary)),
+              child: Text(LocaleKeys.payment_confirm.tr(), style: TextStyle(color: theme.colorScheme.onPrimary)), // 🔥 ترجمة
             ),
           ],
         );

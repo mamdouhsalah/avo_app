@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepository repository;
@@ -27,7 +30,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (uid.isEmpty) {
-        emit(ProfileFailure('User not authenticated'));
+        emit(ProfileFailure(LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
         return;
       }
       final profile = await repository.getProfile(uid);
@@ -57,7 +60,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (uid.isEmpty) {
-        emit(ProfileFailure('User not authenticated'));
+        emit(ProfileFailure(LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
         return;
       }
 
@@ -84,7 +87,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (uid.isEmpty) {
-        emit(ProfileFailure('User not authenticated'));
+        emit(ProfileFailure(LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
         return;
       }
 

@@ -2,9 +2,12 @@ import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/call_message_chat_row.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
 
 class SelectedAppointmentCard extends StatelessWidget {
   final Appointment appointment;
@@ -21,12 +24,12 @@ class SelectedAppointmentCard extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.only(left: 24.0.w),
+        padding: EdgeInsetsDirectional.only(start: 24.0.w),
         child: SizedBox(
           height: 420.h,
           child: Container(
               width: 430.w,
-              margin: EdgeInsets.only(right: 33.w),
+              margin: EdgeInsetsDirectional.only(end: 33.w),
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
@@ -35,7 +38,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                   BoxShadow(
                       color: colorScheme.onSurface.withValues(alpha: .1),
                       blurRadius: 5.r,
-                      offset: Offset(0, 1),
+                      offset: const Offset(0, 1),
                       spreadRadius: 1.r),
                 ],
               ),
@@ -148,7 +151,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Selected Date',
+                          LocaleKeys.appointment_selected_date.tr(),
                           style: TextStyle(
                               color: colorScheme.onSurface,
                               fontSize: 16.sp,
@@ -171,7 +174,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Selected Time',
+                          LocaleKeys.appointment_selected_time.tr(),
                           style: TextStyle(
                               color: colorScheme.onSurface,
                               fontSize: 16.sp,
@@ -190,17 +193,16 @@ class SelectedAppointmentCard extends StatelessWidget {
                     SizedBox(height: 24.h),
 
                     /// button
-
                     MainButton(
-                        text: "Cancel Appointment",
+                        text: LocaleKeys.appointment_cancel_appointment.tr(),
                         onPressed: () {},
                         width: 343,
                         height: 48)
                   ],
                 ),
-                Positioned(
+                PositionedDirectional(
                   top: 0,
-                  right: 0,
+                  end: 0,
                   child: Row(
                     children: [
                       /// rating

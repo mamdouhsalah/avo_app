@@ -4,8 +4,12 @@ import 'package:avo_app/app/features/home/logic/home_state.dart';
 import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
+
 
 class CatogeryScreen extends StatefulWidget {
   const CatogeryScreen({super.key});
@@ -49,7 +53,7 @@ class _CatogeryScreenState extends State<CatogeryScreen> {
                 color: Theme.of(context).colorScheme.outlineVariant,
               ),
               title: Text(
-                "Categories",
+                LocaleKeys.category_title.tr(),
                 style: TextStyle(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -60,25 +64,25 @@ class _CatogeryScreenState extends State<CatogeryScreen> {
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
               child: state.categories.isEmpty
-                  ? const Center(child: Text("No categories available"))
+                  ? Center(child: Text(LocaleKeys.category_no_categories.tr()))
                   : GridView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        mainAxisSpacing: 16.h,
-                        crossAxisSpacing: 18.w,
-                        childAspectRatio: 1,
-                      ),
-                      itemCount: state.categories.length,
-                      itemBuilder: (_, index) {
-                        return CategoryItem(
-                          category: state.categories[index],
-                          isSelected: _selectedCategoryIndex == index,
-                          onTap: () => setState(() => _selectedCategoryIndex = index),
-                          onDoubleTap: () => setState(() => _selectedCategoryIndex = -1),
-                        );
-                      },
-                    ),
+                physics: const BouncingScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 16.h,
+                  crossAxisSpacing: 18.w,
+                  childAspectRatio: 1,
+                ),
+                itemCount: state.categories.length,
+                itemBuilder: (_, index) {
+                  return CategoryItem(
+                    category: state.categories[index],
+                    isSelected: _selectedCategoryIndex == index,
+                    onTap: () => setState(() => _selectedCategoryIndex = index),
+                    onDoubleTap: () => setState(() => _selectedCategoryIndex = -1),
+                  );
+                },
+              ),
             ),
           );
         }

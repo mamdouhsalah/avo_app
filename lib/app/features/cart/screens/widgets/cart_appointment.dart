@@ -1,13 +1,16 @@
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
 
 class CartAppointment extends StatelessWidget {
   final Appointment appointment;
   const CartAppointment({super.key , required this.appointment});
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -19,13 +22,13 @@ class CartAppointment extends StatelessWidget {
           height: 170.h,
           child: Container(
               width: 343.w,
-              margin: EdgeInsets.only(right: 33.w),
+              margin: EdgeInsetsDirectional.only(end: 33.w),
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(color: colorScheme.primary, width: 2),
-                
+
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,9 +54,9 @@ class CartAppointment extends StatelessWidget {
                           ),
                         ),
                       ),
-              
+
                       SizedBox(width: 16.w),
-              
+
                       /// Info
                       Expanded(
                         child: Column(
@@ -69,7 +72,7 @@ class CartAppointment extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-              
+
                             Text(
                               "(${appointment.specialty} | ${appointment.clinic})",
                               style: TextStyle(
@@ -80,29 +83,35 @@ class CartAppointment extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            
-                  // hourly rate
-                  // will be a static text temporarily 
-                  Text(
-                    "Hourly Rated : \$120",
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500
-                    ),
-                  ),
+
+                            // hourly rate
+                            Text(
+                              'appointment.hourly_rate'.tr(namedArgs: {
+                                'price': '\$120'
+                              }),
+                              style: TextStyle(
+                                  color: colorScheme.onSurface,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w500
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 34.h,),
-                 
-                 // make payment button
-                 MainButton(text: 'Make Payment', onPressed: (){} ,width: 311.w, height: 32.h,) 
+
+                  // make payment button
+                  MainButton(
+                    text: LocaleKeys.cart_make_payment.tr(),
+                    onPressed: (){},
+                    width: 311.w,
+                    height: 32.h,
+                  )
                 ],
               )
-            ),
+          ),
         ),
       ),
     );

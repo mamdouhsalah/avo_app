@@ -18,6 +18,7 @@ class ChatBotScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // 🔥 دمجنا الـ BlocProvider بتاع برانش الـ main
     return BlocProvider(
       create: (context) => ChatbotCubit(),
       child: Scaffold(
@@ -58,8 +59,14 @@ class ChatBotScreen extends StatelessWidget {
       elevation: 0,
       leadingWidth: 50.w,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded,
-            size: 20.sp, color: theme.colorScheme.onSurface),
+        icon: Transform.flip(
+          flipX: context.locale.languageCode == 'ar',
+          child: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20.sp,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
         onPressed: () => context.pop(),
       ),
       titleSpacing: 0,
@@ -76,8 +83,7 @@ class ChatBotScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                // "AVO Assistant",
-                LocaleKeys.chatbot_chatbot_title.tr(), // 👈 ترجمة اسم البوت
+                LocaleKeys.chatbot_chatbot_title.tr(),
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -85,12 +91,11 @@ class ChatBotScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                LocaleKeys.chatbot_chatbot_online.tr(), 
+                LocaleKeys.chatbot_chatbot_online.tr(),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: Colors
-                      .green, 
+                  color: Colors.green,
                 ),
               ),
             ],

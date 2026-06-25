@@ -1,7 +1,12 @@
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:ui' as ui;
+
+import '../../../../core/Language/locale_keys.g.dart';
+
 
 class MedicationDetailTile extends StatelessWidget {
   final ReminderModel reminder;
@@ -27,7 +32,6 @@ class MedicationDetailTile extends StatelessWidget {
             padding: EdgeInsets.all(AppSpacing.h16),
             child: Row(
               children: [
-                // أيقونة الدواء الملونة
                 Container(
                   padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
@@ -37,7 +41,6 @@ class MedicationDetailTile extends StatelessWidget {
                   child: Icon(Icons.medication_rounded, color: theme.colorScheme.primary, size: 28.sp),
                 ),
                 SizedBox(width: AppSpacing.h16),
-                // بيانات الدواء
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,22 +49,21 @@ class MedicationDetailTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(reminder.name, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                          // Badge الحالة (Active)
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
                               color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20.r),
                             ),
-                            child: Text("Active", style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.bold)),
+                            child: Text(LocaleKeys.reminder_active.tr(), // 🔥 ترجمة
+                                style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
                       SizedBox(height: 4.h),
                       Text("${reminder.dosage} • ${reminder.pillCount}",
-                          style: TextStyle(color: Colors.grey, fontSize: 13.sp)),
+                          style: TextStyle(color: Colors.grey, fontSize: 13.sp), textDirection: ui.TextDirection.ltr), // 💡 الأرقام تقرأ صح
                       SizedBox(height: 8.h),
-                      // صف التردد
                       Row(
                         children: [
                           Icon(Icons.repeat_rounded, size: 14.sp, color: theme.colorScheme.primary),
@@ -75,7 +77,6 @@ class MedicationDetailTile extends StatelessWidget {
               ],
             ),
           ),
-          // شريط الوقت السفلي
           Container(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.h16, vertical: 10.h),
             decoration: BoxDecoration(
@@ -89,7 +90,7 @@ class MedicationDetailTile extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha:0.1), borderRadius: BorderRadius.circular(20.r)),
-                  child: Text(reminder.time, style: TextStyle(color: theme.colorScheme.primary, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                  child: Text(reminder.time, style: TextStyle(color: theme.colorScheme.primary, fontSize: 12.sp, fontWeight: FontWeight.bold), textDirection: ui.TextDirection.ltr), // 💡 وقت
                 ),
               ],
             ),

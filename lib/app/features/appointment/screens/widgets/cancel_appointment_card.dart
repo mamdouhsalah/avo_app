@@ -1,4 +1,6 @@
 import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/Language/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,7 +15,6 @@ class CancelAppointmentCard extends StatelessWidget {
 
     return Center(
       child: Material(
-        // insted of using box shadow
         color: colorScheme.surface,
         elevation: 10,
         shadowColor: colorScheme.onSurface.withValues(alpha: .1),
@@ -40,10 +41,9 @@ class CancelAppointmentCard extends StatelessWidget {
               ),
 
               SizedBox(height: 16.h),
-              // cancel appointment text
 
               Text(
-                'Cancel Appointment',
+                LocaleKeys.appointment_cancel_appointment.tr(),
                 style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
@@ -52,27 +52,28 @@ class CancelAppointmentCard extends StatelessWidget {
 
               SizedBox(height: 24.h),
 
-              // are you sure message
               Text(
-                'Are You sure you want to cancel appointment  of D. $doctorName ?',
+                'appointment.cancel_confirm_msg'.tr(namedArgs: {
+                  'doctorName': doctorName,
+                }),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16.sp, color: Colors.grey),
               ),
 
               SizedBox(height: 60.h),
 
-              // yes and no buttons
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MainButton(
-                    text: 'Yes',
+                    text: LocaleKeys.general_yes.tr(),
                     onPressed: () {},
                     width: 161.w,
                     height: 48.h,
                   ),
                   SizedBox(width: 21.w),
                   MainButton(
-                    text: 'No',
+                    text: LocaleKeys.general_no.tr(),
                     onPressed: () {},
                     isNo: true,
                     width: 161.w,

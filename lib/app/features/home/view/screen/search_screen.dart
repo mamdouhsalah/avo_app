@@ -5,8 +5,11 @@ import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -58,14 +61,14 @@ class _SearchScreenState extends State<SearchScreen> {
         } else if (state is HomeLoaded) {
           final doctors = state.bestDoctors
               .where((d) =>
-                  d.name.toLowerCase().contains(query.toLowerCase()) ||
-                  d.specialty.toLowerCase().contains(query.toLowerCase()))
+          d.name.toLowerCase().contains(query.toLowerCase()) ||
+              d.specialty.toLowerCase().contains(query.toLowerCase()))
               .toList();
 
           final pharmacies = state.bestPharmacies
               .where((p) =>
-                  p.name.toLowerCase().contains(query.toLowerCase()) ||
-                  p.type.toLowerCase().contains(query.toLowerCase()))
+          p.name.toLowerCase().contains(query.toLowerCase()) ||
+              p.type.toLowerCase().contains(query.toLowerCase()))
               .toList();
 
           return Scaffold(
@@ -76,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 color: Theme.of(context).colorScheme.outlineVariant,
               ),
               title: Text(
-                "Search",
+                LocaleKeys.general_search.tr(), // 🔥 استخدام الكلمة المشتركة
                 style: TextStyle(
                   fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
@@ -99,7 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 12.w),
-                      hintText: "Search doctors, pharmacies...",
+                      hintText: LocaleKeys.search_page_hint.tr(), // 🔥 ترجمة
                       hintStyle: TextStyle(
                         color: Theme.of(context).colorScheme.outlineVariant,
                       ),
@@ -109,15 +112,15 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       suffixIcon: query.isNotEmpty
                           ? IconButton(
-                              onPressed: () {
-                                controller.clear();
-                                setState(() => query = "");
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                color: Theme.of(context).colorScheme.outlineVariant,
-                              ),
-                            )
+                        onPressed: () {
+                          controller.clear();
+                          setState(() => query = "");
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                      )
                           : null,
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surface,
@@ -137,106 +140,106 @@ class _SearchScreenState extends State<SearchScreen> {
                   Expanded(
                     child: query.isEmpty
                         ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.search,
-                                  size: 70.sp,
-                                  color: Theme.of(context).colorScheme.outlineVariant,
-                                ),
-                                SizedBox(height: 16.h),
-                                Text(
-                                  "Start typing to search...",
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.outlineVariant,
-                                  ),
-                                ),
-                              ],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search,
+                            size: 70.sp,
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            LocaleKeys.search_page_start_typing.tr(), // 🔥 ترجمة
+                            style: TextStyle(
+                              color:
+                              Theme.of(context).colorScheme.outlineVariant,
                             ),
-                          )
+                          ),
+                        ],
+                      ),
+                    )
                         : ListView(
-                            children: [
-                              if (doctors.isNotEmpty) ...[
-                                Text(
-                                  "Doctors",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                      children: [
+                        if (doctors.isNotEmpty) ...[
+                          Text(
+                            LocaleKeys.search_page_doctors.tr(), // 🔥 ترجمة
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          ...doctors.map(
+                                (doc) => BestDoctorCard(
+                              doctor: doc,
+                              onFavoriteToggle: () {},
+                              onBook: () {},
+                            ),
+                          ),
+                        ],
+                        if (pharmacies.isNotEmpty) ...[
+                          SizedBox(height: 20.h),
+                          Text(
+                            LocaleKeys.search_page_pharmacies.tr(), // 🔥 ترجمة
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          ...pharmacies.map(
+                                (pharmacy) => BestPharmacyCard(
+                              pharmacy: pharmacy,
+                              onTap: () {},
+                              onFavoriteToggle: () {},
+                            ),
+                          ),
+                        ],
+                        if (doctors.isEmpty && pharmacies.isEmpty)
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 60.h),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_off_rounded,
+                                    size: 70.sp,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outlineVariant,
                                   ),
-                                ),
-                                SizedBox(height: 10.h),
-                                ...doctors.map(
-                                  (doc) => BestDoctorCard(
-                                    doctor: doc,
-                                    onFavoriteToggle: () {},
-                                    onBook: () {},
-                                  ),
-                                ),
-                              ],
-                              if (pharmacies.isNotEmpty) ...[
-                                SizedBox(height: 20.h),
-                                Text(
-                                  "Pharmacies",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                    color: Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                                SizedBox(height: 10.h),
-                                ...pharmacies.map(
-                                  (pharmacy) => BestPharmacyCard(
-                                    pharmacy: pharmacy,
-                                    onTap: () {},
-                                    onFavoriteToggle: () {},
-                                  ),
-                                ),
-                              ],
-                              if (doctors.isEmpty && pharmacies.isEmpty)
-                                Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 60.h),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.search_off_rounded,
-                                          size: 70.sp,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .outlineVariant,
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        Text(
-                                          "No results found",
-                                          style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                          ),
-                                        ),
-                                        SizedBox(height: 6.h),
-                                        Text(
-                                          "check your spelling and try again.",
-                                          style: TextStyle(
-                                            fontSize: 13.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .outlineVariant,
-                                          ),
-                                        ),
-                                      ],
+                                  SizedBox(height: 16.h),
+                                  Text(
+                                    LocaleKeys.search_page_no_results.tr(), // 🔥 ترجمة
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
                                     ),
                                   ),
-                                ),
-                            ],
+                                  SizedBox(height: 6.h),
+                                  Text(
+                                    LocaleKeys.search_page_check_spelling.tr(), // 🔥 ترجمة
+                                    style: TextStyle(
+                                      fontSize: 13.sp,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .outlineVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
+                      ],
+                    ),
                   ),
                 ],
               ),

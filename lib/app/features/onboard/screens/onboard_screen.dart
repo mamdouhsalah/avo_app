@@ -1,10 +1,13 @@
 import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avo_app/app/features/onboard/logic/onboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 class OnboardScreen extends StatefulWidget {
   const OnboardScreen({super.key});
@@ -15,16 +18,17 @@ class OnboardScreen extends StatefulWidget {
 
 class _OnboardScreenState extends State<OnboardScreen> {
   late final OnboardController _controller;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _controller = OnboardController();
 
-    Timer.periodic(const Duration(seconds: 4), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (_controller.currentIndex < _controller.slides.length - 1) {
         _controller.nextPage();
-        setState(() {});
+        if (mounted) setState(() {});
       } else {
         timer.cancel();
       }
@@ -33,6 +37,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -73,7 +78,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(
                             _controller.slides.length,
-                            (dotIndex) => Container(
+                                (dotIndex) => Container(
                               margin: EdgeInsets.symmetric(horizontal: 8.w),
                               width: _controller.currentIndex == dotIndex
                                   ? 20.w
@@ -127,7 +132,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                         setState(() {});
                       },
                       child: Text(
-                        'Skip',
+                        LocaleKeys.general_skip.tr(),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
@@ -157,10 +162,13 @@ class _OnboardScreenState extends State<OnboardScreen> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       child: Center(
-                        child: Icon(
-                          Icons.navigate_next_outlined,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          size: 40.sp,
+                        child: Transform.flip(
+                          flipX: context.locale.languageCode == 'ar',
+                          child: Icon(
+                            Icons.navigate_next_outlined,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            size: 40.sp,
+                          ),
                         ),
                       ),
                     ),
