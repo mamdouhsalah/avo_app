@@ -4,7 +4,6 @@ import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,17 +12,11 @@ import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 class AccountInfoScreen extends StatefulWidget {
   const AccountInfoScreen({super.key});
 
-  @override
-  State<AccountInfoScreen> createState() => _AccountInfoScreenState();
-}
-
-class _AccountInfoScreenState extends State<AccountInfoScreen> {
-  bool isEditMode = false;
+  AccountInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -141,8 +134,20 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                 ),
               ),
             ),
-          );
-        },
+            const SizedBox(height: 20),
+            _buildTextField(
+              context,
+              label: 'Email',
+              initialValue: userData.email,
+            ),
+            const SizedBox(height: 20),
+            _buildTextField(
+              context,
+              label: 'Phone',
+              initialValue: userData.phoneNumber,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -182,13 +187,6 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               horizontal: 15,
               vertical: 15,
             ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide(
@@ -204,9 +202,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               ),
             ),
             filled: true,
-            fillColor: enabled
-                ? theme.cardColor
-                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            fillColor: theme.cardColor,
           ),
         ),
       ],
