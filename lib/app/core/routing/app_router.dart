@@ -1,3 +1,9 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
+import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
+import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
+import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/core/layout/main_layout.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
@@ -108,7 +114,12 @@ class AppRouter {
           GoRoute(path: home, builder: (context, state) => const HomeScreen()),
           GoRoute(
               path: reminder,
-              builder: (context, state) => const ReminderScreen()),
+              builder: (context, state) => BlocProvider(
+                create: (_) => ReminderCubit(
+                  firebaseConsumer: FirebaseConsumerImpl(),
+                ),
+                child: const ReminderScreen(),
+              )),
           GoRoute(
             path: profile,
             builder: (context, state) => const ProfileScreen(
@@ -196,8 +207,26 @@ class AppRouter {
       ),
 
       GoRoute(
-          path: addMedication,
-          builder: (context, state) => const AddMedicationScreen()),
+        path: addMedication,
+        builder: (context, state) => BlocProvider(
+          create: (_) => AddMedicationCubit(
+            firebaseConsumer: FirebaseConsumerImpl(),
+          ),
+          child: const AddMedicationScreen(),
+        ),
+      ),
+
+      // ── Schedule screen ("See All" from ReminderScreen) ──
+      // Previously missing — would crash the app on navigation.
+      GoRoute(
+        path: schedule,
+        builder: (context, state) => BlocProvider(
+          create: (_) => ScheduleCubit(
+            firebaseConsumer: FirebaseConsumerImpl(),
+          )..loadForDate(DateTime.now()),
+          child: const ScheduleScreen(),
+        ),
+      ),
       GoRoute(
           path: chatBot, builder: (context, state) => const ChatBotScreen()),
 

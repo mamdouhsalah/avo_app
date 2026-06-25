@@ -7,7 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class FirebaseConsumerImpl implements FirebaseConsumer {
-  late final FirebaseDatabase _database;
+  FirebaseDatabase get _database => FirebaseDatabase.instance;
 
   @override
   Future<void> init() async {
@@ -15,10 +15,9 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp();
       }
-      _database = FirebaseDatabase.instance;
       _database.setPersistenceEnabled(true);
     } catch (e) {
-      throw DatabaseExceptionHandler.handleException(e);
+      log("Firebase Init Notice: $e");
     }
   }
 
@@ -30,7 +29,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Future<T> get<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) async {
+        required T Function(Map<String, dynamic> json) fromJson}) async {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
@@ -60,7 +59,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Future<List<T>> getList<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) async {
+        required T Function(Map<String, dynamic> json) fromJson}) async {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
@@ -76,7 +75,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Stream<List<T>> streamList<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) {
+        required T Function(Map<String, dynamic> json) fromJson}) {
     try {
       final ref = _getQuery(path, queryParams);
       return ref.onValue.map((event) {
