@@ -239,7 +239,7 @@ class NotificationService {
       await handleNotificationAction(action);
     } catch (e) {
       // Log error (e.g., to native logs or file)
-      print('Error in background action handler: $e');
+      debugPrint('Error in background action handler: $e');
     }
   }
 // static Future<void> initializeBackgroundHandler() async {
