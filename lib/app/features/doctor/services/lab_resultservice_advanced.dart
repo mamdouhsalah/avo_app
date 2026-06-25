@@ -79,16 +79,20 @@ class LabResultServiceAdvanced {
     try {
       // إذا كان لديك ملف فعلي:
       if (result.fileUrl != null && result.fileUrl!.isNotEmpty) {
-        await Share.shareXFiles(
-          [XFile(result.fileUrl!)],
-          text: subject ?? 'Lab Result: ${result.title}',
-          subject: subject ?? result.title,
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(result.fileUrl!)],
+            text: subject ?? 'Lab Result: ${result.title}',
+            subject: subject ?? result.title,
+          ),
         );
       } else {
         // مشاركة نصية فقط إذا لم يكن هناك ملف
-        await Share.share(
-          _buildShareText(result),
-          subject: subject ?? 'Lab Result - ${result.title}',
+        await SharePlus.instance.share(
+          ShareParams(
+            text: _buildShareText(result),
+            subject: subject ?? 'Lab Result - ${result.title}',
+          ),
         );
       }
 

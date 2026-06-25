@@ -161,7 +161,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
           onResult: (val) {
             onRecognized(val.recognizedWords);
           },
-          localeId: "ar-EG",
+          listenOptions: stt.SpeechListenOptions(localeId: "ar-EG"),
         );
       }
     } else {
