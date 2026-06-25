@@ -3,6 +3,7 @@ import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
+import 'package:avo_app/app/core/services/remote/sync_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
 import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
@@ -58,6 +59,11 @@ class MyApp extends StatelessWidget {
               Provider<AdminRepository>(
                 create: (context) => AdminRepositoryImpl(),
               ),
+              Provider<SyncRepository>(
+                create: (providerContext) => SyncRepository(
+                  firebaseConsumer: providerContext.read<FirebaseConsumer>(),
+                ),
+              ),
               BlocProvider<HomeCubit>(
                 create: (providerContext) => HomeCubit(
                   repository: providerContext.read<HomeRepository>(),
@@ -66,6 +72,7 @@ class MyApp extends StatelessWidget {
               BlocProvider<AuthCubit>(
                 create: (providerContext) => AuthCubit(
                   repository: providerContext.read<AuthRepository>(),
+                  syncRepository: providerContext.read<SyncRepository>(),
                 ),
               ),
               BlocProvider<ProfileCubit>(
@@ -76,6 +83,7 @@ class MyApp extends StatelessWidget {
               BlocProvider<SplashCubit>(
                 create: (providerContext) => SplashCubit(
                   repository: providerContext.read<AuthRepository>(),
+                  syncRepository: providerContext.read<SyncRepository>(),
                 ),
               ),
               BlocProvider<AdminCubit>(
