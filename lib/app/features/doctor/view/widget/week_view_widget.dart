@@ -10,10 +10,10 @@ class WeekViewWidget extends StatelessWidget {
   final Function(DateTime) onDateSelected;
 
   const WeekViewWidget({
-    Key? key,
+    super.key,
     required this.weekStart,
     required this.onDateSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +258,7 @@ class WeekViewWidget extends StatelessWidget {
           ...appointments.take(6).map((apt) {
             int index = appointments.indexOf(apt);
             return _buildAppointmentItem(apt, index);
-          }).toList()
+          })
         else
           Center(
             child: Text(

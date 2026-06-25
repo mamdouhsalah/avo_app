@@ -7,10 +7,10 @@ class MonthWeekSelectorSheet extends StatefulWidget {
   final Function(DateTime monthDate, DateTime weekStart) onSelected;
 
   const MonthWeekSelectorSheet({
-    Key? key,
+    super.key,
     required this.initialDate,
     required this.onSelected,
-  }) : super(key: key);
+  });
 
   @override
   State<MonthWeekSelectorSheet> createState() => _MonthWeekSelectorSheetState();
@@ -329,7 +329,7 @@ class _MonthWeekSelectorSheetState extends State<MonthWeekSelectorSheet> {
               ),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
