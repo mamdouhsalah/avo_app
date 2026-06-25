@@ -11,7 +11,7 @@ class SplashCubit extends Cubit<SplashState> {
     try {
       final user = await repository.checkToken();
       if (user != null) {
-        if (user.isVerified == true) {
+        if (user.isVerified == true || user.role == 'admin') {
           emit(SplashSuccess(user.role));
         } else {
           emit(SplashUnverified(user.role));

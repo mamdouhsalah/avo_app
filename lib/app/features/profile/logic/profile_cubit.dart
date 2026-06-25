@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
+import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
 import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
@@ -30,7 +31,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (uid.isEmpty) {
-        emit(ProfileFailure(LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
+        emit(ProfileFailure(
+            LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
         return;
       }
       final profile = await repository.getProfile(uid);
@@ -60,7 +62,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (uid.isEmpty) {
-        emit(ProfileFailure(LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
+        emit(ProfileFailure(
+            LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
         return;
       }
 
@@ -87,7 +90,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (uid.isEmpty) {
-        emit(ProfileFailure(LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
+        emit(ProfileFailure(
+            LocaleKeys.profile_unauthenticated.tr())); // 🔥 ترجمة رسالة الخطأ
         return;
       }
 
@@ -109,6 +113,15 @@ class ProfileCubit extends Cubit<ProfileState> {
     } catch (e) {
       emit(ProfileFailure(e.toString()));
     }
+  }
+
+  Future<void> changeTheme(ThemeMode mode, BuildContext context) async {
+    context.read<ThemeCubit>().setTheme(mode);
+  }
+
+  Future<void> changeLanguage(String languageCode, BuildContext context) async {
+    await context.setLocale(Locale(languageCode));
+    await repository.saveLanguage(languageCode);
   }
 
   @override
