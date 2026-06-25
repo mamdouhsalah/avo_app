@@ -10,10 +10,10 @@ class DayViewWidget extends StatelessWidget {
   final Function(DateTime) onDateChanged;
 
   const DayViewWidget({
-    Key? key,
+    super.key,
     required this.selectedDate,
     required this.onDateChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -288,7 +288,7 @@ class DayViewWidget extends StatelessWidget {
               appointment: entry.value,
               colorIndex: entry.key,
             );
-          }).toList()
+          })
         else
           Center(
             child: Padding(

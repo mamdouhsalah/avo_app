@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onChanged: (v) => setState(() => isDarkTheme = v),
                             activeTrackColor: theme.colorScheme.primary,
                             inactiveThumbColor: theme.colorScheme.onSurface,
-                            trackOutlineColor: MaterialStateProperty.all(
+                            trackOutlineColor: WidgetStateProperty.all(
                                 theme.colorScheme.outlineVariant),
                           ),
                         ),

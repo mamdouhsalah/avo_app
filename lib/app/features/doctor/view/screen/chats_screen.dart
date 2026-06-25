@@ -1,5 +1,5 @@
 import 'package:avo_app/app/core/models/chatmodel.dart';
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/features/doctor/services/chatcontroller.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:flutter/material.dart';

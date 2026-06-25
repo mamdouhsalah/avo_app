@@ -1,4 +1,4 @@
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
@@ -9,10 +9,10 @@ class ChatSearchBar extends StatelessWidget {
   final TextEditingController? controller;
 
   const ChatSearchBar({
-    Key? key,
+    super.key,
     required this.onChanged,
     this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +69,11 @@ class ChatTile extends StatelessWidget {
   final Function(BuildContext)? onLongPress;
 
   const ChatTile({
-    Key? key,
+    super.key,
     required this.chat,
     required this.onTap,
     this.onLongPress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -242,10 +242,10 @@ class EmptyChatState extends StatelessWidget {
   final IconData icon;
 
   const EmptyChatState({
-    Key? key,
+    super.key,
     required this.message,
     this.icon = Icons.chat_outlined,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +276,7 @@ class EmptyChatState extends StatelessWidget {
 
 /// Loading State Widget
 class ChatLoadingState extends StatelessWidget {
-  const ChatLoadingState({Key? key}) : super(key: key);
+  const ChatLoadingState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -308,9 +308,9 @@ class ChatListHeader extends StatelessWidget {
   final int unreadCount;
 
   const ChatListHeader({
-    Key? key,
+    super.key,
     required this.unreadCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

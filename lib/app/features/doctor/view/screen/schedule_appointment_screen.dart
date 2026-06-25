@@ -1,4 +1,4 @@
-import 'package:avo_app/app/features/doctor/view/widget/custom_dayViewWidget.dart';
+import 'package:avo_app/app/features/doctor/view/widget/custom_day_view_widget.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/view/widget/month_view_widget.dart';
 import 'package:avo_app/app/features/doctor/view/widget/week_view_widget.dart';
@@ -26,9 +26,7 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   set selectedDate(DateTime value) => _selectedDate = value;
 
   DateTime get weekStart {
-    if (_weekStart == null) {
-      _weekStart = ScheduleController.getWeekStart(selectedDate);
-    }
+    _weekStart ??= ScheduleController.getWeekStart(selectedDate);
     return _weekStart!;
   }
 

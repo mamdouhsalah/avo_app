@@ -1,11 +1,11 @@
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
 import 'package:avo_app/app/features/doctor/data/data.dart';
 import 'package:avo_app/app/features/doctor/view/screen/notification_screen.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
-import 'package:avo_app/app/features/doctor/view/widget/custom_statCard.dart';
+import 'package:avo_app/app/features/doctor/view/widget/custom_stat_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
