@@ -156,7 +156,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
                                             color: Colors.green),
                                         SizedBox(width: 8.w),
                                         Text(
-                                          'تم أخذ جميع الأدوية اليوم! 🎉',
+                                          'تم أخذ جميع الأدوية اليوم!',
                                           style: TextStyle(
                                               fontSize: 16.sp,
                                               color: Colors.green,
