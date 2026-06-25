@@ -177,4 +177,16 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
       return MapEntry(key.toString(), _castValue(value));
     });
   }
+
+  @override
+  String? getRefrence({required String path})  {
+    try {
+      final String? ref = _database.ref(path).push().key;
+      log("GETS REFRENCE SUCCESSFULLY");
+      return ref;
+    } catch (e) {
+      log("FAILED TO GET REFRENCE");
+      throw DatabaseExceptionHandler.handleException(e);
+    }
+  }
 }

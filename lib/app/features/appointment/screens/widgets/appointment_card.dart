@@ -1,7 +1,7 @@
+import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/core/utils/is_today.dart';
-import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:avo_app/app/core/constants/app_colors.dart';
@@ -29,9 +29,9 @@ class AppointmentCard extends StatelessWidget {
         children: [
           // date on day for the oppointment
           Text(
-            isToday(date: appointment.date)
+            isToday(date: appointment.dateTime)
                 ? LocaleKeys.general_today.tr()
-                : "${appointment.date.day} ${getMonthNameFromDate(date: appointment.date)}",
+                : "${appointment.dateTime.day} ${getMonthNameFromDate(date: appointment.date)}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,

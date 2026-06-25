@@ -4,6 +4,7 @@ import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,11 +13,17 @@ import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 class AccountInfoScreen extends StatefulWidget {
   const AccountInfoScreen({super.key});
 
-  AccountInfoScreen({super.key});
+  @override
+  State<AccountInfoScreen> createState() => _AccountInfoScreenState();
+}
+
+class _AccountInfoScreenState extends State<AccountInfoScreen> {
+  bool isEditMode = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -40,7 +47,7 @@ class AccountInfoScreen extends StatefulWidget {
         ),
         centerTitle: true,
       ),
-      body: BlocConsumer<ProfileCubit, ProfileState>(
+      body:BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
           if (state is ProfileFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -85,7 +92,8 @@ class AccountInfoScreen extends StatefulWidget {
                       enabled: isEditMode,
                       keyboardType: TextInputType.phone,
                       // 🔥 يفضل نخلي أرقام التليفون تقرأ من الشمال لليمين دايماً
-                      textDirection: ui.TextDirection.ltr,                    ),
+                      textDirection: ui.TextDirection.ltr,
+                    ),
                   ],
                 ),
               ),
@@ -97,6 +105,8 @@ class AccountInfoScreen extends StatefulWidget {
       ),
       bottomNavigationBar: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
+          final colorScheme = Theme.of(context).colorScheme;
+
           return Container(
             padding: const EdgeInsets.all(20),
             color: theme.scaffoldBackgroundColor,
@@ -134,20 +144,8 @@ class AccountInfoScreen extends StatefulWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            _buildTextField(
-              context,
-              label: 'Email',
-              initialValue: userData.email,
-            ),
-            const SizedBox(height: 20),
-            _buildTextField(
-              context,
-              label: 'Phone',
-              initialValue: userData.phoneNumber,
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
