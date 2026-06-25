@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -15,12 +16,14 @@ class CalendarStripWidget extends StatelessWidget {
     return Container(
       color: theme.scaffoldBackgroundColor,
       child: TableCalendar(
+        locale: context.locale.languageCode,
+
         focusedDay: selectedDay,
         firstDay: DateTime.now().subtract(const Duration(days: 365)),
         lastDay: DateTime.now().add(const Duration(days: 365)),
-        calendarFormat: CalendarFormat.week, // عرض أسبوعي فقط زي Figma
+        calendarFormat: CalendarFormat.week,
         startingDayOfWeek: StartingDayOfWeek.sunday,
-        headerVisible: false, // هنخفيه عشان إحنا عاملين Header مخصص
+        headerVisible: false,
         selectedDayPredicate: (day) => isSameDay(selectedDay, day),
         onDaySelected: (selected, focused) => onDaySelected(selected),
 

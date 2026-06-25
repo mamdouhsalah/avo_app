@@ -1,7 +1,11 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/models/pharmacy_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../Language/locale_keys.g.dart';
+
 
 class BestPharmacyCard extends StatelessWidget {
   final PharmacyModel pharmacy;
@@ -120,7 +124,7 @@ class BestPharmacyCard extends StatelessWidget {
           SizedBox(height: 12.h),
           const Spacer(),
           InkWell(
-            onTap: () {},
+            onTap: onTap, // 💡 وصلنالك الـ onTap اللي كنت باعتها في الكونستركتور
             child: Container(
               width: double.infinity,
               height: 40.h,
@@ -130,7 +134,7 @@ class BestPharmacyCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Text(
-                "Buy Medicine",
+                LocaleKeys.general_buy_medicine.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 16.sp,

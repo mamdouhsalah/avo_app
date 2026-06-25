@@ -5,9 +5,12 @@ import 'package:avo_app/app/features/reminder/screens/widgets/add_medication_fab
 import 'package:avo_app/app/features/reminder/screens/widgets/next_dose_card.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/schedule_tile.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/wave_header_painter.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class ReminderScreen extends StatelessWidget {
   const ReminderScreen({super.key});
@@ -16,7 +19,6 @@ class ReminderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Dummy Data
     // Dummy Data بعد التحديث
     final List<ReminderModel> schedule = [
       ReminderModel(
@@ -75,9 +77,9 @@ class ReminderScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: AppSpacing.v16, horizontal: AppSpacing.h20),
                   child: Center(
                     child: Text(
-                      'Reminder',
+                      LocaleKeys.reminder_title.tr(), // 🔥 ترجمة العنوان
                       style: TextStyle(
-                        inherit: false, // لمنع حدوث خطأ الـ Interpolation الذي ظهر لك سابقاً
+                        inherit: false,
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -104,7 +106,7 @@ class ReminderScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Today's Schedule",
+                              LocaleKeys.reminder_todays_schedule.tr(), // 🔥 ترجمة جدول النهاردة
                               style: TextStyle(
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.bold,
@@ -116,7 +118,7 @@ class ReminderScreen extends StatelessWidget {
                                 context.push(AppRouter.schedule);
                               },
                               child: Text(
-                                "See all",
+                                LocaleKeys.reminder_see_all.tr(), // 🔥 ترجمة عرض الكل
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
@@ -147,8 +149,6 @@ class ReminderScreen extends StatelessWidget {
           context.push(AppRouter.addMedication);
         },
       ),
-
-      // TODO: Place the Shared Bottom Navigation Bar Here
     );
   }
 }

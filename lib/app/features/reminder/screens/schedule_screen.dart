@@ -4,8 +4,11 @@ import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/add_medication_fab.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/calendar_strip_widget.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/medication_detail_tile.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -30,7 +33,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Schedule"),
+        title: Text(LocaleKeys.reminder_schedule.tr()), // 🔥 ترجمة العنوان
         actions: [
           IconButton(
             onPressed: () {
@@ -41,7 +44,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               color: theme.colorScheme.primary,
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(

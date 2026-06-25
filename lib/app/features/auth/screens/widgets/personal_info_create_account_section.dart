@@ -23,13 +23,68 @@ class _PersonalInfoCreateAccountSectionState
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        widget.cubit.profileImagePath = pickedFile.path;
-        log("Image: ${widget.cubit.profileImagePath}, , Path: ${pickedFile.path}");
-      });
-    }
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Select Profile Photo',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined),
+                title: const Text('Take Photo'),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                    if (pickedFile != null) {
+                      setState(() {
+                        widget.cubit.profileImagePath = pickedFile.path;
+                        log("Camera Image picked: ${pickedFile.path}");
+                      });
+                    }
+                  } catch (e) {
+                    log("Error picking image from camera: $e");
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Choose from Gallery'),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      setState(() {
+                        widget.cubit.profileImagePath = pickedFile.path;
+                        log("Gallery Image picked: ${pickedFile.path}");
+                      });
+                    }
+                  } catch (e) {
+                    log("Error picking image from gallery: $e");
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override

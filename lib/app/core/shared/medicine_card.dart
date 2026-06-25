@@ -1,7 +1,11 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/models/medicine_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../Language/locale_keys.g.dart';
+
 
 class MedicineCard extends StatelessWidget {
   final MedicineModel medicine;
@@ -14,7 +18,7 @@ class MedicineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 16.w),
+      margin: EdgeInsetsDirectional.only(end: 16.w),
       height: 197.h,
       width: 325.w,
       padding: EdgeInsets.all(24.w),
@@ -38,14 +42,17 @@ class MedicineCard extends StatelessWidget {
               const Spacer(),
               Container(
                 height: 21.43.h,
-                width: 63.67.w,
+                // كبرنا العرض سنة صغيرة عشان يستوعب الكلمة بالعربي مرتاحة
+                width: 75.w,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.onPrimary,
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Center(
                   child: Text(
-                    "In ${medicine.time[medicine.time.length - 1]} min ",
+                    LocaleKeys.general_in_mins.tr(namedArgs: {
+                      'mins': medicine.time[medicine.time.length - 1]
+                    }),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
@@ -99,7 +106,7 @@ class MedicineCard extends StatelessWidget {
             ],
           ),
 
-          Spacer(),
+          const Spacer(),
           // Mark as Taken Button
           SizedBox(
             height: 40.h,
@@ -115,7 +122,7 @@ class MedicineCard extends StatelessWidget {
               ),
               onPressed: () {},
               child: Text(
-                "Mark as Taken",
+                LocaleKeys.general_mark_as_taken.tr(),
                 style: TextStyle(fontSize: 14.sp),
               ),
             ),

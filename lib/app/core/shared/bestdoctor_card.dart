@@ -1,7 +1,11 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../Language/locale_keys.g.dart';
+
 
 class BestDoctorCard extends StatelessWidget {
   final DoctorModel doctor;
@@ -22,7 +26,7 @@ class BestDoctorCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 170.h,
-      margin: EdgeInsets.only(bottom: 12.h),
+      margin: EdgeInsets.only(bottom: 12.h), // 💡 المسافة السفلية مش محتاجة Directional
       padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -135,7 +139,7 @@ class BestDoctorCard extends StatelessWidget {
 
           const Spacer(),
           InkWell(
-            onTap: () {},
+            onTap: onBook, // 💡 تأكدت إن الـ onBook متوصل بالزرار بدل ما كان فاضي () {}
             child: Container(
               width: double.infinity,
               height: 40.h,
@@ -145,7 +149,7 @@ class BestDoctorCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Text(
-                "Book Appointment",
+                LocaleKeys.general_book_appointment.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 16.sp,

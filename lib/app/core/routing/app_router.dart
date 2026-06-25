@@ -1,6 +1,10 @@
 import 'package:avo_app/app/core/layout/main_layout.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/features/admin/views/screen/admin_approvals_screen.dart';
+import 'package:avo_app/app/features/admin/views/screen/admin_dashboard_screen.dart';
+import 'package:avo_app/app/features/admin/views/screen/admin_logs_screen.dart';
+import 'package:avo_app/app/features/admin/views/screen/admin_users_screen.dart';
 import 'package:avo_app/app/features/auth/screens/create_account_type_screen.dart';
 import 'package:avo_app/app/features/auth/screens/login_screen.dart';
 import 'package:avo_app/app/features/auth/screens/reset_password_screen.dart';
@@ -69,6 +73,12 @@ class AppRouter {
   static const String addMedication = '/add-medication';
   static const String detailsPatient = '/details-patient';
   static const String scheduleAppointment = '/schedule-appointment';
+
+  // Admin Routes
+  static const String adminDashboard = '/admin-dashboard';
+  static const String adminLogs = '/admin-logs';
+  static const String adminApprovals = '/admin-approvals';
+  static const String adminUsers = '/admin-users';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -190,6 +200,20 @@ class AppRouter {
           builder: (context, state) => const AddMedicationScreen()),
       GoRoute(
           path: chatBot, builder: (context, state) => const ChatBotScreen()),
+
+      // ==================== Admin Routes ====================
+      GoRoute(
+          path: adminDashboard,
+          builder: (context, state) => const AdminDashboardScreen()),
+      GoRoute(
+          path: adminLogs,
+          builder: (context, state) => const AdminLogsScreen()),
+      GoRoute(
+          path: adminApprovals,
+          builder: (context, state) => const AdminApprovalsScreen()),
+      GoRoute(
+          path: adminUsers,
+          builder: (context, state) => const AdminUsersScreen()),
     ],
   );
 
@@ -210,4 +234,6 @@ class AppRouter {
   static void goToChats(BuildContext context) => context.go(chats);
   static void goToAnalytics(BuildContext context) => context.go(analytics);
   static void goToNewChat(BuildContext context) => context.go(newChat);
+  static void goToAdminDashboard(BuildContext context) =>
+      context.go(adminDashboard);
 }

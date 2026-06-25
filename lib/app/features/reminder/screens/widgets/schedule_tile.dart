@@ -1,7 +1,12 @@
+import 'dart:ui' as ui;
+
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/Language/locale_keys.g.dart';
 
 class ScheduleTile extends StatelessWidget {
   final ReminderModel reminder;
@@ -55,6 +60,7 @@ class ScheduleTile extends StatelessWidget {
                 SizedBox(height: 2.h),
                 Text(
                   "${reminder.dosage} • ${reminder.time}",
+                  textDirection: ui.TextDirection.ltr,
                   style: TextStyle(
                     fontSize: 13.sp,
                     color: Colors.grey,
@@ -65,12 +71,12 @@ class ScheduleTile extends StatelessWidget {
           ),
           if (isNext)
             Text(
-              "Next",
+              LocaleKeys.reminder_next.tr(), // 🔥 ترجمة
               style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
             )
           else if (isTaken)
             Text(
-              "Taken",
+              LocaleKeys.reminder_taken.tr(), // 🔥 ترجمة
               style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: Colors.grey),
             ),
         ],

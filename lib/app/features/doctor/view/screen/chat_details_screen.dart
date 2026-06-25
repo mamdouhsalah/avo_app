@@ -22,11 +22,13 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   // Dummy messages for UI
   final List<ChatMessageModel> _messages = [
     ChatMessageModel(
+      id: "1",
       text: "Hello Doctor, I have a question about my medication.",
       isUser: false, // Patient message
       time: "10:00 AM",
     ),
     ChatMessageModel(
+      id: "2",
       text: "Sure, what's your question?",
       isUser: true, // Doctor message
       time: "10:01 AM",
@@ -45,6 +47,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     setState(() {
       _messages.add(
         ChatMessageModel(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
           text: _messageController.text,
           isUser: true,
           time: "Now",

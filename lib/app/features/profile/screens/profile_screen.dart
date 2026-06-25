@@ -4,11 +4,14 @@ import 'package:avo_app/app/core/shared/CustomAvatar.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class ProfileScreen extends StatefulWidget {
   final bool showBottomNav;
@@ -27,7 +30,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool isArabic = false;
   bool isDarkTheme = false;
 
   Future<void> _pickImage() async {
@@ -41,6 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // 💡 معرفة اللغة الحالية عشان نعلم عليها في الـ BottomSheet
+    final bool isArabic = context.locale.languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -48,18 +52,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // AppBar
       appBar: widget.showAppBar
           ? AppBar(
-              backgroundColor: theme.scaffoldBackgroundColor,
-              leading: widget.showDrawer
-                  ? Builder(
-                      builder: (context) => IconButton(
-                        icon: Icon(Icons.menu,
-                            color: theme.textTheme.titleLarge?.color,
-                            size: 24.sp),
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                      ),
-                    )
-                  : null,
-            )
+        backgroundColor: theme.scaffoldBackgroundColor,
+        leading: widget.showDrawer
+            ? Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu,
+                color: theme.textTheme.titleLarge?.color,
+                size: 24.sp),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        )
+            : null,
+      )
           : null,
 
       // Drawer
@@ -132,33 +136,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildListTile(
                             context,
                             Icons.lock_outline,
-                            "Account Information",
-                            () => context.push(AppRouter.accountInfo)),
+                            LocaleKeys.profile_account_info.tr(), // 🔥 ترجمة
+                                () => context.push(AppRouter.accountInfo)),
                         _buildListTile(
                             context,
                             Icons.person_outline,
-                            "Personal Information",
-                            () => context.push(AppRouter.personalInfo)),
+                            LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
+                                () => context.push(AppRouter.personalInfo)),
                         _buildListTile(context, Icons.credit_card_outlined,
-                            "Cards Details", () => context.push(AppRouter.checkout)),
+                            LocaleKeys.profile_cards_details.tr(), () => context.push(AppRouter.checkout)), // 🔥 ترجمة
                         ListTile(
                           leading:
-                              Icon(Icons.translate, color: theme.colorScheme.onSurface),
-                          title: Text("Language App", style: theme.textTheme.bodyLarge),
+                          Icon(Icons.translate, color: theme.colorScheme.onSurface),
+                          title: Text(LocaleKeys.profile_app_language.tr(), style: theme.textTheme.bodyLarge), // 🔥 ترجمة
                           trailing: IconButton(
-                            onPressed: _showLanguageBottomSheet,
+                            onPressed: () => _showLanguageBottomSheet(isArabic),
                             icon: Icon(Icons.language,
                                 color: theme.colorScheme.onSurface),
                           ),
                         ),
-                        Divider(
+                        const Divider(
                           height: 1,
                         ),
                         ListTile(
                           leading: Icon(Icons.wb_sunny_outlined,
                               color: theme.colorScheme.onSurface),
                           title: Text(
-                            "App Theme",
+                            LocaleKeys.profile_app_theme.tr(), // 🔥 ترجمة
                             style: theme.textTheme.bodyLarge,
                           ),
                           trailing: Switch(
@@ -170,13 +174,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 theme.colorScheme.outlineVariant),
                           ),
                         ),
-                        Divider(
+                        const Divider(
                           height: 1,
                         ),
                         ListTile(
                           leading: const Icon(Icons.logout, color: Colors.red),
-                          title: const Text("Sign Out",
-                              style: TextStyle(color: Colors.red)),
+                          title: Text(LocaleKeys.profile_sign_out.tr(), // 🔥 ترجمة
+                              style: const TextStyle(color: Colors.red)),
                           onTap: () {
                             cubit.logout();
                           },
@@ -195,7 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLanguageBottomSheet() {
+  void _showLanguageBottomSheet(bool isArabic) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -204,24 +208,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Select Language",
+              Text(LocaleKeys.profile_select_language.tr(), // 🔥 ترجمة
                   style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 20),
               ListTile(
                 leading: const Icon(Icons.language),
-                title: const Text("English"),
+                title: Text(LocaleKeys.profile_english.tr()), // 🔥 ترجمة
                 trailing: isArabic
                     ? null
                     : const Icon(Icons.check, color: Colors.green),
-                onTap: () => _changeLanguage(false),
+                onTap: () => _changeLanguage('en'), // 💡 ربط بالـ locale
               ),
               ListTile(
                 leading: const Icon(Icons.language),
-                title: const Text("Arabic"),
+                title: Text(LocaleKeys.profile_arabic.tr()), // 🔥 ترجمة
                 trailing: isArabic
                     ? const Icon(Icons.check, color: Colors.green)
                     : null,
-                onTap: () => _changeLanguage(true),
+                onTap: () => _changeLanguage('ar'), // 💡 ربط بالـ locale
               ),
             ],
           ),
@@ -230,9 +234,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _changeLanguage(bool arabic) {
-    setState(() => isArabic = arabic);
-    Navigator.pop(context);
+  // 💡 التعديل هنا: دالة تغيير اللغة باستخدام easy_localization
+  void _changeLanguage(String langCode) {
+    Navigator.pop(context); // قفل الشيت الأول
+    if (context.locale.languageCode != langCode) {
+      context.setLocale(Locale(langCode)); // قلب لغة الأبلكيشن!
+    }
   }
 
   Widget _buildListTile(
@@ -243,11 +250,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ListTile(
           leading: Icon(icon, color: theme.colorScheme.onSurface),
           title: Text(title, style: theme.textTheme.bodyLarge),
-          trailing: Icon(Icons.arrow_forward_ios,
-              size: 16, color: theme.colorScheme.onSurface),
+          trailing: Transform.flip(
+            // 🔥 قلب السهم أوتوماتيك في حالة اللغة العربية
+            flipX: context.locale.languageCode == 'ar',
+            child: Icon(Icons.arrow_forward_ios,
+                size: 16, color: theme.colorScheme.onSurface),
+          ),
           onTap: onTap,
         ),
-        Divider(
+        const Divider(
           height: 1,
         ),
       ],

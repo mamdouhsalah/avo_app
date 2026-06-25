@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
-import 'package:avo_app/app/features/appointment/models/appointment_model.dart';
+import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -7,7 +8,7 @@ class PricedAppointmentCard extends StatelessWidget {
   final Appointment appointment;
   const PricedAppointmentCard({super.key , required this.appointment});
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -19,13 +20,13 @@ class PricedAppointmentCard extends StatelessWidget {
           height: 106.h,
           child: Container(
               width: 343.w,
-              margin: EdgeInsets.only(right: 33.w),
+              margin: EdgeInsetsDirectional.only(end: 33.w),
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(color: colorScheme.primary, width: 2),
-                
+
               ),
               child: Stack(children: [
                 Column(
@@ -81,17 +82,18 @@ class PricedAppointmentCard extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              
-                    // hourly rate
-                    // will be a static text temporarily 
-                    Text(
-                      "Hourly Rated : \$120",
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500
-                      ),
-                    ),
+
+                              // hourly rate
+                              Text(
+                                'appointment.hourly_rate'.tr(namedArgs: {
+                                  'price': '\$120'
+                                }),
+                                style: TextStyle(
+                                    color: colorScheme.onSurface,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -100,9 +102,10 @@ class PricedAppointmentCard extends StatelessWidget {
 
                   ],
                 ),
-                Positioned(
+
+                PositionedDirectional(
                   top: 0,
-                  right: 0,
+                  end: 0,
                   child: Row(
                     children: [
                       /// rating

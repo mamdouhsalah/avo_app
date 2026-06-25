@@ -1,6 +1,10 @@
 import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../Language/locale_keys.g.dart';
+
 
 class ErrorFeedbackWidget extends StatelessWidget {
   final String errorMessage;
@@ -19,10 +23,11 @@ class ErrorFeedbackWidget extends StatelessWidget {
     return SizedBox(
       height: height ?? 200.h,
       child: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.error_outline_rounded,
@@ -40,7 +45,7 @@ class ErrorFeedbackWidget extends StatelessWidget {
               if (onRetry != null) ...[
                 SizedBox(height: 16.h),
                 MainButton(
-                  text: "retry",
+                  text: LocaleKeys.general_retry.tr(),
                   onPressed: onRetry!,
                   width: 150.w,
                 ),
