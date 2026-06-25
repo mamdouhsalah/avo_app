@@ -33,7 +33,10 @@ class CustomDrawer extends StatelessWidget {
                 SvgPicture.asset(
                   'assets/svg/logo/logo.svg',
                   width: 150.w,
-                  color: theme.colorScheme.primary,
+                  colorFilter: ColorFilter.mode(
+                    theme.colorScheme.primary,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ],
             ),

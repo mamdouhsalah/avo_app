@@ -423,7 +423,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
               ),
               SizedBox(height: 8.h),
               DropdownButtonFormField<DoctorModel>(
-                value: _selectedDoctor,
+                initialValue: _selectedDoctor,
                 items: DataRepository.doctors.map((doctor) {
                   return DropdownMenuItem<DoctorModel>(
                     value: doctor,

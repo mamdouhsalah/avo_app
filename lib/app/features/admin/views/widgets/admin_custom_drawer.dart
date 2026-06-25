@@ -109,7 +109,7 @@ class AdminCustomDrawer extends StatelessWidget {
                   onChanged: (value) {
                     context.read<ThemeCubit>().toggleTheme();
                   },
-                  activeColor: AppColors.lightPrimary,
+                  activeThumbColor: AppColors.lightPrimary,
                 ),
               ],
             ),
