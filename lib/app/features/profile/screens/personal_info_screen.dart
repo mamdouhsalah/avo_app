@@ -1,14 +1,14 @@
 import 'dart:math';
+import 'dart:ui' as ui;
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
+import 'package:intl/intl.dart' hide TextDirection;
+
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
-import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-// أو لو بتعمل import لـ intl مباشرة:
-import 'package:intl/intl.dart' hide TextDirection;
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'dart:ui' as ui;
 import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
 
 class PersonalInfoScreen extends StatefulWidget {
@@ -21,22 +21,32 @@ class PersonalInfoScreen extends StatefulWidget {
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   bool isEditMode = false;
 
+  final TextEditingController _heightController =
+      TextEditingController(text: '179.50');
+  final TextEditingController _weightController =
+      TextEditingController(text: '120.50');
+  final TextEditingController _dobController =
+      TextEditingController(text: '11 / 05 / 2006');
+  
+  // حقول الـ main اللي مش مربوطة بالـ Cubit
+  final TextEditingController _bloodTypeController =
+      TextEditingController(text: 'O+');
+  final TextEditingController _chronicController =
+      TextEditingController(text: 'Chronic Diseases');
+
+  String selectedGender = 'Male';
+
   static const Color maleBlue = Color(0xFF00A3FF);
   static const Color femalePink = Color(0xFFFD778D);
 
-  Future<void> _selectDateOfBirth(
-      BuildContext context, ProfileCubit cubit) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      final formatted =
-          "${picked.day.toString().padLeft(2, '0')} / ${picked.month.toString().padLeft(2, '0')} / ${picked.year}";
-      cubit.dobController.text = formatted;
-    }
+  @override
+  void dispose() {
+    _heightController.dispose();
+    _weightController.dispose();
+    _dobController.dispose();
+    _bloodTypeController.dispose();
+    _chronicController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,7 +70,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         title: Text(
           LocaleKeys.personal_info_title.tr(),
           style:
-          theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -78,7 +88,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           } else if (state is ProfileSuccess && isEditMode) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(LocaleKeys.personal_info_update_success.tr()), // 🔥 ترجمة النجاح
+                content: Text(LocaleKeys.personal_info_update_success.tr()),
                 backgroundColor: Colors.green,
               ),
             );
@@ -97,22 +107,31 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(LocaleKeys.personal_info_gender.tr(), // 🔥 ترجمة النوع
+                    Text(LocaleKeys.personal_info_gender.tr(),
                         style: theme.textTheme.bodyLarge
                             ?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 15),
                     Row(
                       children: [
-                        _buildGenderCard(context, LocaleKeys.personal_info_malee.tr(), Icons.person, // 🔥 ترجمة
-                            maleBlue, cubit.selectedGender == 'Male' || cubit.selectedGender == 'ذكر', cubit, 'Male'),
+                        _buildGenderCard(
+                            context,
+                            LocaleKeys.personal_info_malee.tr(),
+                            Icons.person,
+                            maleBlue,
+                            cubit.selectedGender == 'Male' ||
+                                cubit.selectedGender == 'ذكر',
+                            cubit,
+                            'Male'),
                         const SizedBox(width: 20),
                         _buildGenderCard(
                             context,
-                            LocaleKeys.personal_info_femalee.tr(), // 🔥 ترجمة
+                            LocaleKeys.personal_info_femalee.tr(),
                             Icons.person_3,
                             femalePink,
-                            cubit.selectedGender == 'Female' || cubit.selectedGender == 'أنثى',
-                            cubit, 'Female'),
+                            cubit.selectedGender == 'Female' ||
+                                cubit.selectedGender == 'أنثى',
+                            cubit,
+                            'Female'),
                       ],
                     ),
                     const SizedBox(height: 25),
@@ -120,27 +139,66 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       children: [
                         Expanded(
                             child: _buildEditableField(
-                                context, LocaleKeys.personal_info_height.tr(), cubit.heightController, // 🔥 ترجمة
-                                isNumeric: true, showEditIcon: false, textDirection: ui.TextDirection.ltr)), // 🔥 LTR للأرقام
+                                context,
+                                LocaleKeys.personal_info_height.tr(),
+                                cubit.heightController,
+                                isNumeric: true,
+                                showEditIcon: false,
+                                textDirection: ui.TextDirection.ltr)),
                         const SizedBox(width: 15),
                         Expanded(
                             child: _buildEditableField(
-                                context, LocaleKeys.personal_info_weight.tr(), cubit.weightController, // 🔥 ترجمة
-                                isNumeric: true, showEditIcon: false, textDirection: ui.TextDirection.ltr,)), // 🔥 LTR للأرقام
+                                context,
+                                LocaleKeys.personal_info_weight.tr(),
+                                cubit.weightController,
+                                isNumeric: true,
+                                showEditIcon: false,
+                                textDirection: ui.TextDirection.ltr)),
                       ],
                     ),
                     const SizedBox(height: 20),
                     _buildEditableField(
-                        context, LocaleKeys.personal_info_dob.tr(), cubit.dobController, // 🔥 ترجمة
+                        context, LocaleKeys.personal_info_dob.tr(), cubit.dobController,
                         isDropdown: true,
                         textDirection: ui.TextDirection.ltr,
-                        onTap: () => _selectDateOfBirth(context, cubit)),
+                        onTap: () {
+                          // تأكد إن الميثود دي موجودة عندك تحت
+                          // _selectDateOfBirth(context, cubit);
+                        }),
+                    
+                    // 🔥 رجعنا الحقول الخاصة ببرانش الـ main
+                    const SizedBox(height: 20),
+                    _buildEditableField(context, 'Blood Type', _bloodTypeController,
+                        isDropdown: true),
                     const SizedBox(height: 25),
+                    Text('Chronic Diseases',
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    _buildEditableField(context, '', _chronicController,
+                        isDropdown: true, isHint: true),
+                    const SizedBox(height: 25),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Surgical History',
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: Icon(Icons.add,
+                              color: isEditMode
+                                  ? theme.iconTheme.color
+                                  : theme.disabledColor),
+                          onPressed: isEditMode ? () {} : null,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // _buildSurgicalHistoryItem(context, 'Bidding process', '08/10/2026'),
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),
-              if (state is ProfileLoading)
-                const Center(child: CircularProgressIndicator()),
             ],
           );
         },
@@ -172,7 +230,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   elevation: 0,
                 ),
                 child: Text(
-                  isEditMode ? LocaleKeys.general_save.tr() : LocaleKeys.general_edit.tr(), // 🔥 استخدام الكلمات المشتركة
+                  isEditMode
+                      ? LocaleKeys.general_save.tr()
+                      : LocaleKeys.general_edit.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -189,7 +249,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
-  // 💡 ضفنا value عشان نبعت القيمة بالإنجليزي للـ Cubit بغض النظر عن لغة العرض
   Widget _buildGenderCard(BuildContext context, String title, IconData icon,
       Color color, bool isSelected, ProfileCubit cubit, String value) {
     final theme = Theme.of(context);
@@ -216,9 +275,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               Text(title,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight:
-                    isSelected ? FontWeight.bold : FontWeight.normal,
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                     color:
-                    isSelected ? color : theme.textTheme.bodyMedium?.color,
+                        isSelected ? color : theme.textTheme.bodyMedium?.color,
                   )),
             ],
           ),
@@ -227,15 +286,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
-  // 💡 ضفنا TextDirection عشان نظبط الأرقام والتواريخ
   Widget _buildEditableField(
       BuildContext context, String label, TextEditingController controller,
       {bool isNumeric = false,
-        bool isDropdown = false,
-        bool isHint = false,
-        bool showEditIcon = true,
-        TextDirection? textDirection,
-        VoidCallback? onTap}) {
+      bool isDropdown = false,
+      bool isHint = false,
+      bool showEditIcon = true,
+      ui.TextDirection? textDirection,
+      VoidCallback? onTap}) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,29 +306,29 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         TextField(
           controller: controller,
           enabled: isEditMode,
-          textDirection: ui.TextDirection.ltr,
+          textDirection: textDirection ?? ui.TextDirection.ltr, // 💡 ربطناها بالـ Parameter
           style: theme.textTheme.bodyMedium,
           keyboardType: isNumeric
               ? const TextInputType.numberWithOptions(decimal: true)
               : TextInputType.text,
           readOnly: isDropdown,
-          onTap: isEditMode && isDropdown ? onTap : null,
+          onTap: onTap, // 💡 ضفنا الـ onTap اللي كانت ناقصة هنا
           decoration: InputDecoration(
             suffixIcon: isEditMode && showEditIcon
                 ? Icon(
-                isDropdown
-                    ? Icons.keyboard_arrow_down
-                    : Icons.edit_outlined,
-                size: 20,
-                color: theme.iconTheme.color)
+                    isDropdown
+                        ? Icons.keyboard_arrow_down
+                        : Icons.edit_outlined,
+                    size: 20,
+                    color: theme.iconTheme.color)
                 : null,
             filled: true,
             fillColor: isEditMode
                 ? theme.cardColor
                 : theme.colorScheme.surfaceContainerHighest
-                .withValues(alpha: 0.3),
+                    .withValues(alpha: 0.3),
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: theme.dividerColor),
@@ -285,14 +343,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide:
-              BorderSide(color: theme.colorScheme.primary, width: 1.5),
+                  BorderSide(color: theme.colorScheme.primary, width: 1.5),
             ),
           ),
         ),
       ],
     );
   }
-
-// Widget _buildSurgicalHistoryItem(
-//     BuildContext context, String title, String date) { ... }
 }

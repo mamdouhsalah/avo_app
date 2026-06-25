@@ -33,7 +33,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     try {
       final userProfile = await _consumer.get<UserProfileModel>(
         'users/$uid',
-        fromJson: (json) => UserProfileModel.fromJson(json),
+        fromJson: (json) => UserProfileModel.fromJson(json, id: uid),
       );
       return userProfile;
     } catch (e) {

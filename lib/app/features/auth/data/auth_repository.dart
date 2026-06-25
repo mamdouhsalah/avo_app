@@ -11,24 +11,9 @@ abstract class AuthRepository {
     RegisterRequestModel registerRequestModel
   );
   Future<UserProfileModel?> checkToken();
-  Future<AuthResponseModel> forgetPassword(
+  Future<void> forgetPassword(
     String email
   );
-  Future<AuthResponseModel> verifyCode(
-    String code,
-    String email
-  );
-  Future<AuthResponseModel> resetPassword(
-    String password,
-    String confirmPassword,
-    String token
-  );
-  Future<AuthResponseModel> changePassword(
-    String password,
-    String confirmPassword,
-    String token
-  );
-  Future<AuthResponseModel> verifyEmail(String email);
   Future<AuthResponseModel> updateProfile(
     String name,
     String email,
@@ -36,7 +21,7 @@ abstract class AuthRepository {
     String gender,
     String dateOfBirth,
   );
-  Future<AuthResponseModel> logout();
+  Future<void> logout();
 
   Future<void> reresetPassword(
     String email

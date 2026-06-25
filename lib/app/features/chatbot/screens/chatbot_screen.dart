@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
-import 'package:avo_app/app/features/chatbot/data/chat_message_model.dart';
 import 'package:avo_app/app/features/chatbot/screens/widgets/chat_bubble_widget.dart';
 import 'package:avo_app/app/features/chatbot/screens/widgets/chat_input_widget.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import '../../../core/Language/locale_keys.g.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avo_app/app/features/chatbot/logic/chatbot_cubit.dart';
+import 'package:avo_app/app/features/chatbot/logic/chatbot_state.dart';
 
 class ChatBotScreen extends StatelessWidget {
   const ChatBotScreen({super.key});
@@ -16,48 +18,36 @@ class ChatBotScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final List<ChatMessageModel> dummyMessages = [
-      ChatMessageModel(
-        text: LocaleKeys.chatbot_bot_welcome_msg.tr(),
-        isUser: false,
-        time: "10:00 AM",
-      ),
-      ChatMessageModel(
-        text: LocaleKeys.chatbot_dummy_msg_1.tr(),
-        isUser: true,
-        time: "10:01 AM",
-      ),
-      ChatMessageModel(
-        text: LocaleKeys.chatbot_dummy_msg_2.tr(),
-        isUser: false,
-        time: "10:01 AM",
-      ),
-      ChatMessageModel(
-        text: LocaleKeys.chatbot_dummy_msg_3.tr(),
-        isUser: true,
-        time: "10:02 AM",
-      ),
-    ];
-
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: _buildAppBar(context, theme),
-      body: Column(
-        children: [
-          // قائمة الرسائل
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.h20, vertical: AppSpacing.v20),
-              itemCount: dummyMessages.length,
-              itemBuilder: (context, index) {
-                return ChatBubbleWidget(message: dummyMessages[index]);
-              },
+    // 🔥 دمجنا الـ BlocProvider بتاع برانش الـ main
+    return BlocProvider(
+      create: (context) => ChatbotCubit(),
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: _buildAppBar(context, theme),
+        body: Column(
+          children: [
+            // قائمة الرسائل
+            Expanded(
+              child: BlocBuilder<ChatbotCubit, ChatbotState>(
+                builder: (context, state) {
+                  return ListView.builder(
+                    reverse: true, // Show newest messages at bottom
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSpacing.h20, vertical: AppSpacing.v20),
+                    itemCount: state.messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = state.messages[index];
+                      // Reverse index because of reverse: true
+                      return ChatBubbleWidget(message: msg);
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          // حقل الإدخال
-          const ChatInputWidget(),
-        ],
+            // حقل الإدخال
+            const ChatInputWidget(),
+          ],
+        ),
       ),
     );
   }
