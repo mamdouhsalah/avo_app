@@ -1,12 +1,9 @@
-import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import 'package:intl/intl.dart' hide TextDirection;
 
-import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
 import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys

@@ -1,7 +1,6 @@
 import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/models/user_role.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/constants/app_imgs.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/core/shared/custom_text_form_field.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
@@ -12,7 +11,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -196,37 +194,6 @@ class LoginScreen extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _SocialButton extends StatelessWidget {
-  final String icon;
-  final VoidCallback onTap;
-
-  const _SocialButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(12.r),
-        decoration: BoxDecoration(
-          border: Border.all(color: colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: SvgPicture.asset(
-          icon,
-          width: 24.w,
-          height: 24.h,
-          placeholderBuilder: (context) => Icon(
-            Icons.login,
-            color: colorScheme.onSurface.withValues(alpha: 0.2),
-          ),
         ),
       ),
     );
