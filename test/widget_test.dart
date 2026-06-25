@@ -80,6 +80,7 @@ void main() {
 
     test('test login should return AuthResponseModel', () async {
       final UserProfileModel expectedProfile = UserProfileModel(
+          id: 'fake_uid_1234',
           email: 'abdallahalqiran765@gmail.com',
           fullName: "Abdallah Mahmoud",
           role: "Engineer",
