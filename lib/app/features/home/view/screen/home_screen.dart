@@ -33,6 +33,33 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isVisible = true;
   int selectedCategoryIndex = -1;
 
+  String _calculateMinsUntil(String timeStr) {
+    try {
+      final timeStrTrimmed = timeStr.trim().toUpperCase();
+      final isPM = timeStrTrimmed.contains('PM');
+      final isAM = timeStrTrimmed.contains('AM');
+      final cleanTime = timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
+      final parts = cleanTime.split(':');
+      if (parts.length < 2) return '--';
+      
+      int hour = int.parse(parts[0]);
+      final min = int.parse(parts[1]);
+      
+      if (isPM && hour != 12) hour += 12;
+      if (isAM && hour == 12) hour = 0;
+      
+      final medMinutes = hour * 60 + min;
+      final now = TimeOfDay.now();
+      final currentMinutes = now.hour * 60 + now.minute;
+      
+      final diff = medMinutes - currentMinutes;
+      if (diff < 0) return '0';
+      return diff.toString();
+    } catch (_) {
+      return '--';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
@@ -301,8 +328,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 scrollDirection: Axis.horizontal,
                                                 itemCount: upcomingMedicines.length,
                                                 itemBuilder: (_, i) {
+                                                  final reminder = reminders[i];
                                                   return MedicineCard(
                                                     medicine: upcomingMedicines[i],
+                                                    minsUntil: _calculateMinsUntil(reminder.time),
+                                                    onMarkAsTaken: () {
+                                                      context.read<ReminderCubit>().markAsTaken(reminder);
+                                                    },
                                                   );
                                                 },
                                               ),
