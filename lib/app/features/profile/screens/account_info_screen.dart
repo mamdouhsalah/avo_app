@@ -185,6 +185,13 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               horizontal: 15,
               vertical: 15,
             ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.r),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide(
@@ -200,7 +207,9 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               ),
             ),
             filled: true,
-            fillColor: theme.cardColor,
+            fillColor: enabled
+                ? theme.cardColor
+                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           ),
         ),
       ],

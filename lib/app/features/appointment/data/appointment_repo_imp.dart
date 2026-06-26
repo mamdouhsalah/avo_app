@@ -100,6 +100,7 @@ class AppointmentRepoImp implements AppointmentRepo {
     }
   }
 
+  /// TODO : recommended to be a stream later
   @override
   Future<List<AppointmentModel>> getAllAppointments() async {
     try {
@@ -167,20 +168,142 @@ class AppointmentRepoImp implements AppointmentRepo {
     }
   }
 
-  @override
-  Future<void> updateAppointment(
-    AppointmentModel appointment,
-  ){
-    
+@override
+Future<void> updateAppointmentDetails({
+  required String appointmentId,
+  DateTime? appointmentDate,
+  String? timeStart,
+  String? timeEnd,
+  String? room,
+  String? title,
+}) async {
+  try {
+    final user = await getCurrentUser();
+
+    if (user.role != UserRole.doctor) {
+      throw DatabaseException(
+        'Only doctors can update appointments',
+        'permission-denied',
+      );
+    }
+
+    final updateData = <String, dynamic>{};
+
+    if (appointmentDate != null) {
+      updateData['appointmentDate'] =
+          appointmentDate.toIso8601String();
+    }
+
+    if (timeStart != null) {
+      updateData['timeStart'] = timeStart;
+    }
+
+    if (timeEnd != null) {
+      updateData['timeEnd'] = timeEnd;
+    }
+
+    if (room != null) {
+      updateData['room'] = room;
+    }
+
+    if (title != null) {
+      updateData['title'] = title;
+    }
+
+    await _consumer.update(
+      '${DatabasePaths.appointments}/$appointmentId',
+      data: updateData,
+    );
+  } catch (e) {
+    throw DatabaseException(
+      e.toString(),
+      'failed-to-update-appointment',
+    );
   }
+}
 
   @override
   Future<void> completeAppointment(
     String appointmentId,
-  );
+  ) {
+    // only doctor can complete an appointment
+  }
 
   @override
   Future<void> cancelAppointment(
     String appointmentId,
-  );
+  ) async {
+    // both doctor and patient can cancel an appointment
+    try {
+      final appointment = await _getAppointmentById(appointmentId);
+
+      /// to know the appointment was canceled by whome for future statistics
+      CurrentUser currentUser = await _getCurrentUser();
+      if (appointment.status == AppointmentStatus.completed) {
+        throw DatabaseException(
+          'Completed appointments cannot be cancelled',
+          'appointment-already-completed',
+        );
+      }
+
+      if (appointment.status == AppointmentStatus.canceled) {
+        throw DatabaseException(
+          'Appointment already cancelled',
+          'appointment-already-cancelled',
+        );
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/$appointmentId',
+        data: {
+          'status': AppointmentStatus.canceled.value,
+          'canceledBy': currentUser.uid
+        },
+      );
+    } catch (e) {
+      throw DatabaseException(
+        e.toString(),
+        'failed-to-cancel-appointment',
+      );
+    }
+  }
+
+  @override
+Future<void> confirmAppointment(
+  AppointmentModel appointment,
+) async {
+  try {
+    final CurrentUser user = await _getCurrentUser();
+// feel extra thing to do here!!!!
+    if (user.role != 'doctor') {
+      throw DatabaseException(
+        'Only doctors can confirm appointments',
+        'permission-denied',
+      );
+    }
+
+    if ( // must be pending first
+      appointment.status !=
+      AppointmentStatus.pending
+    ) {
+      throw DatabaseException(
+        'Appointment is not pending',
+        'invalid-status',
+      );
+    }
+
+    await _consumer.update(
+      '${DatabasePaths.appointments}/${appointment.id}',
+      data: {
+        'status':
+            AppointmentStatus.upcoming.value,/// upcoming/confirmed?!!
+      },
+    );
+  } catch (e) {
+    throw DatabaseException(
+      e.toString(),
+      'failed-to-confirm-appointment',
+    );
+  }
+}
 }
