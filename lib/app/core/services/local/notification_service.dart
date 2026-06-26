@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
-import 'package:avo_app/app/core/constants/old_constance.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
@@ -237,9 +237,8 @@ class NotificationService {
     final firebaseKey = settingsBox.get('firebase_key_${medication.key}') as String? ?? '';
 
     for (var day in medication.days) {
-      final weekday = arabicDayToWeekday[day];
+      final weekday = englishDayToWeekday(day);
       log('weekday: $weekday');
-      if (weekday == null) continue;
 
       // Generate a unique notification ID by including the weekday
       final notificationId = '${medication.key}$index$weekday'.hashCode;
@@ -300,7 +299,7 @@ class NotificationService {
   static Future<void> cancelMedicationNotifications(Medication med) async {
     for (int i = 0; i < med.times.length; i++) {
       for (String day in med.days) {
-        final weekday = arabicDayToWeekday[day];
+        final weekday = englishDayToWeekday(day);
         if (weekday != null) {
           await AwesomeNotifications()
               .cancel(med.key.hashCode + i + weekday * 100);

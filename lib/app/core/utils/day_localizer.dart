@@ -35,6 +35,20 @@ String weekdayToEnglish(int weekday) {
   return map[weekday] ?? 'Monday';
 }
 
+/// Maps an English day name (from DB) to its DateTime.weekday (1=Monday...7=Sunday).
+int englishDayToWeekday(String englishDay) {
+  const map = {
+    'Monday': 1,
+    'Tuesday': 2,
+    'Wednesday': 3,
+    'Thursday': 4,
+    'Friday': 5,
+    'Saturday': 6,
+    'Sunday': 7,
+  };
+  return map[englishDay] ?? 1;
+}
+
 /// Returns all 7 English day names in calendar order (Saturday-first,
 /// matching [StartingDayOfWeek.sunday] / the Middle-East calendar convention).
 const List<String> kAllEnglishDays = [

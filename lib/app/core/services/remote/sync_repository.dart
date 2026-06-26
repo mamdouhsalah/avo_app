@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
+import 'package:avo_app/app/core/services/local/notification_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -75,6 +76,12 @@ class SyncRepository {
 
         // Persist mapping so local edits/deletes know which remote record to target
         await settingsBox.put('firebase_key_$hiveKey', firebaseKey);
+        
+        // Schedule local notifications for this synced medication
+        for (int i = 0; i < newMedication.times.length; i++) {
+          await NotificationService.scheduleMedicationNotification(
+              newMedication, newMedication.times[i], i);
+        }
         
         syncCount++;
       }
