@@ -140,16 +140,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Icons.lock_outline,
                             LocaleKeys.profile_account_info.tr(), // 🔥 ترجمة
                             () => context.push(AppRouter.accountInfo)),
-                        _buildListTile(
-                            context,
-                            Icons.person_outline,
-                            LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
-                            () => context.push(AppRouter.personalInfo)),
-                        _buildListTile(
-                            context,
-                            Icons.credit_card_outlined,
-                            LocaleKeys.profile_cards_details.tr(),
-                            () => context.push(AppRouter.checkout)), // 🔥 ترجمة
+                        if (!widget.showDrawer)
+                          _buildListTile(
+                              context,
+                              Icons.person_outline,
+                              LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
+                              () => context.push(AppRouter.personalInfo)),
+                        // _buildListTile(
+                        //     context,
+                        //     Icons.credit_card_outlined,
+                        //     LocaleKeys.profile_cards_details.tr(),
+                        //     () => context.push(AppRouter.checkout)), // 🔥 ترجمة
                         ListTile(
                           leading: Icon(Icons.translate,
                               color: theme.colorScheme.onSurface),

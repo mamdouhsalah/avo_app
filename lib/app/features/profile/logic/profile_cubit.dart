@@ -67,11 +67,23 @@ class ProfileCubit extends Cubit<ProfileState> {
         return;
       }
 
+      final height = double.tryParse(heightController.text.trim());
+      if ((height == null || height < 30 || height > 210) && (userProfile == null || userProfile!.role != 'doctor')) {
+        emit(ProfileFailure(LocaleKeys.auth_error_invalid_height.tr()));
+        return;
+      }
+
+      final weight = double.tryParse(weightController.text.trim());
+      if ((weight == null || weight < 8 || weight > 220) && (userProfile == null || userProfile!.role != 'doctor')) {
+        emit(ProfileFailure(LocaleKeys.auth_error_invalid_weight.tr()));
+        return;
+      }
+
       final data = {
         'full_name': fullNameController.text.trim(),
         'phone_number': phoneController.text.trim(),
-        'height': double.tryParse(heightController.text.trim())?.toInt() ?? 0,
-        'weight': double.tryParse(weightController.text.trim())?.toInt() ?? 0,
+        'height': height,
+        'weight': weight,
         'date_of_birth': dobController.text.trim(),
         'gender': selectedGender.toLowerCase(),
       };

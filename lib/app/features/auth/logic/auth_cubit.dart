@@ -77,11 +77,11 @@ class AuthCubit extends Cubit<AuthState> {
         return LocaleKeys.auth_error_select_gender;
       }
       final height = double.tryParse(heightController.text.trim());
-      if ((height == null || height <= 0) && selectedRole != 'doctor') {
+      if ((height == null || height < 30 || height > 210) && selectedRole != 'doctor') {
         return LocaleKeys.auth_error_invalid_height;
       }
       final weight = double.tryParse(weightController.text.trim());
-      if ((weight == null || weight <= 0) && selectedRole != 'doctor') {
+      if ((weight == null || weight < 8 || weight > 220) && selectedRole != 'doctor') {
         return LocaleKeys.auth_error_invalid_weight;
       }
       if (selectedDob == null) {

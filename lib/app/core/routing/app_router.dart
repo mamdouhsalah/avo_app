@@ -114,7 +114,7 @@ class AppRouter {
             builder: (context, state) => const ProfileScreen(
               showBottomNav: true,
               showAppBar: true,
-              showDrawer: true,
+              showDrawer: false,
             ),
           ),
         ],
