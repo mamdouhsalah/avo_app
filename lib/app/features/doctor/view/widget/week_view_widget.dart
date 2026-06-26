@@ -7,18 +7,20 @@ import 'package:avo_app/app/features/doctor/services/schedule_controller.dart';
 
 class WeekViewWidget extends StatelessWidget {
   final DateTime weekStart;
+  final List<AppointmentModel> appointments;
   final Function(DateTime) onDateSelected;
 
   const WeekViewWidget({
     super.key,
     required this.weekStart,
+    required this.appointments,
     required this.onDateSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     final weekAppointments =
-        ScheduleController.getAppointmentsForWeek(weekStart);
+        ScheduleController.getAppointmentsForWeek(weekStart, appointments);
 
     return SingleChildScrollView(
       child: Column(
@@ -121,7 +123,7 @@ class WeekViewWidget extends StatelessWidget {
       // Get appointments for this hour
       List<AppointmentModel> appointmentsThisHour =
           allAppointments.where((apt) {
-        return apt.timeRange.start.hour == hour;
+        return apt.startHour == hour;
       }).toList();
 
       rows.add(
@@ -201,7 +203,7 @@ class WeekViewWidget extends StatelessWidget {
         children: [
           // Time
           Text(
-            '${ScheduleUtils.formatTime(appointment.timeRange.start)} - ${ScheduleUtils.formatTime(appointment.timeRange.end)}',
+            '${appointment.startTime} - ${appointment.endTime}',
             style: TextStyle(
               fontSize: 10.sp,
               color: Colors.grey[700],
@@ -212,7 +214,7 @@ class WeekViewWidget extends StatelessWidget {
 
           // Patient name
           Text(
-            appointment.patient?.fullName ?? 'Unknown Patient',
+            appointment.patientName ?? 'Unknown Patient',
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
@@ -225,7 +227,7 @@ class WeekViewWidget extends StatelessWidget {
 
           // Diagnosis
           Text(
-            appointment.patient?.diagnosis ?? 'No Diagnosis',
+            appointment.notes ?? 'No Diagnosis',
             style: TextStyle(
               fontSize: 10.sp,
               color: Colors.grey[600],
@@ -302,7 +304,7 @@ class WeekViewWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    apt.patient?.fullName ?? 'Unknown Patient',
+                    apt.patientName ?? 'Unknown Patient',
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
@@ -310,7 +312,7 @@ class WeekViewWidget extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    apt.patient?.diagnosis ?? 'No Diagnosis',
+                    'ID: ${apt.patientId}',
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: Colors.grey[600],
@@ -323,7 +325,8 @@ class WeekViewWidget extends StatelessWidget {
                           size: 12.sp, color: Colors.grey),
                       SizedBox(width: 4.w),
                       Text(
-                        DateFormat('MMM dd, yyyy').format(apt.date),
+                        DateFormat('MMM dd, yyyy')
+                            .format(DateTime.parse(apt.date ?? '')),
                         style:
                             TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
                       ),
@@ -331,7 +334,7 @@ class WeekViewWidget extends StatelessWidget {
                       Icon(Icons.access_time, size: 12.sp, color: Colors.grey),
                       SizedBox(width: 4.w),
                       Text(
-                        ScheduleUtils.formatTime(apt.timeRange.start),
+                        apt.startTime,
                         style:
                             TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
                       ),

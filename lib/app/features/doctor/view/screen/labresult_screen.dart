@@ -1,5 +1,4 @@
 import 'package:avo_app/app/core/models/lab_result_model.dart';
-import 'package:avo_app/app/features/doctor/data/data.dart';
 import 'package:avo_app/app/features/doctor/view/screen/labresult_detail_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/add_labresult_screen.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
@@ -28,7 +27,7 @@ class _LabresultScreenState extends State<LabresultScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
     _tabController.addListener(_onTabChanged);
-    _filteredResults = DataRepository.labResults;
+    _filteredResults = LabResultService.labResults;
   }
 
   @override
@@ -56,7 +55,7 @@ class _LabresultScreenState extends State<LabresultScreen>
   }
 
   void _applyFilters() {
-    List<LabResultModel> base = DataRepository.labResults;
+    List<LabResultModel> base = LabResultService.labResults;
     if (_filterType.isNotEmpty) {
       base = LabResultService.filterByType(base, _filterType);
     }
@@ -469,10 +468,10 @@ class _LabresultScreenState extends State<LabresultScreen>
   }
 
   Widget _buildStatsRow(ThemeData theme) {
-    final total = DataRepository.labResults.length;
+    final total = LabResultService.labResults.length;
     final manual =
-        DataRepository.labResults.where((r) => r.typeAdd == 'Manual').length;
-    final ai = DataRepository.labResults.where((r) => r.typeAdd == 'AI').length;
+        LabResultService.labResults.where((r) => r.typeAdd == 'Manual').length;
+    final ai = LabResultService.labResults.where((r) => r.typeAdd == 'AI').length;
 
     return Row(
       children: [
@@ -572,7 +571,7 @@ class _LabresultScreenState extends State<LabresultScreen>
                     size: 13.sp, color: Colors.grey[500]),
                 SizedBox(width: 4.w),
                 Text(
-                  result.patientName,
+                  result.patientName ?? 'Unknown Patient',
                   style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
                 ),
               ],

@@ -14,8 +14,8 @@ class MainLayout extends StatelessWidget {
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/maps')) return 0;
-    if (location.startsWith('/schedule')) return 1;
+    if (location.startsWith('/scanner')) return 0;
+    if (location.startsWith('/chats')) return 1;
     if (location.startsWith('/home')) return 2;
     if (location.startsWith('/reminder')) return 3;
     if (location.startsWith('/profile')) return 4;
@@ -25,10 +25,10 @@ class MainLayout extends StatelessWidget {
   void _onItemTapped(int index, BuildContext context) {
     switch (index) {
       case 0:
-        context.go('/maps');
+        context.go('/scanner');
         break;
       case 1:
-        context.go('/schedule');
+        context.go('/chats');
         break;
       case 2:
         context.go('/home');

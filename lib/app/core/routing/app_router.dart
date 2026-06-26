@@ -13,15 +13,15 @@ import 'package:avo_app/app/features/auth/screens/validation_code_screen.dart';
 import 'package:avo_app/app/features/chatbot/screens/chatbot_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/analytics_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/appointment_screen.dart';
-import 'package:avo_app/app/features/doctor/view/screen/chats_screen.dart';
+import 'package:avo_app/app/features/chats/view/screens/chats_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/dashboard_screen.dart';
-import 'package:avo_app/app/features/doctor/view/screen/details_patient_screen.dart';
+import 'package:avo_app/app/features/chats/view/screens/user_details_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/labresult_screen.dart';
-import 'package:avo_app/app/features/doctor/view/screen/new_chat_screen.dart';
+import 'package:avo_app/app/features/chats/view/screens/new_chat_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/patient_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/schedule_appointment_screen.dart';
-import 'package:avo_app/app/features/doctor/view/screen/chat_details_screen.dart';
-import 'package:avo_app/app/features/doctor/view/screen/audio_call_screen.dart';
+import 'package:avo_app/app/features/chats/view/screens/chat_details_screen.dart';
+import 'package:avo_app/app/features/chats/view/screens/audio_call_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
@@ -34,6 +34,7 @@ import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
 import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:avo_app/app/features/onboard/screens/onboard_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -55,6 +56,7 @@ class AppRouter {
   static const String labResults = '/lab-results';
   static const String schedule = '/schedule';
   static const String chats = '/chats';
+  static const String doctorChats = '/doctor-chats';
   static const String newChat = '/new-chat';
   static const String analytics = '/analytics';
 
@@ -79,6 +81,7 @@ class AppRouter {
   static const String adminLogs = '/admin-logs';
   static const String adminApprovals = '/admin-approvals';
   static const String adminUsers = '/admin-users';
+  static const String adminChats = '/admin-chats';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -117,6 +120,10 @@ class AppRouter {
               showDrawer: false,
             ),
           ),
+          GoRoute(
+            path: chats,
+            builder: (context, state) => const ChatsScreen(isDoctor: false),
+          ),
         ],
       ),
 
@@ -135,7 +142,9 @@ class AppRouter {
       GoRoute(
           path: analytics,
           builder: (context, state) => const AnalyticsScreen()),
-      GoRoute(path: chats, builder: (context, state) => const ChatsScreen()),
+      GoRoute(
+          path: doctorChats,
+          builder: (context, state) => const ChatsScreen(isDoctor: true)),
       GoRoute(
           path: newChat, builder: (context, state) => const NewChatScreen()),
       GoRoute(
@@ -154,10 +163,10 @@ class AppRouter {
 
       // Other Routes
       GoRoute(
-        path: '/patient-details',
+        path: '/user-details',
         builder: (context, state) {
-          final patient = state.extra as PatientModel;
-          return DetailsPatientScreen(patient: patient);
+          final user = state.extra;
+          return UserDetailsScreen(user: user);
         },
       ),
       GoRoute(
@@ -171,9 +180,10 @@ class AppRouter {
         path: '/audio-call',
         builder: (context, state) {
           final chat = state.extra as ChatModel;
+          final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
           return AudioCallScreen(
-            name: chat.patient.fullName,
-            imageUrl: chat.patient.image ?? '',
+            name: chat.otherUserName(currentUid),
+            imageUrl: chat.otherUserImage(currentUid) ?? '',
           );
         },
       ),
@@ -214,6 +224,9 @@ class AppRouter {
       GoRoute(
           path: adminUsers,
           builder: (context, state) => const AdminUsersScreen()),
+      GoRoute(
+          path: adminChats,
+          builder: (context, state) => const ChatsScreen(isAdmin: true)),
     ],
   );
 
@@ -232,6 +245,7 @@ class AppRouter {
       context.go(appointments);
   static void goToLabResults(BuildContext context) => context.go(labResults);
   static void goToChats(BuildContext context) => context.go(chats);
+  static void goToDoctorChats(BuildContext context) => context.go(doctorChats);
   static void goToAnalytics(BuildContext context) => context.go(analytics);
   static void goToNewChat(BuildContext context) => context.go(newChat);
   static void goToAdminDashboard(BuildContext context) =>

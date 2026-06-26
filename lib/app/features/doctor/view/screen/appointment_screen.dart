@@ -1,6 +1,9 @@
-import 'package:avo_app/app/features/doctor/data/data.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,32 +17,19 @@ class AppointmentScreen extends StatefulWidget {
 class _AppointmentScreenState extends State<AppointmentScreen> {
   bool isUpcoming = true;
   bool isGridView = false; // false = List View, true = Grid View
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  @override
+  void initState() {
+    super.initState();
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     final now = DateTime.now();
-
-    final todayAppointments = DataRepository.appointments.where((appointment) {
-      final appointmentDateTime = DateTime(
-        appointment.date.year,
-        appointment.date.month,
-        appointment.date.day,
-        appointment.timeRange.start.hour,
-        appointment.timeRange.start.minute,
-      );
-
-      final isToday = appointment.date.year == now.year &&
-          appointment.date.month == now.month &&
-          appointment.date.day == now.day;
-
-      if (isUpcoming) {
-        return isToday && appointmentDateTime.isAfter(now);
-      } else {
-        return appointmentDateTime.isBefore(now);
-      }
-    }).toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -86,38 +76,50 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             SizedBox(height: 16.h),
 
             // Stats Grid
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12.h,
-              crossAxisSpacing: 12.w,
-              childAspectRatio: 1.5,
-              children: [
-                _buildStatCard("Total",
-                    DataRepository.appointments.length.toString(), Colors.blue),
-                _buildStatCard(
-                  "Confirmed",
-                  DataRepository.appointments
-                      .where((e) => e.isFavorite)
-                      .length
-                      .toString(),
-                  const Color(0xFF00B8A9),
-                ),
-                _buildStatCard(
-                  "Pending",
-                  DataRepository.appointments
-                      .where((e) => !e.isFavorite)
-                      .length
-                      .toString(),
-                  Colors.orange,
-                ),
-                _buildStatCard(
-                  "Available",
-                  todayAppointments.length.toString(),
-                  Colors.grey,
-                ),
-              ],
+            StreamBuilder<List<AppointmentModel>>(
+              stream: _doctorRepo.streamDoctorAppointments(_doctorId),
+              builder: (context, snapshot) {
+                final allAppointments = snapshot.data ?? [];
+                
+                final todayAppointments = allAppointments.where((appointment) {
+                    final isToday = appointment.isToday;
+                    return isToday;
+                }).toList();
+
+                return GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12.h,
+                  crossAxisSpacing: 12.w,
+                  childAspectRatio: 1.5,
+                  children: [
+                    _buildStatCard("Total",
+                        allAppointments.length.toString(), Colors.blue),
+                    _buildStatCard(
+                      "Confirmed",
+                      allAppointments
+                          .where((e) => e.status == 'confirmed')
+                          .length
+                          .toString(),
+                      const Color(0xFF00B8A9),
+                    ),
+                    _buildStatCard(
+                      "Pending",
+                      allAppointments
+                          .where((e) => e.status == 'pending')
+                          .length
+                          .toString(),
+                      Colors.orange,
+                    ),
+                    _buildStatCard(
+                      "Available",
+                      todayAppointments.length.toString(),
+                      Colors.grey,
+                    ),
+                  ],
+                );
+              }
             ),
 
             SizedBox(height: 24.h),
@@ -213,16 +215,48 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
             // Appointments List / Grid
             Expanded(
-              child: todayAppointments.isEmpty
-                  ? Center(
+              child: StreamBuilder<List<AppointmentModel>>(
+                stream: _doctorRepo.streamDoctorAppointments(_doctorId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  
+                  final allAppointments = snapshot.data ?? [];
+                  
+                  final todayAppointments = allAppointments.where((appointment) {
+                    final appointmentDateTime = DateTime(
+                      appointment.dateTime.year,
+                      appointment.dateTime.month,
+                      appointment.dateTime.day,
+                      appointment.startHour,
+                      appointment.startMinute,
+                    );
+
+                    final isToday = appointment.isToday;
+
+                    if (isUpcoming) {
+                      return isToday && appointmentDateTime.isAfter(now);
+                    } else {
+                      return appointmentDateTime.isBefore(now);
+                    }
+                  }).toList();
+
+                  if (todayAppointments.isEmpty) {
+                    return Center(
                       child: Text(
                         isUpcoming
                             ? "No Upcoming Appointments"
                             : "No Past Appointments",
                         style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                       ),
-                    )
-                  : isGridView
+                    );
+                  }
+
+                  return isGridView
                       ? GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
@@ -247,7 +281,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                               appointment: todayAppointments[index],
                             );
                           },
-                        ),
+                        );
+                }
+              ),
             ),
           ],
         ),

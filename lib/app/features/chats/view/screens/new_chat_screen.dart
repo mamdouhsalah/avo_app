@@ -1,7 +1,11 @@
-import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:avo_app/app/features/doctor/data/data.dart';
-import 'package:avo_app/app/features/doctor/services/chatcontroller.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:avo_app/app/core/models/chatmodel.dart';
+import 'package:avo_app/app/core/constants/database_paths.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -15,15 +19,49 @@ class NewChatScreen extends StatefulWidget {
 
 class _NewChatScreenState extends State<NewChatScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final ChatController _chatController = ChatController();
+  late final DoctorRepositoryImpl _doctorRepo;
+  late final FirestoreChatService _chatService;
+  final String _currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+  Future<List<PatientModel>>? _patientsFuture;
   String _searchQuery = '';
 
-  List<PatientModel> get _allPatients => DataRepository.patients;
+  @override
+  void initState() {
+    super.initState();
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    _chatService = FirestoreChatService();
+    _patientsFuture = _fetchAllUsersForTesting();
+  }
 
-  List<PatientModel> get _filteredPatients {
-    if (_searchQuery.isEmpty) return _allPatients;
+  Future<List<PatientModel>> _fetchAllUsersForTesting() async {
+    try {
+      final allUsers = await FirebaseConsumerImpl().getList(
+        'users',
+        fromJson: (json) => PatientModel.fromJson(json),
+      );
+      final list = allUsers.where((user) => user.id != _currentUid).toList();
+
+      if (list.isEmpty) {
+        list.add(PatientModel(
+          id: 'dummy_id',
+          fullName: 'Debugging: Total users fetched = ${allUsers.length}',
+          email: 'debug@test.com',
+          phoneNumber: '0100000000',
+          role: 'patient',
+        ));
+      }
+
+      return list;
+    } catch (e) {
+      print('Error fetching all users: $e');
+      throw Exception(e.toString());
+    }
+  }
+
+  List<PatientModel> _getFilteredPatients(List<PatientModel> allPatients) {
+    if (_searchQuery.isEmpty) return allPatients;
     final query = _searchQuery.toLowerCase();
-    return _allPatients.where((patient) {
+    return allPatients.where((patient) {
       return patient.fullName.toLowerCase().contains(query) ||
           patient.email.toLowerCase().contains(query) ||
           patient.phoneNumber.toLowerCase().contains(query) ||
@@ -37,52 +75,52 @@ class _NewChatScreenState extends State<NewChatScreen> {
     super.dispose();
   }
 
-  void _startChat(PatientModel patient) {
-    // Check if a chat with this patient already exists
-    final existingChats = _chatController.getAllChats();
-    final existing = existingChats.where((c) => c.patient.id == patient.id);
+  Future<void> _startChat(PatientModel patient) async {
+    await _chatService.getOrCreateChat(
+      doctorId: _currentUid,
+      patientId: patient.id,
+    );
 
-    if (existing.isNotEmpty) {
-      // Navigate to existing chat
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Chat with ${patient.fullName} already exists'),
-          behavior: SnackBarBehavior.floating,
-        ),
+    if (!mounted) return;
+
+    // جلب بيانات الدكتور (اليوزر الحالي) عشان نبني ChatModel كامل
+    DoctorModel? doctorData;
+    try {
+      doctorData = await FirebaseConsumerImpl().get(
+        '${DatabasePaths.users}/$_currentUid',
+        fromJson: (json) => DoctorModel.fromJson(json),
       );
-      context.pop();
-      return;
+    } catch (_) {
+      doctorData = DoctorModel(
+        id: _currentUid,
+        name: 'Doctor',
+        specialty: 'Doctor',
+        rating: 0,
+        reviews: 0,
+        openTime: '09:00',
+        closeTime: '17:00',
+      );
     }
 
-    // Create new chat
-    final newChat = ChatModel(
-      id: 'chat_${DateTime.now().millisecondsSinceEpoch}',
+    if (!mounted) return;
+
+    final chat = ChatModel(
+      id: ChatModel.buildChatId(_currentUid, patient.id),
       patient: patient,
-      doctor: DataRepository.doctors[0],
-      lastMessage: 'New conversation started',
+      doctor: doctorData!,
+      lastMessage: '',
       lastMessageTime: DateTime.now(),
       unreadCount: 0,
       isOnline: false,
       lastMessageSender: 'doctor',
     );
 
-    _chatController.addNewChat(newChat);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Chat started with ${patient.fullName}'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-
-    context.pop();
+    context.push('/chat-details', extra: chat);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final patients = _filteredPatients;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -153,34 +191,53 @@ class _NewChatScreenState extends State<NewChatScreen> {
             ),
           ),
 
-          // ========== PATIENTS COUNT ==========
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-            child: Row(
-              children: [
-                Text(
-                  '${patients.length} patients',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // ========== PATIENTS LIST ==========
           Expanded(
-            child: patients.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    itemCount: patients.length,
-                    itemBuilder: (context, index) {
-                      return _buildPatientTile(patients[index], theme);
-                    },
-                  ),
+            child: FutureBuilder<List<PatientModel>>(
+                future: _patientsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  final allPatients = snapshot.data ?? [];
+                  final patients = _getFilteredPatients(allPatients);
+
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 4.h),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${patients.length} patients',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: patients.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.builder(
+                                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                itemCount: patients.length,
+                                itemBuilder: (context, index) {
+                                  return _buildPatientTile(
+                                      patients[index], theme);
+                                },
+                              ),
+                      ),
+                    ],
+                  );
+                }),
           ),
         ],
       ),
@@ -285,14 +342,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       Row(
                         children: [
                           Icon(
-                            Icons.medical_information_outlined,
+                            Icons.info,
                             size: 13.sp,
                             color: Colors.grey[500],
                           ),
                           SizedBox(width: 4.w),
                           Expanded(
                             child: Text(
-                              patient.diagnosis ?? 'No diagnosis',
+                              patient.role,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: Colors.grey[600],

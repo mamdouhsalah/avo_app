@@ -1,57 +1,97 @@
-import 'package:avo_app/app/core/models/doctor_model.dart';
-import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:avo_app/app/core/models/timerange_model.dart';
-
 class AppointmentModel {
   final String id;
-  final DoctorModel doctor;
-  final PatientModel? patient;
-  final double rating;
-  final bool isFavorite;
-  final TimeRange timeRange;
-  final DateTime date;
+  final String doctorId;
+  final String patientId;
+  final String status; // confirmed, pending, cancelled, completed
+  final String date; // ISO date string
+  final String startTime; // "09:00"
+  final String endTime; // "10:00"
+  final String? patientName;
+  final String? doctorName;
+  final String? notes;
 
   const AppointmentModel({
     required this.id,
-    required this.doctor,
-    required this.rating,
-    required this.isFavorite,
-    required this.timeRange,
+    required this.doctorId,
+    required this.patientId,
+    this.status = 'pending',
     required this.date,
-    this.patient
+    this.startTime = '09:00',
+    this.endTime = '10:00',
+    this.patientName,
+    this.doctorName,
+    this.notes,
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return AppointmentModel(
         id: '',
-        doctor: DoctorModel.fromJson(null),
-        rating: 0.0,
-        isFavorite: false,
-        timeRange: TimeRange.fromJson(null),
-        date: DateTime.now(),
+        doctorId: '',
+        patientId: '',
+        date: DateTime.now().toIso8601String(),
       );
     }
     return AppointmentModel(
       id: json['id']?.toString() ?? '',
-      doctor: DoctorModel.fromJson(json['doctor'] as Map<String, dynamic>?),
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      isFavorite: json['isFavorite'] as bool? ?? false,
-      timeRange: TimeRange.fromJson(json['timeRange'] as Map<String, dynamic>?),
-      date: json['date'] != null
-          ? DateTime.tryParse(json['date'].toString()) ?? DateTime.now()
-          : DateTime.now(),
+      doctorId: json['doctorId']?.toString() ?? '',
+      patientId: json['patientId']?.toString() ?? '',
+      status: json['status']?.toString() ?? 'pending',
+      date: json['date']?.toString() ?? DateTime.now().toIso8601String(),
+      startTime: json['startTime']?.toString() ?? '09:00',
+      endTime: json['endTime']?.toString() ?? '10:00',
+      patientName: json['patientName']?.toString(),
+      doctorName: json['doctorName']?.toString(),
+      notes: json['notes']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'doctor': doctor.toJson(),
-      'rating': rating,
-      'isFavorite': isFavorite,
-      'timeRange': timeRange.toJson(),
-      'date': date.toIso8601String(),
+      'doctorId': doctorId,
+      'patientId': patientId,
+      'status': status,
+      'date': date,
+      'startTime': startTime,
+      'endTime': endTime,
+      if (patientName != null) 'patientName': patientName,
+      if (doctorName != null) 'doctorName': doctorName,
+      if (notes != null) 'notes': notes,
     };
+  }
+
+  /// Parse the date string into DateTime
+  DateTime get dateTime => DateTime.tryParse(date) ?? DateTime.now();
+
+  /// Format date for display
+  String get formattedDate {
+    final dt = dateTime;
+    return "${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}";
+  }
+
+  /// Format time range for display
+  String get timeRangeText => '$startTime - $endTime';
+
+  /// Check if appointment is upcoming
+  bool get isUpcoming => dateTime.isAfter(DateTime.now());
+
+  /// Check if appointment is today
+  bool get isToday {
+    final now = DateTime.now();
+    final dt = dateTime;
+    return dt.year == now.year && dt.month == now.month && dt.day == now.day;
+  }
+
+  /// Get start hour for scheduling
+  int get startHour {
+    final parts = startTime.split(':');
+    return int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
+  }
+
+  /// Get start minute
+  int get startMinute {
+    final parts = startTime.split(':');
+    return int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
   }
 }

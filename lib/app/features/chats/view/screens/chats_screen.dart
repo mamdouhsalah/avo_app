@@ -1,34 +1,41 @@
+import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
-import 'package:avo_app/app/features/doctor/services/chatcontroller.dart';
+import 'package:avo_app/app/features/chats/view/widget/chat_widget.dart';
+import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
+import 'package:avo_app/app/features/admin/views/widgets/admin_custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avo_app/app/features/doctor/view/widget/chat_widget.dart';
 
 class ChatsScreen extends StatefulWidget {
-  const ChatsScreen({super.key});
+  final bool isDoctor;
+  final bool isAdmin;
+  const ChatsScreen({super.key, this.isDoctor = false, this.isAdmin = false});
 
   @override
   State<ChatsScreen> createState() => _ChatsScreenState();
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
-  final ChatController _controller = ChatController();
+  final FirestoreChatService _chatService = FirestoreChatService();
   final TextEditingController _searchController = TextEditingController();
+  final String _currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
   String _searchQuery = '';
+  late Stream<List<ChatModel>> _chatsStream;
 
   @override
   void initState() {
     super.initState();
-    _controller.initialize();
+    _chatsStream = _chatService.chatsStreamForUser(_currentUid);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _controller.dispose();
     super.dispose();
   }
 
@@ -73,7 +80,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
             child: Row(
               children: [
                 CustomAvatar(
-                  imageUrl: chat.patient.image,
+                  imageUrl: chat.otherUserImage(_currentUid),
                   size: 50.sp,
                   radius: 48.r,
                   borderColor: theme.colorScheme.primary,
@@ -83,7 +90,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(chat.patient.fullName,
+                      Text(chat.otherUserName(_currentUid),
                           style: TextStyle(
                               fontSize: 16.sp, fontWeight: FontWeight.bold)),
                       Text(
@@ -108,12 +115,34 @@ class _ChatsScreenState extends State<ChatsScreen> {
           }),
           _buildOptionTile(Icons.person, 'View Profile', () {
             Navigator.pop(context);
-            context.push('/patient-details', extra: chat.patient);
+            context.push('/user-details', extra: chat.iAmDoctor(_currentUid) ? chat.patient : chat.doctor);
           }),
-          _buildOptionTile(Icons.notifications_off, 'Mute Notifications', () {
-            Navigator.pop(context);
-            _showSnackBar('Notifications muted for this chat');
-          }),
+          StreamBuilder<DatabaseEvent>(
+            stream: FirebaseDatabase.instance
+                .ref('${DatabasePaths.users}/$_currentUid/mutedChats/${chat.id}')
+                .onValue,
+            builder: (context, snapshot) {
+              bool isMuted = false;
+              if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+                isMuted = snapshot.data!.snapshot.value == true;
+              }
+              return _buildOptionTile(
+                isMuted ? Icons.notifications_active_outlined : Icons.notifications_off_outlined,
+                isMuted ? 'Unmute Notifications' : 'Mute Notifications',
+                () async {
+                  final ref = FirebaseDatabase.instance.ref('${DatabasePaths.users}/$_currentUid/mutedChats/${chat.id}');
+                  if (isMuted) {
+                    await ref.remove();
+                    if (context.mounted) _showSnackBar('Notifications unmuted for this chat');
+                  } else {
+                    await ref.set(true);
+                    if (context.mounted) _showSnackBar('Notifications muted for this chat');
+                  }
+                  if (context.mounted) Navigator.pop(context);
+                },
+              );
+            },
+          ),
           _buildOptionTile(Icons.delete, 'Delete Chat', () {
             Navigator.pop(context);
             _showDeleteConfirmation(context, chat);
@@ -137,15 +166,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Chat?'),
-        content: Text('Delete chat with ${chat.patient.fullName}?'),
+        content: Text('Delete chat with ${chat.otherUserName(_currentUid)}?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel')),
           TextButton(
             onPressed: () {
+              _chatService.deleteChat(chat.id, _currentUid);
               Navigator.pop(context);
-              _controller.deleteChat(chat.id);
               _showSnackBar('Chat deleted successfully');
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -173,18 +202,22 @@ class _ChatsScreenState extends State<ChatsScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: Icon(
-              Icons.menu,
-              color: theme.textTheme.titleLarge?.color,
-              size: 24.sp,
-            ),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
+        leading: (widget.isDoctor || widget.isAdmin)
+            ? Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    color: theme.textTheme.titleLarge?.color,
+                    size: 24.sp,
+                  ),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
+              )
+            : null,
       ),
-      drawer: const CustomDrawer(),
+      drawer: widget.isAdmin 
+          ? const AdminCustomDrawer() 
+          : (widget.isDoctor ? const CustomDrawer() : null),
       body: Column(
         children: [
           Padding(
@@ -206,7 +239,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
           ),
           Expanded(
             child: StreamBuilder<List<ChatModel>>(
-              stream: _controller.chatsStream,
+              stream: _chatsStream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return const _EmptyChatState(
@@ -215,16 +248,26 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   );
                 }
 
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const _ChatLoadingState();
                 }
 
-                final allChats = snapshot.data!;
+                final allChats = snapshot.data ?? [];
 
-                // Fixed: Using instance methods correctly
-                var filteredChats =
-                    _controller.filterChats(allChats, _searchQuery);
-                filteredChats = _controller.sortChatsByTime(filteredChats);
+                var filteredChats = allChats;
+                if (_searchQuery.isNotEmpty) {
+                  final query = _searchQuery.toLowerCase();
+                  filteredChats = allChats.where((chat) {
+                    return chat
+                            .otherUserName(_currentUid)
+                            .toLowerCase()
+                            .contains(query) ||
+                        chat.lastMessage.toLowerCase().contains(query);
+                  }).toList();
+                }
+
+                filteredChats.sort(
+                    (a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
 
                 if (filteredChats.isEmpty) {
                   return _EmptyChatState(
@@ -237,7 +280,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   );
                 }
 
-                final totalUnread = _controller.getTotalUnreadCount(allChats);
+                int totalUnread = 0;
+                for (var chat in allChats) {
+                  totalUnread += chat.unreadCount;
+                }
 
                 return Column(
                   children: [
@@ -250,6 +296,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           final chat = filteredChats[index];
                           return ChatTile(
                             chat: chat,
+                            currentUid: _currentUid,
                             onTap: () => _onChatTap(chat),
                             onLongPress: (context) =>
                                 _onChatLongPress(context, chat),

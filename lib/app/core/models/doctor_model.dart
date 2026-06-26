@@ -43,18 +43,20 @@ class DoctorModel {
     }
     return DoctorModel(
       id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      specialty: json['specialty']?.toString() ?? '',
+      // Support both 'name' and 'full_name' from RTDB
+      name: json['name']?.toString() ?? json['full_name']?.toString() ?? '',
+      specialty: json['specialty']?.toString() ?? json['role']?.toString() ?? '',
       hospital: json['hospital']?.toString(),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviews: (json['reviews'] as num?)?.toInt() ?? 0,
       hourlyRate: (json['hourlyRate'] as num?)?.toDouble() ?? 0.0,
       experience: (json['experience'] as num?)?.toInt() ?? 0,
       patientsTreated: (json['patientsTreated'] as num?)?.toInt() ?? 0,
-      openTime: json['openTime']?.toString() ?? '',
-      closeTime: json['closeTime']?.toString() ?? '',
+      openTime: json['openTime']?.toString() ?? '09:00',
+      closeTime: json['closeTime']?.toString() ?? '17:00',
       isFavorite: json['isFavorite'] as bool? ?? false,
-      imageUrl: json['imageUrl']?.toString(),
+      // Support both 'imageUrl' and 'image' from RTDB
+      imageUrl: json['imageUrl']?.toString() ?? json['image']?.toString(),
     );
   }
 

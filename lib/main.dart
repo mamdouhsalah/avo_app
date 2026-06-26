@@ -11,6 +11,8 @@ import 'package:avo_app/app/core/services/local/points_service.dart';
 import 'package:avo_app/app/core/services/local/health_metrics_service.dart';
 import 'package:avo_app/app/core/services/local/hive_medical_analysis_service.dart';
 import 'package:avo_app/app/core/services/local/notification_service.dart';
+import 'package:avo_app/app/core/services/local/fcm_service.dart';
+import 'package:avo_app/app/core/services/remote/presence_service.dart';
 
 void main() async {
 
@@ -27,6 +29,12 @@ void main() async {
   await HealthMetricsService.init();
   await MedicalAnalysisService().init();
   await NotificationService.init();
+
+  // Services added from chat feature
+  await FCMService.initialize();
+  PresenceService.initialize();
+
+  // Services added from main for localization
   final preferencesService = PreferencesService();
   final savedLanguage = preferencesService.getLanguage();
 

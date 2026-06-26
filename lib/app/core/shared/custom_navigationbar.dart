@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../Language/locale_keys.g.dart';
 
-
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -18,11 +17,23 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      {"icon": Icons.map_outlined, "label": LocaleKeys.bottom_nav_maps.tr()},
-      {"icon": Icons.calendar_today, "label": LocaleKeys.bottom_nav_schedule.tr()},
-      {"icon": Icons.medical_services_outlined, "label": LocaleKeys.bottom_nav_home.tr()},
-      {"icon": Icons.access_time_outlined, "label": LocaleKeys.bottom_nav_reminder.tr()},
-      {"icon": Icons.person_outline, "label": LocaleKeys.bottom_nav_profile.tr()},
+      {
+        "icon": Icons.adf_scanner_outlined,
+        "label": LocaleKeys.bottom_nav_Scanner.tr()
+      },
+      {"icon": Icons.chat_sharp, "label": LocaleKeys.bottom_nav_Chat.tr()},
+      {
+        "icon": Icons.medical_services_outlined,
+        "label": LocaleKeys.bottom_nav_home.tr()
+      },
+      {
+        "icon": Icons.access_time_outlined,
+        "label": LocaleKeys.bottom_nav_reminder.tr()
+      },
+      {
+        "icon": Icons.person_outline,
+        "label": LocaleKeys.bottom_nav_profile.tr()
+      },
     ];
 
     return Container(
