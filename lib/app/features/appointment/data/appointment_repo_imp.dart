@@ -1,34 +1,81 @@
 import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/models/current_user.dart';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
+import 'package:avo_app/app/core/models/user_role.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
 import 'package:avo_app/app/features/appointment/data/appointment_repo.dart';
 import 'package:avo_app/app/features/appointment/models/appointment_model.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repo.dart';
+import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AppointmentRepoImp implements AppointmentRepo {
   final FirebaseConsumer _consumer;
   final FirebaseAuth _firebaseAuth; // for current user
+  final DoctorRepository _doctorRepository;
+  final ProfileRepository _patientRepository; // feels misleading but ...
 
+  
   AppointmentRepoImp({
     required FirebaseConsumer consumer,
     FirebaseAuth? firebaseAuth,
+    required DoctorRepository doctorRepository,
+    required ProfileRepository patientRepository
   })  : _consumer = consumer,
+        _doctorRepository = doctorRepository,
+        _patientRepository = patientRepository,
         _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
+/// helper functions
+
+Future<List<AppointmentCardModel>> _buildAppointmentCards(
+    List<AppointmentModel> appointments,
+) async {
+
+  final List<AppointmentCardModel> cards = [];
+
+  for (final appointment in appointments) {
+
+    final doctor =
+        await _doctorRepository.getDoctorById(
+            appointment.doctorId);
+
+    UserProfileModel? patient;
+
+    if (appointment.patientId != null && appointment.patientId!.isNotEmpty) {
+      patient =
+          await _patientRepository.getUserIfPatientById(
+              appointment.patientId!);
+    }
+
+    cards.add(
+      AppointmentCardModel(
+        appointment: appointment,
+        doctor: doctor,
+        patient: patient,
+      ),
+    );
+  }
+
+  return cards;
+}
 
   Future<AppointmentModel> _getAppointmentById(String appointmentId) async {
     try {
       final AppointmentModel appointment = await _consumer
           .get<AppointmentModel>('${DatabasePaths.appointments}/$appointmentId',
-              fromJson: AppointmentModel.fromJson);
+              fromJson: (json) => AppointmentModel.fromJson(json));
       return appointment;
     } catch (e) {
       throw DatabaseException(e.toString(), 'failed-to-load-appointment');
     }
   }
 
+// determines doctor / patient
   Future<CurrentUser> _getCurrentUser() async {
     try {
       final currentUser = _firebaseAuth.currentUser;
@@ -44,7 +91,7 @@ class AppointmentRepoImp implements AppointmentRepo {
 
       final UserProfileModel user = await _consumer.get<UserProfileModel>(
         '${DatabasePaths.users}/$uid',
-        fromJson: UserProfileModel.fromJson,
+        fromJson: (json) => UserProfileModel.fromJson(json),
       );
 
       return CurrentUser(uid: uid, role: user.role);
@@ -67,7 +114,7 @@ class AppointmentRepoImp implements AppointmentRepo {
       final List<AppointmentModel> appointments =
           await _consumer.getList<AppointmentModel>(
         '${DatabasePaths.appointments}',
-        fromJson: AppointmentModel.fromJson,
+        fromJson: (json) => AppointmentModel.fromJson(json),
         queryParams: FirebaseQueryParams(
           orderByChild: 'patientId',
           equalTo: uid,
@@ -87,7 +134,7 @@ class AppointmentRepoImp implements AppointmentRepo {
       final List<AppointmentModel> appointments =
           await _consumer.getList<AppointmentModel>(
         '${DatabasePaths.appointments}',
-        fromJson: AppointmentModel.fromJson,
+        fromJson: (json) => AppointmentModel.fromJson(json),
         queryParams: FirebaseQueryParams(
           orderByChild: 'doctorId',
           equalTo: uid,
@@ -100,24 +147,35 @@ class AppointmentRepoImp implements AppointmentRepo {
     }
   }
 
-  /// TODO : recommended to be a stream later
-  @override
-  Future<List<AppointmentModel>> getAllAppointments() async {
-    try {
-      final CurrentUser user = await _getCurrentUser();
-      switch (user.role) {
-        case 'patient':
-          return await _getPatientAppointments();
-        default:
-          return await _getDoctorAppointments();
-      }
-    } catch (e) {
-      throw DatabaseException(e.toString(), 'failed-to-get-user-appointments');
+@override
+Future<List<AppointmentCardModel>> getAllAppointments() async {
+  try {
+    final CurrentUser user = await _getCurrentUser();
+
+    final List<AppointmentModel> appointments;
+
+    switch (user.role) {
+      case UserRole.patient:
+        appointments = await _getPatientAppointments();
+        break;
+
+      case UserRole.doctor:
+      default:
+        appointments = await _getDoctorAppointments();
+        break;
     }
+
+    return await _buildAppointmentCards(appointments);
+  } catch (e) {
+    throw DatabaseException(
+      e.toString(),
+      'failed-to-get-user-appointments',
+    );
   }
+}
 
   /// patient methods
-  /// upcomming , canceled , completed , favourite will be handled in cubit
+  /// TODO : upcomming , canceled , completed , favourite will be handled in cubit
   @override
   Future<void> setFavourite(String appointmentId) async {
     try {
@@ -151,7 +209,7 @@ class AppointmentRepoImp implements AppointmentRepo {
   ) async {
     try {
       final CurrentUser user = await _getCurrentUser();
-      if (user.role == 'doctor') {
+      if (user.role == UserRole.doctor) {
         // 1. Generate the ID locally (0 network cost, completely offline)
         final String? generatedId =
             await _consumer.getRefrence(path: DatabasePaths.appointments);
@@ -168,68 +226,99 @@ class AppointmentRepoImp implements AppointmentRepo {
     }
   }
 
-@override
-Future<void> updateAppointmentDetails({
-  required String appointmentId,
-  DateTime? appointmentDate,
-  String? timeStart,
-  String? timeEnd,
-  String? room,
-  String? title,
-}) async {
-  try {
-    final user = await getCurrentUser();
+  @override
+  Future<void> updateAppointmentDetails({
+    required String appointmentId,
+    DateTime? appointmentDate,
+    String? timeStart,
+    String? timeEnd,
+    String? room,
+    String? title,
+  }) async {
+    try {
+      final user = await _getCurrentUser();
 
-    if (user.role != UserRole.doctor) {
+      if (user.role != UserRole.doctor) {
+        throw DatabaseException(
+          'Only doctors can update appointments',
+          'permission-denied',
+        );
+      }
+
+      final updateData = <String, dynamic>{};
+
+      if (appointmentDate != null) {
+        updateData['appointmentDate'] = appointmentDate.toIso8601String();
+      }
+
+      if (timeStart != null) {
+        updateData['timeStart'] = timeStart;
+      }
+
+      if (timeEnd != null) {
+        updateData['timeEnd'] = timeEnd;
+      }
+
+      if (room != null) {
+        updateData['room'] = room;
+      }
+
+      if (title != null) {
+        updateData['title'] = title;
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/$appointmentId',
+        data: updateData,
+      );
+    } catch (e) {
       throw DatabaseException(
-        'Only doctors can update appointments',
-        'permission-denied',
+        e.toString(),
+        'failed-to-update-appointment',
       );
     }
-
-    final updateData = <String, dynamic>{};
-
-    if (appointmentDate != null) {
-      updateData['appointmentDate'] =
-          appointmentDate.toIso8601String();
-    }
-
-    if (timeStart != null) {
-      updateData['timeStart'] = timeStart;
-    }
-
-    if (timeEnd != null) {
-      updateData['timeEnd'] = timeEnd;
-    }
-
-    if (room != null) {
-      updateData['room'] = room;
-    }
-
-    if (title != null) {
-      updateData['title'] = title;
-    }
-
-    await _consumer.update(
-      '${DatabasePaths.appointments}/$appointmentId',
-      data: updateData,
-    );
-  } catch (e) {
-    throw DatabaseException(
-      e.toString(),
-      'failed-to-update-appointment',
-    );
   }
-}
 
   @override
   Future<void> completeAppointment(
-    String appointmentId,
-  ) {
-    // only doctor can complete an appointment
+    AppointmentModel appointment,
+  ) async {
+    try {
+      final user = await _getCurrentUser();
+      // only doctor can make appointment completed
+      if (user.role != UserRole.doctor) {
+        throw DatabaseException(
+          'Only doctors can complete appointments',
+          'permission-denied',
+        );
+      }
+
+      if (appointment.status !=
+              AppointmentStatus.upcoming // must be upcoming first
+          ) {
+        throw DatabaseException(
+          'Only upcoming appointments can be completed',
+          'invalid-status',
+        );
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/${appointment.id}',
+        data: {
+          'status': AppointmentStatus.completed.value,
+        },
+      );
+    } catch (e) {
+      throw DatabaseException(
+        e.toString(),
+        'failed-to-complete-appointment',
+      );
+    }
   }
 
   @override
+
+  ///TODO : later caceled automatically if appointment date == now and it is pending
   Future<void> cancelAppointment(
     String appointmentId,
   ) async {
@@ -269,41 +358,120 @@ Future<void> updateAppointmentDetails({
   }
 
   @override
-Future<void> confirmAppointment(
-  AppointmentModel appointment,
-) async {
-  try {
-    final CurrentUser user = await _getCurrentUser();
+  Future<void> confirmAppointment(
+    AppointmentModel appointment,
+  ) async {
+    try {
+      final CurrentUser user = await _getCurrentUser();
 // feel extra thing to do here!!!!
-    if (user.role != 'doctor') {
+      if (user.role != UserRole.doctor) {
+        throw DatabaseException(
+          'Only doctors can confirm appointments',
+          'permission-denied',
+        );
+      }
+
+      if ( // must be pending first
+          appointment.status != AppointmentStatus.pending) {
+        throw DatabaseException(
+          'Appointment is not pending',
+          'invalid-status',
+        );
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/${appointment.id}',
+        data: {
+          'status': AppointmentStatus.upcoming.value,
+
+          /// upcoming/confirmed?!!
+        },
+      );
+    } catch (e) {
       throw DatabaseException(
-        'Only doctors can confirm appointments',
-        'permission-denied',
+        e.toString(),
+        'failed-to-confirm-appointment',
       );
     }
+  }
 
-    if ( // must be pending first
-      appointment.status !=
-      AppointmentStatus.pending
-    ) {
+  @override // if doctor rejects a pending appointment it becomes available again
+  Future<void> rejectAppointment(
+    AppointmentModel appointment,
+  ) async {
+    try {
+      final CurrentUser user = await _getCurrentUser();
+  // feel extra thing to do here!!!!
+      if (user.role != UserRole.doctor) {
+        throw DatabaseException(
+          'Only doctors can reject appointments',
+          'permission-denied',
+        );
+      }
+
+      if ( // must be pending first
+          appointment.status != AppointmentStatus.pending) {
+        throw DatabaseException(
+          'Appointment is not pending',
+          'invalid-status',
+        );
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/${appointment.id}',
+        data: {
+          'status': AppointmentStatus.available.value,
+
+          /// upcoming/confirmed?!!
+        },
+      );
+    } catch (e) {
       throw DatabaseException(
-        'Appointment is not pending',
-        'invalid-status',
+        e.toString(),
+        'failed-to-confirm-appointment',
       );
     }
+  }
 
-    await _consumer.update(
-      '${DatabasePaths.appointments}/${appointment.id}',
-      data: {
-        'status':
-            AppointmentStatus.upcoming.value,/// upcoming/confirmed?!!
-      },
-    );
-  } catch (e) {
-    throw DatabaseException(
-      e.toString(),
-      'failed-to-confirm-appointment',
-    );
+  @override
+  Future<void> bookAppointment(String appointmentId) async {
+    try {
+      final currentUser = await _getCurrentUser();
+
+      if (currentUser.role != UserRole.patient) {
+        throw DatabaseException(
+          'Only patients can book appointments',
+          'permission-denied',
+        );
+      }
+
+      final appointment = await _getAppointmentById(appointmentId);
+
+      if (appointment.status != AppointmentStatus.available) {
+        throw DatabaseException(
+          'Appointment is no longer available',
+          'appointment-not-available',
+        );
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/$appointmentId',
+        data: {
+          'patientId': currentUser.uid,
+          'status': AppointmentStatus.pending.value,
+        },
+      );
+
+      // Later:
+      // NotificationService.sendBookingRequestToDoctor(...)
+    } catch (e) {
+      throw DatabaseException(
+        e.toString(),
+        'failed-to-book-appointment',
+      );
+    }
   }
 }
-}
+/// TODO : get pending ,canceled,available,completed 
+/// appointments and their count in appointment cubit
+///  after getting doctor appointments once!!!

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
 import 'package:avo_app/app/core/services/remote/cloudinary_service.dart';
@@ -56,6 +57,19 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return await _cloudinaryService.uploadImage(file);
     } catch (e) {
       throw DatabaseException(e.toString(), 'upload-avatar-failed');
+    }
+  }
+
+  @override
+  Future<UserProfileModel> getUserIfPatientById(String patientId) {
+    try {
+      final user = _consumer.get<UserProfileModel>(
+          '${DatabasePaths.users}/$patientId',
+          fromJson: (json) => UserProfileModel.fromJson(json, id: patientId));
+      return user;
+    } catch (e) {
+      throw DatabaseException(
+          e.toString(), 'user is not found or is not a patient');
     }
   }
 }

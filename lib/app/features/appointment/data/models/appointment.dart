@@ -4,15 +4,12 @@ enum AppointmentStatus {
   confirmed, // doctor accepted
   completed, // finished
   canceled, // canceled by doctor or patient
-  upcoming // patient booked it but still in future
 }
 
 // from enum to string
 extension AppointmentStatusExtension on AppointmentStatus {
   String get value {
     switch (this) {
-      case AppointmentStatus.upcoming:
-        return 'upcoming';
       case AppointmentStatus.completed:
         return 'completed';
       case AppointmentStatus.canceled:
@@ -32,8 +29,6 @@ extension AppointmentStatusExtension on AppointmentStatus {
         return AppointmentStatus.completed;
       case 'canceled':
         return AppointmentStatus.canceled;
-      case 'upcoming':
-        return AppointmentStatus.upcoming;
       case 'pending':
         return AppointmentStatus.pending;
       case 'confirmed':

@@ -6,4 +6,6 @@ abstract class ProfileRepository {
   Future<UserProfileModel> getProfile(String uid);
   Future<void> updateProfile(String uid, Map<String, dynamic> data);
   Future<String> uploadAvatar(File file);
+  // for combining appointment with patient data in the same card
+  Future<UserProfileModel> getUserIfPatientById(String patientId);
 }
