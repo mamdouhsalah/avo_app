@@ -42,11 +42,10 @@ class AppointmentCard extends StatelessWidget {
                   ),
                 ),
                 child: ClipOval(
-                  child: Image.asset(
-                    appointment.doctor.imageUrl.toString(),
-                    width: 55.r,
-                    height: 55.r,
-                    fit: BoxFit.cover,
+                  child: Icon(
+                    Icons.person,
+                    size: 30.r,
+                    color: theme.colorScheme.surface,
                   ),
                 ),
               ),
@@ -56,7 +55,7 @@ class AppointmentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      appointment.doctor.name,
+                      appointment.doctorName ?? 'Doctor',
                       style: TextStyle(
                         color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.w500,
@@ -64,7 +63,7 @@ class AppointmentCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "(${appointment.doctor.specialty})",
+                      appointment.status,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.w400,
@@ -75,7 +74,7 @@ class AppointmentCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "${appointment.rating}",
+                          appointment.formattedDate,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.w400,
@@ -83,7 +82,7 @@ class AppointmentCard extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 5.w),
-                        Icon(Icons.star,
+                        Icon(Icons.calendar_today,
                             color: AppColors.lightOrangeOutLine, size: 16.sp),
                       ],
                     ),
@@ -109,7 +108,7 @@ class AppointmentCard extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onPrimary, size: 24.sp),
               SizedBox(width: 6.w),
               Text(
-                appointment.doctor.openTime,
+                appointment.startTime,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w400,
@@ -126,7 +125,7 @@ class AppointmentCard extends StatelessWidget {
                     SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
-                        appointment.doctor.closeTime,
+                        appointment.endTime,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.w400,

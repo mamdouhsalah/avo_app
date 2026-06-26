@@ -14,7 +14,8 @@ class SplashCubit extends Cubit<SplashState> {
     try {
       final user = await repository.checkToken();
       if (user != null) {
-        if (user.isVerified == true) {
+        // تم دمج صلاحية الأدمن من main مع عملية المزامنة من فرعك
+        if (user.isVerified == true || user.role == 'admin') {
           // Initial Data Sync: fetch meds from Firebase if local is cleared (e.g. fresh install)
           await syncRepository.syncMedicationsFromRemote();
           emit(SplashSuccess(user.role));

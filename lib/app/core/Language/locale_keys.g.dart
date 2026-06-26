@@ -3,8 +3,8 @@
 // ignore_for_file: constant_identifier_names
 
 abstract class  LocaleKeys {
-  static const bottom_nav_maps = 'bottom_nav.maps';
-  static const bottom_nav_schedule = 'bottom_nav.schedule';
+  static const bottom_nav_Scanner = 'bottom_nav.Scanner';
+  static const bottom_nav_Chat = 'bottom_nav.Chat';
   static const bottom_nav_home = 'bottom_nav.home';
   static const bottom_nav_reminder = 'bottom_nav.reminder';
   static const bottom_nav_profile = 'bottom_nav.profile';
@@ -21,14 +21,14 @@ abstract class  LocaleKeys {
   static const general_today = 'general.today';
   static const general_yes = 'general.yes';
   static const general_no = 'general.no';
+  static const general_done = 'general.done';
   static const general_message = 'general.message';
   static const general_cancel = 'general.cancel';
-  static const general_download = 'general.download';
   static const general_delete = 'general.delete';
+  static const general_download = 'general.download';
   static const general_share = 'general.share';
   static const general_search = 'general.search';
   static const general_skip = 'general.skip';
-  static const general_done = 'general.done';
   static const general_save = 'general.save';
   static const general_edit = 'general.edit';
   static const general = 'general';

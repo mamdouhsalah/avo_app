@@ -2,8 +2,11 @@ import 'dart:io';
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:avo_app/app/features/doctor/data/data.dart';
+import 'package:avo_app/app/features/doctor/services/labresult_service.dart';
 import 'package:avo_app/app/features/doctor/view/widget/patient_search_bottom_sheet.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,25 +37,34 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
   final TextEditingController _notesController = TextEditingController();
 
   PatientModel? _selectedPatient;
-  DoctorModel? _selectedDoctor;
+  List<PatientModel> _patients = [];
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void initState() {
     super.initState();
     _isAnalyzing = widget.isAI;
 
-    // Default select first patient and doctor if available
-    if (DataRepository.patients.isNotEmpty) {
-      _selectedPatient = DataRepository.patients.first;
-    }
-    if (DataRepository.doctors.isNotEmpty) {
-      _selectedDoctor = DataRepository.doctors.first;
-    }
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    _loadPatients();
 
     if (_isAnalyzing) {
       _simulateAIAnalysis();
     } else {
       _prefillManual();
+    }
+  }
+
+  Future<void> _loadPatients() async {
+    final patients = await _doctorRepo.getDoctorPatients(_currentUid);
+    if (mounted) {
+      setState(() {
+        _patients = patients;
+        if (_patients.isNotEmpty) {
+          _selectedPatient = _patients.first;
+        }
+      });
     }
   }
 
@@ -119,7 +131,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
           expand: false,
           builder: (context, scrollController) {
             return PatientSearchBottomSheet(
-              patients: DataRepository.patients,
+              patients: _patients,
               selectedPatient: _selectedPatient,
               onPatientSelected: (patient) {
                 setState(() {
@@ -144,20 +156,13 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
         );
         return;
       }
-      if (_selectedDoctor == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Please select a doctor'),
-              backgroundColor: Colors.red),
-        );
-        return;
-      }
-
       final newResult = LabResultModel(
         id: "lr_${DateTime.now().millisecondsSinceEpoch}",
         title: _titleController.text.trim(),
-        patient: _selectedPatient!,
-        doctor: _selectedDoctor!,
+        patientId: _selectedPatient!.id,
+        doctorId: _currentUid,
+        patientName: _selectedPatient!.fullName,
+        doctorName: 'Doctor', // Could fetch from prefs or pass it down
         description: _descriptionController.text.trim(),
         dateTime: DateTime.now(),
         fileType: widget.file.name.split('.').last.toLowerCase(),
@@ -172,7 +177,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
       );
 
       // Add to repository
-      DataRepository.addLabResult(newResult);
+      LabResultService.labResults.add(newResult);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -414,38 +419,6 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
                   ),
                 ),
               ],
-              SizedBox(height: 16.h),
-
-              // ── Doctor Dropdown ──────────────────────────────
-              Text(
-                "Assign Doctor",
-                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.h),
-              DropdownButtonFormField<DoctorModel>(
-                initialValue: _selectedDoctor,
-                items: DataRepository.doctors.map((doctor) {
-                  return DropdownMenuItem<DoctorModel>(
-                    value: doctor,
-                    child: Text(doctor.name),
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  setState(() {
-                    _selectedDoctor = val;
-                  });
-                },
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.medical_services_outlined),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-                ),
-                validator: (val) =>
-                    val == null ? 'Please assign a doctor' : null,
-              ),
               SizedBox(height: 20.h),
 
               // ── General Info Form Fields ─────────────────────

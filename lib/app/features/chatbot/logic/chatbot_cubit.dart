@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:avo_app/app/features/chatbot/data/chat_message_model.dart';
+import 'package:avo_app/app/features/chatbot/data/chatbot_message_model.dart';
 
 import 'package:avo_app/app/core/services/local/gemini_service.dart';
 import 'chatbot_state.dart';
@@ -36,7 +36,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
   }
 
   void _addWelcomeMessage() {
-    final welcomeMessage = ChatMessageModel(
+    final welcomeMessage = ChatbotMessageModel(
       id: const Uuid().v4(),
       text: 'أهلاً بيك! أنا المساعد الطبي الخاص بيك، أقدر أساعدك إزاي النهاردة؟',
       isUser: false,
@@ -54,7 +54,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       emit(state.copyWith(isListening: false));
     }
 
-    final textMessage = ChatMessageModel(
+    final textMessage = ChatbotMessageModel(
       id: const Uuid().v4(),
       text: text,
       isUser: true,
@@ -71,7 +71,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       
       if (response.isNotEmpty) {
         final messageId = const Uuid().v4();
-        final aiMessage = ChatMessageModel(
+        final aiMessage = ChatbotMessageModel(
           id: messageId,
           text: '', // Start empty for typing animation
           isUser: false,
@@ -108,7 +108,7 @@ class ChatbotCubit extends Cubit<ChatbotState> {
       } else {
         timer.cancel();
         // Update the actual message
-        final messages = List<ChatMessageModel>.from(state.messages);
+        final messages = List<ChatbotMessageModel>.from(state.messages);
         final index = messages.indexWhere((msg) => msg.id == messageId);
         if (index != -1) {
           messages[index] = messages[index].copyWith(text: response);

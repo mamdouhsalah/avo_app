@@ -1,6 +1,9 @@
-import 'package:avo_app/app/features/doctor/data/data.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_pationtcard.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +18,16 @@ class PatientScreen extends StatefulWidget {
 class _PatientScreenState extends State<PatientScreen> {
   final TextEditingController _searchController = TextEditingController();
   String query = "";
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  Future<List<PatientModel>>? _patientsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    _patientsFuture = _doctorRepo.getDoctorPatients(_doctorId);
+  }
 
   @override
   void dispose() {
@@ -25,12 +38,6 @@ class _PatientScreenState extends State<PatientScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    final filteredPatients = DataRepository.patients.where((patient) {
-      return patient.fullName.toLowerCase().contains(query.toLowerCase()) ||
-          patient.email.toLowerCase().contains(query.toLowerCase()) ||
-          patient.phoneNumber.contains(query);
-    }).toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -98,8 +105,26 @@ class _PatientScreenState extends State<PatientScreen> {
             ),
             SizedBox(height: 24.h),
             Expanded(
-              child: filteredPatients.isEmpty
-                  ? Center(
+              child: FutureBuilder<List<PatientModel>>(
+                future: _patientsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  final allPatients = snapshot.data ?? [];
+                  
+                  final filteredPatients = allPatients.where((patient) {
+                    return patient.fullName.toLowerCase().contains(query.toLowerCase()) ||
+                        patient.email.toLowerCase().contains(query.toLowerCase()) ||
+                        patient.phoneNumber.contains(query);
+                  }).toList();
+
+                  if (filteredPatients.isEmpty) {
+                    return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -109,31 +134,35 @@ class _PatientScreenState extends State<PatientScreen> {
                           SizedBox(height: 16.h),
                           Text(
                             query.isEmpty
-                                ? "Search for patients"
+                                ? "No patients yet"
                                 : "No patients found",
                             style: TextStyle(
                                 fontSize: 18.sp, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: filteredPatients.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 12.h),
-                          child: CustomPatientCard(
-                            patient: filteredPatients[index],
-                            onTap: () {
-                              context.push(
-                                '/patient-details',
-                                extra: filteredPatients[index],
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: filteredPatients.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: CustomPatientCard(
+                          patient: filteredPatients[index],
+                          onTap: () {
+                            context.push(
+                              '/user-details',
+                              extra: filteredPatients[index],
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                }
+              ),
             ),
           ],
         ),

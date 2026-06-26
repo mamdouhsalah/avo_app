@@ -14,7 +14,7 @@ class CodegenLoader extends AssetLoader{
     return Future.value(mapLocales[locale.toString()]);
   }
 
-  static const Map<String,dynamic> _en = {
+  static const Map<String,dynamic> _ar = {
   "bottom_nav": {
     "maps": "Maps",
     "schedule": "Schedule",
@@ -332,6 +332,8 @@ static const Map<String,dynamic> _ar = {
   "bottom_nav": {
     "maps": "الخرائط",
     "schedule": "المواعيد",
+    "Scanner": "ماسح ضوئي",
+    "Chat": "الدردشة",
     "home": "الرئيسية",
     "reminder": "التذكير",
     "profile": "حسابي"
@@ -642,5 +644,255 @@ static const Map<String,dynamic> _ar = {
     "december": "ديسمبر"
   }
 };
-static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
+static const Map<String,dynamic> _en = {
+  "bottom_nav": {
+    "Scanner": "Scanner",
+    "Chat": "Chat",
+    "home": "Home",
+    "reminder": "Reminder",
+    "profile": "Profile"
+  },
+  "general": {
+    "view_all": "View All",
+    "in_mins": "In {mins} min",
+    "mark_as_taken": "Mark as Taken",
+    "buy_medicine": "Buy Medicine",
+    "book_appointment": "Book Appointment",
+    "retry": "Retry",
+    "date": "Date",
+    "time": "Time",
+    "continue_btn": "Continue",
+    "today": "Today",
+    "yes": "Yes",
+    "no": "No",
+    "message": "Message",
+    "cancel": "Cancel",
+    "download": "Download",
+    "delete": "Delete",
+    "share": "Share",
+    "search": "Search",
+    "skip": "Skip",
+    "done": "Done",
+    "save": "Save",
+    "edit": "Edit"
+  },
+  "tracking": {
+    "title": "Tracking Order",
+    "order_placed": "Order Placed",
+    "shipped": "Shipped",
+    "delivered": "Delivered"
+  },
+  "order_card": {
+    "order_id": "Order #{id}",
+    "tracking_id": "Tracking ID: {id}",
+    "expected_delivery": "Expected Delivery: {date}"
+  },
+  "schedule": {
+    "january": "January",
+    "time_zone": "Time Zone",
+    "est_time": "EST time...",
+    "title": "Schedule"
+  },
+  "reminder": {
+    "active": "Active",
+    "next_dose_in": "Next dose in",
+    "take": "Take",
+    "pill": "pill",
+    "next": "Next",
+    "taken": "Taken",
+    "title": "Reminder",
+    "add": "ADD",
+    "medication_name": "Medication Name",
+    "from": "From",
+    "to": "To",
+    "frequency": "Frequency",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "custom": "Custom",
+    "select_custom_date": "Select Custom Date",
+    "selected_date": "Selected Date: {date}",
+    "reminder_settings": "Reminder Settings",
+    "sound_notifications": "Sound notifications",
+    "smart_reminders": "Smart reminders",
+    "todays_schedule": "Today's Schedule",
+    "see_all": "See all",
+    "schedule": "Schedule"
+  },
+  "personal_info": {
+    "title": "Personal Information",
+    "update_success": "Personal information updated successfully",
+    "gender": "Gender",
+    "malee": "Male",
+    "femalee": "Female",
+    "height": "Height (CM)",
+    "weight": "Weight (KG)",
+    "dob": "Date of Birth"
+  },
+  "account_info": {
+    "title": "Account Info",
+    "update_success": "Account information updated successfully",
+    "full_name": "Full Name",
+    "phone": "Phone"
+  },
+  "profile": {
+    "unauthenticated": "User not authenticated",
+    "account_info": "Account Information",
+    "personal_info": "Personal Information",
+    "cards_details": "Cards Details",
+    "app_language": "App Language",
+    "select_language": "Select Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "app_theme": "App Theme",
+    "sign_out": "Sign Out"
+  },
+  "payment": {
+    "formatted_card": "{cardType} **** {digits}",
+    "add_card_title": "Add Card",
+    "name_on_card": "Name on card",
+    "name_hint": "Enter name on card",
+    "number_on_card": "Number on card",
+    "expiry": "Expiry",
+    "cvv": "CVV",
+    "select_color": "Select Card Color",
+    "checkout": "Checkout",
+    "your_cards": "Your Cards",
+    "add_card": "Add Card",
+    "other_methods": "Other Methods",
+    "paypal": "PayPal",
+    "apple_pay": "Apple Pay",
+    "bank_transfer": "Bank Transfer",
+    "connected": "Connected",
+    "balance": "Balance",
+    "total_price": "Total Price",
+    "pay_now": "Pay Now →",
+    "confirm_payment": "Confirm Payment",
+    "confirm_msg": "Are you sure you want to pay {amount}?",
+    "confirm": "Confirm",
+    "success_title": "Payment Successful",
+    "success_desc": "Your payment has been processed",
+    "amount": "Amount",
+    "card": "Card",
+    "date": "Date"
+  },
+  "onboard": {
+    "title_1": "Welcome to AVO",
+    "desc_1": "Your Health Companion",
+    "title_2": "All Medical Services",
+    "desc_2": "Schedule appointments with top doctors in seconds.",
+    "desc_3": "Access pharmacies, labs and radiology centers in one place."
+  },
+  "search_page": {
+    "hint": "Search doctors, pharmacies...",
+    "start_typing": "Start typing to search...",
+    "doctors": "Doctors",
+    "pharmacies": "Pharmacies",
+    "no_results": "No results found",
+    "check_spelling": "Check your spelling and try again."
+  },
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome",
+    "upcoming_appointments": "Upcoming Appointments",
+    "no_upcoming_appointments": "No upcoming appointments",
+    "upcoming_medicine": "Upcoming Medicine",
+    "no_medicines_scheduled": "No medicines scheduled",
+    "categories": "Categories",
+    "no_categories": "No categories available",
+    "best_doctors": "Best Doctors",
+    "no_doctors": "No doctors available",
+    "best_pharmacies": "Best Pharmacies",
+    "no_pharmacies": "No pharmacies available"
+  },
+  "category": {
+    "title": "Categories",
+    "no_categories": "No categories available"
+  },
+  "chatbot": {
+    "bot_welcome_msg": "Hello! How can I help you today?",
+    "chatbot_title": "AVO Assistant",
+    "chatbot_online": "Online",
+    "dummy_msg_1": "I need to set a reminder for my Amoxicillin.",
+    "dummy_msg_2": "Sure! What is the dosage and when would you like to be reminded?",
+    "dummy_msg_3": "500mg, every day at 9:00 AM."
+  },
+  "cart": {
+    "title": "Cart",
+    "make_payment": "Make Payment"
+  },
+  "appointment": {
+    "title": "Appointments",
+    "upcoming": "Upcoming",
+    "completed": "Completed",
+    "canceled": "Canceled",
+    "details_title": "Appointment Details",
+    "schedule": "Schedule",
+    "cancel_appointment": "Cancel Appointment",
+    "reschedule": "Reschedule",
+    "cancel_confirm_msg": "Are you sure you want to cancel appointment of Dr. {doctorName}?",
+    "cancel_success_title": "Canceled Successfully",
+    "cancel_success_msg": "Your appointment with Dr. {doctorName} is canceled successfully",
+    "review_experience": "Review your experience",
+    "write_message_hint": "Write a message for the doctor ....",
+    "hourly_rate": "Hourly Rate: {price}",
+    "selected_date": "Selected Date",
+    "selected_time": "Selected Time"
+  },
+  "auth": {
+    "create_account": "Create Account",
+    "choose_role": "Choose your role to create your account.",
+    "create_desc": "Create your account for a seamless healthcare experience",
+    "doctor": "Doctor",
+    "patient": "Patient",
+    "radiology_specialist": "Radiology Specialist",
+    "pharmacy_specialist": "Pharmacy Specialist",
+    "laboratory_specialist": "Laboratory Specialist",
+    "continue": "Continue",
+    "sign_up": "Sign Up",
+    "full_name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "gender": "Gender",
+    "malee": "Male",
+    "femalee": "Female",
+    "height": "Height (CM)",
+    "weight": "Weight (KG)",
+    "dob": "Date of Birth",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "full_name_hint": "Enter your full name",
+    "email_hint": "Enter your email",
+    "phone_hint": "Enter your Phone Number",
+    "height_hint": "Height",
+    "weight_hint": "Weight",
+    "dob_hint": "DD / MM / YY",
+    "password_hint": "Enter your password",
+    "confirm_password_hint": "Confirm Your Password",
+    "welcome_back": "Welcome Back",
+    "sign_in_desc": "Sign in to continue",
+    "forgot_password": "Forgot Password?",
+    "login": "Login",
+    "or_continue_with": "Or continue with",
+    "new_to_avo": "New to AVO? ",
+    "create_an_account": "Create an account",
+    "error_invalid_credentials": "Invalid email or password",
+    "error_select_role": "Please select a role",
+    "error_invalid_name": "Please enter a valid name",
+    "error_invalid_email": "Please enter a valid email address",
+    "error_invalid_phone": "Please enter a valid phone number",
+    "error_select_gender": "Please select a gender",
+    "error_invalid_height": "Please enter a valid height",
+    "error_invalid_weight": "Please enter a valid weight",
+    "error_select_dob": "Please select your date of birth",
+    "error_invalid_password": "Password must be at least 6 characters",
+    "error_password_mismatch": "Passwords do not match",
+    "error_need_verification": "Your account is pending admin approval. Please wait until your account is activated.",
+    "reset_email_sent": "Reset Password Email Sent Successfully, check your email to reset your password",
+    "forgot_password_appbar": "Forgot Password",
+    "forgot_password_title": "Forgot your password?",
+    "forgot_password_subtitle": "Enter the email address associated with your account and we will send you a verification code.",
+    "send_code": "Send Code"
+  }
+};
+static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};
 }

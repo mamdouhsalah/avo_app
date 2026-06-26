@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
-import 'package:avo_app/app/features/chatbot/data/chat_message_model.dart';
+import 'package:avo_app/app/features/chatbot/data/chatbot_message_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/chatbot/logic/chatbot_cubit.dart';
 import 'package:avo_app/app/features/chatbot/logic/chatbot_state.dart';
 
 class ChatBubbleWidget extends StatelessWidget {
-  final ChatMessageModel message;
+  final ChatbotMessageModel message;
 
   const ChatBubbleWidget({super.key, required this.message});
 

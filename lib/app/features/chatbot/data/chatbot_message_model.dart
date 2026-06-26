@@ -1,23 +1,23 @@
-class ChatMessageModel {
+class ChatbotMessageModel {
   final String id;
   final String text;
   final bool isUser;
   final String time;
 
-  ChatMessageModel({
+  ChatbotMessageModel({
     required this.id,
     required this.text,
     required this.isUser,
     required this.time,
   });
 
-  ChatMessageModel copyWith({
+  ChatbotMessageModel copyWith({
     String? id,
     String? text,
     bool? isUser,
     String? time,
   }) {
-    return ChatMessageModel(
+    return ChatbotMessageModel(
       id: id ?? this.id,
       text: text ?? this.text,
       isUser: isUser ?? this.isUser,

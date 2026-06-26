@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
@@ -15,10 +16,9 @@ class NotificationService {
   static Future<void> init() async {
     final settingsBox = await Hive.openBox('settings');
     final soundEnabled =
-    settingsBox.get('notificationSound', defaultValue: true);
+        settingsBox.get('notificationSound', defaultValue: true);
     final vibrationEnabled =
-    settingsBox.get('notificationVibration', defaultValue: true);
-
+        settingsBox.get('notificationVibration', defaultValue: true);
     await AwesomeNotifications().initialize(
       null, // Reference to your icon, null uses default app icon
       [
@@ -30,7 +30,7 @@ class NotificationService {
           locked: true, // Non-dismissible
           channelShowBadge: true,
           ledColor: Colors.white,
-          defaultColor: const Color(0xFF9D50DD),
+          defaultColor: Color(0xFF9D50DD),
           playSound: soundEnabled,
           enableVibration: vibrationEnabled,
           defaultPrivacy: NotificationPrivacy.Public,
@@ -85,28 +85,156 @@ class NotificationService {
     );
 
     // Request notification permissions
-    await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        AwesomeNotifications().requestPermissionToSendNotifications(
-          channelKey: 'med_channel',
-          permissions: [
-            NotificationPermission.Alert,
-            NotificationPermission.Sound,
-            NotificationPermission.Vibration,
-            NotificationPermission.FullScreenIntent,
-          ],
-        );
+    if (kIsWeb) {
+      await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+        if (!isAllowed) {
+          AwesomeNotifications().requestPermissionToSendNotifications(
+            channelKey: 'med_channel',
+            permissions: [
+              NotificationPermission.Alert,
+              NotificationPermission.Sound,
+              NotificationPermission.Vibration,
+              NotificationPermission
+                  .FullScreenIntent, // Request full-screen permission
+            ],
+          );
+        }
+      });
+    } else {
+      await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+        if (!isAllowed) {
+          AwesomeNotifications().requestPermissionToSendNotifications(
+            channelKey: 'med_channel',
+            permissions: [
+              NotificationPermission.Alert,
+              NotificationPermission.Sound,
+              NotificationPermission.Vibration,
+              NotificationPermission
+                  .FullScreenIntent, // Request full-screen permission
+            ],
+          );
+        }
+      });
+    }
+
+    // Listen for notification actions
+    AwesomeNotifications().setListeners(onActionReceivedMethod: (action) async {
+      if (action.channelKey == 'med_channel') {
+        final payload = action.payload;
+        final medicationKey = int.parse(payload!['medicationKey']!);
+        final notificationId = int.parse(payload['notificationId']!);
+        final time = payload['time']!;
+        final logBox = HiveService.getMedicationLogBox();
+
+        if (action.buttonKeyPressed == 'TOOK') {
+          await logBox.add(MedicationLog(
+            medicationKey: medicationKey,
+            timestamp: DateTime.now(),
+            action: 'took',
+            notificationId: notificationId,
+            logId: '',
+            medicationId: '',
+            medicationName: '',
+            actionDate: DateTime.now(),
+            scheduledTime: '',
+            status: '',
+          ));
+          await AwesomeNotifications().cancel(notificationId);
+        } else if (action.buttonKeyPressed == 'SKIPPED') {
+          await logBox.add(MedicationLog(
+            medicationKey: medicationKey,
+            timestamp: DateTime.now(),
+            action: 'skipped',
+            notificationId: notificationId,
+            logId: '',
+            medicationId: '',
+            medicationName: '',
+            actionDate: DateTime.now(),
+            scheduledTime: '',
+            status: '',
+          ));
+          await AwesomeNotifications().cancel(notificationId);
+        } else if (action.buttonKeyPressed == 'SNOOZE') {
+          await logBox.add(MedicationLog(
+            medicationKey: medicationKey,
+            timestamp: DateTime.now(),
+            action: 'snoozed',
+            notificationId: notificationId,
+            logId: '',
+            medicationId: '',
+            medicationName: '',
+            actionDate: DateTime.now(),
+            scheduledTime: '',
+            status: '',
+          ));
+          // Reschedule notification for 15 minutes later
+          final med = HiveService.getMedicationBox()
+              .values
+              .firstWhere((m) => m.key == medicationKey);
+          final now = DateTime.now();
+          final snoozeTime = now.add(Duration(minutes: 15));
+          await AwesomeNotifications().createNotification(
+            content: NotificationContent(
+              fullScreenIntent: true,
+              locked: true,
+              id: notificationId,
+              channelKey: 'med_channel',
+              title: 'تذكير بالدواء: ${med.name}',
+              body: 'حان وقت أخذ ${med.dose} ${med.unit} من ${med.name}',
+              payload: {
+                'medicationKey': medicationKey.toString(),
+                'notificationId': notificationId.toString(),
+                'time': time,
+              },
+            ),
+            actionButtons: [
+              NotificationActionButton(
+                key: 'TOOK',
+                label: 'أخذته',
+                color: Colors.green,
+                autoDismissible: true,
+              ),
+              NotificationActionButton(
+                key: 'SKIPPED',
+                label: 'تخطي',
+                color: Colors.red,
+                autoDismissible: true,
+              ),
+              NotificationActionButton(
+                key: 'SNOOZE',
+                label: 'تأجيل',
+                color: Colors.blue,
+                autoDismissible: false,
+              ),
+            ],
+            schedule: NotificationCalendar(
+              year: snoozeTime.year,
+              month: snoozeTime.month,
+              day: snoozeTime.day,
+              hour: snoozeTime.hour,
+              minute: snoozeTime.minute,
+              second: 0,
+              millisecond: 0,
+              allowWhileIdle: true,
+            ),
+          );
+        }
       }
     });
-
-    // 🔥 ده الحل السحري! بنربطها بالدالة הـ Static مباشرة بدون Anonymous Function
-    AwesomeNotifications().setListeners(
-      onActionReceivedMethod: NotificationService.onActionReceived,
+    await AwesomeNotifications().requestPermissionToSendNotifications(
+      channelKey: 'med_channel',
+      permissions: [
+        NotificationPermission.Alert,
+        NotificationPermission.Sound,
+        NotificationPermission.Vibration,
+        NotificationPermission
+            .FullScreenIntent, // Request full-screen permission
+      ],
     );
 
     // Check for initial notification action (app launched from notification)
     final initialAction =
-    await AwesomeNotifications().getInitialNotificationAction();
+        await AwesomeNotifications().getInitialNotificationAction();
     if (initialAction != null && initialAction.channelKey == 'med_channel') {
       await handleNotificationAction(initialAction);
     }
@@ -114,16 +242,16 @@ class NotificationService {
     requestBatteryOptimization();
   }
 
+  // Static method for handling actions in background/terminated state
   @pragma('vm:entry-point')
   static Future<void> onActionReceived(ReceivedAction action) async {
+    // Initialize Hive in background
     try {
-      // Initialize Hive in background
       await HiveService.init();
-      if (action.channelKey == 'med_channel') {
-        await handleNotificationAction(action);
-      }
+      await handleNotificationAction(action);
     } catch (e) {
-      debugPrint('Error in background action handler: $e');
+      // Log error (e.g., to native logs or file)
+      print('Error in background action handler: $e');
     }
   }
 
@@ -138,8 +266,6 @@ class NotificationService {
     final time = payload['time']!;
 
     // Create a temporary FirebaseConsumer for background usage
-    // Important: We might need to ensure Firebase App is initialized if this runs in a separate isolate.
-    // However, Awesome Notifications background action usually runs in an isolate where plugins are initialized.
     final firebaseConsumer = FirebaseConsumerImpl();
     try {
       await firebaseConsumer.init();
@@ -175,11 +301,11 @@ class NotificationService {
       await recordLog('snoozed');
 
       // Reschedule notification for 15 minutes later
-      final medBox = HiveService.getMedicationBox();
-      final med = medBox.values.firstWhere((m) => m.key == medicationKey);
+      final med = HiveService.getMedicationBox()
+          .values
+          .firstWhere((m) => m.key == medicationKey);
       final now = DateTime.now();
-      final snoozeTime = now.add(const Duration(minutes: 15));
-
+      final snoozeTime = now.add(Duration(minutes: 15));
       await AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: notificationId,
@@ -254,7 +380,7 @@ class NotificationService {
           channelKey: 'med_channel',
           title: 'تذكير بالدواء: ${medication.name}',
           body:
-          'حان وقت أخذ ${medication.dose} ${medication.unit} من ${medication.name}',
+              'حان وقت أخذ ${medication.dose} ${medication.unit} من ${medication.name}',
           payload: {
             'medicationKey': medication.key.toString(),
             'medicationId': firebaseKey,
@@ -336,7 +462,7 @@ class NotificationService {
         channelKey: 'appointment_channel',
         title: 'تذكير بالموعد: ${appointment.title}',
         body:
-        'الموعد في ${appointment.location} الساعة ${DateFormat('HH:mm').format(appointment.dateTime)}',
+            'الموعد في ${appointment.location} الساعة ${DateFormat('HH:mm').format(appointment.dateTime)}',
         notificationLayout: NotificationLayout.Default,
       ),
       schedule: NotificationCalendar(
@@ -377,13 +503,13 @@ class NotificationService {
     if (!metric.remind) return;
 
     final String displayName = {
-      'sugar': 'سكر الدم',
-      'pressure': 'ضغط الدم',
-      'pressure_systolic': 'ضغط الدم',
-      'pressure_diastolic': 'ضغط الدم',
-      'weight': 'الوزن',
-      'sleep': 'ساعات النوم',
-    }[metric.type] ??
+          'sugar': 'سكر الدم',
+          'pressure': 'ضغط الدم',
+          'pressure_systolic': 'ضغط الدم',
+          'pressure_diastolic': 'ضغط الدم',
+          'weight': 'الوزن',
+          'sleep': 'ساعات النوم',
+        }[metric.type] ??
         metric.type;
 
     await AwesomeNotifications().createNotification(

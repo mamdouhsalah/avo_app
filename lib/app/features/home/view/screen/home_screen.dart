@@ -445,12 +445,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                // 🔥 التعديل السحري للـ RTL زي الداشبورد بالظبط
                 AnimatedPositionedDirectional(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                   bottom: 100.h,
-                  end: isVisible ? 16.w : -50.w, // 🔥 استخدام end بدل right
+                  end: isVisible ? 16.w : -50.w,
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 400),
                     opacity: isVisible ? 1 : 0.8,

@@ -79,11 +79,11 @@ class AuthCubit extends Cubit<AuthState> {
         return LocaleKeys.auth_error_select_gender;
       }
       final height = double.tryParse(heightController.text.trim());
-      if (height == null || height <= 0) {
+      if ((height == null || height < 30 || height > 210) && selectedRole != 'doctor') {
         return LocaleKeys.auth_error_invalid_height;
       }
       final weight = double.tryParse(weightController.text.trim());
-      if (weight == null || weight <= 0) {
+      if ((weight == null || weight < 8 || weight > 220) && selectedRole != 'doctor') {
         return LocaleKeys.auth_error_invalid_weight;
       }
       if (selectedDob == null) {
@@ -122,8 +122,8 @@ class AuthCubit extends Cubit<AuthState> {
         phoneNumber: phoneController.text.trim(),
         gender: selectedGender ?? 'male',
         dateOfBirth: dobStr,
-        height: double.tryParse(heightController.text.trim()) ?? 0,
-        weight: double.tryParse(weightController.text.trim()) ?? 0,
+        height: double.tryParse(heightController.text.trim()),
+        weight: double.tryParse(weightController.text.trim()),
         image: profileImagePath,
       );
 

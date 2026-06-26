@@ -15,6 +15,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp();
       }
+
       _database.setPersistenceEnabled(true);
     } catch (e) {
       log("Firebase Init Notice: $e");
@@ -43,12 +44,17 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
           return result;
         } else {
           throw DatabaseException(
-            'Expected Map data at path: $path, but found: ${rawValue.runtimeType}',
+            'We encountered an issue processing the data. Please try again.',
             'invalid-data-type',
+            'Expected Map data at path: $path, but found: ${rawValue.runtimeType}',
           );
         }
       } else {
-        throw DatabaseException('No data found at path: $path', 'not-found');
+        throw DatabaseException(
+          'The requested information could not be found.',
+          'not-found',
+          'No data found at path: $path',
+        );
       }
     } catch (e) {
       log("GET FAILED: Path: $path, Error: $e");
