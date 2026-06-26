@@ -4,12 +4,16 @@ import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
 import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 // ─────────────────────────── States ───────────────────────────
 
@@ -43,27 +47,24 @@ class ReminderCubit extends Cubit<ReminderState> {
   }) : super(ReminderInitial());
 
   /// Loads all medications scheduled for today.
-  /// Uses [MedicationLog] to determine the real taken/upcoming status
-  /// instead of a pure time-based heuristic.
+  /// Emits [ReminderLoading] → [ReminderLoaded] or [ReminderError].
   void loadTodaysMedications() {
     emit(ReminderLoading());
+    _fetchAndEmitLoaded();
+  }
+
+  /// Refreshes data WITHOUT emitting [ReminderLoading] first.
+  /// ✅ Bug 6 fix: prevents flashing a spinner mid-swipe animation.
+  void _refreshSilently() => _fetchAndEmitLoaded();
+
+  void _fetchAndEmitLoaded() {
     try {
       final medBox = HiveService.getMedicationBox();
       final logBox = HiveService.getMedicationLogBox();
 
-      // Arabic day name matching what AddMedicationCubit stores
-      final arabicDays = {
-        1: 'الإثنين',
-        2: 'الثلاثاء',
-        3: 'الأربعاء',
-        4: 'الخميس',
-        5: 'الجمعة',
-        6: 'السبت',
-        7: 'الأحد',
-      };
-      final todayName = arabicDays[DateTime.now().weekday];
+      // ✅ English day name — matches what AddMedicationCubit now stores
+      final todayName = weekdayToEnglish(DateTime.now().weekday);
 
-      // Collect Hive keys for meds already marked "took" or "taken" or "skipped" today
       final now = DateTime.now();
       final todayStart = DateTime(now.year, now.month, now.day);
       final todayEnd = todayStart.add(const Duration(days: 1));
@@ -72,47 +73,89 @@ class ReminderCubit extends Cubit<ReminderState> {
           .where((log) =>
               log.actionDate.isAfter(todayStart) &&
               log.actionDate.isBefore(todayEnd) &&
-              (log.status == 'taken' || log.status == 'skipped' || log.action == 'took' || log.action == 'skipped'))
+              (log.status == 'taken' ||
+                  log.status == 'skipped' ||
+                  log.action == 'took' ||
+                  log.action == 'skipped'))
           .toList();
 
-      final currentMinutes = TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+      final currentMinutes =
+          TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
 
       List<ReminderModel> schedule = [];
 
+      final dateOnly = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
       for (final med in medBox.values) {
         if (!med.days.contains(todayName)) continue;
+        
+        if (med.fromDate != null) {
+          final fromOnly = DateTime(med.fromDate!.year, med.fromDate!.month, med.fromDate!.day);
+          if (dateOnly.isBefore(fromOnly)) continue;
+        }
+        if (med.toDate != null) {
+          final toOnly = DateTime(med.toDate!.year, med.toDate!.month, med.toDate!.day);
+          if (dateOnly.isAfter(toOnly)) continue;
+        }
 
         for (final timeStr in med.times) {
-          final parts = timeStr.split(':');
-          final hour = int.parse(parts[0]);
-          final minute = int.parse(parts[1]);
+          final timeStrTrimmed = timeStr.trim().toUpperCase();
+          final isPM = timeStrTrimmed.contains('PM');
+          final isAM = timeStrTrimmed.contains('AM');
+          final cleanTime = timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
+          final parts = cleanTime.split(':');
+          
+          if (parts.length < 2) continue;
+          final parsedHour = int.tryParse(parts[0]);
+          final minute = int.tryParse(parts[1]);
+          if (parsedHour == null || minute == null) continue;
+          
+          int hour = parsedHour;
+          if (isPM && hour != 12) hour += 12;
+          if (isAM && hour == 12) hour = 0; // standard 24h internal for elapsed calculation
+          
           final medMinutes = hour * 60 + minute;
+          
+          // Re-format for UI
+          final h = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+          final m = minute.toString().padLeft(2, '0');
+          final ampm = (hour >= 12 && hour < 24) ? 'PM' : 'AM';
 
-          final tod = TimeOfDay(hour: hour, minute: minute);
-          final h = tod.hourOfPeriod == 0 ? 12 : tod.hourOfPeriod;
-          final m = tod.minute.toString().padLeft(2, '0');
-          final ampm = tod.period == DayPeriod.am ? 'AM' : 'PM';
+          // ✅ Bug 19 fix: null-safe Hive key access
+          final hiveKey = med.key as int?;
+          if (hiveKey == null) continue;
 
-          final hiveKey = med.key as int;
-
-          // Real status: check MedicationLog first, then fall back to time
           String status = 'upcoming';
-          final logForThisTime = todayLogs.where((log) => log.medicationKey == hiveKey && (log.scheduledTime == timeStr || log.scheduledTime.isEmpty)).firstOrNull;
+          final logForThisTime = todayLogs
+              .where((log) =>
+                  log.medicationKey == hiveKey &&
+                  (log.scheduledTime == timeStr ||
+                      log.scheduledTime.isEmpty))
+              .firstOrNull;
 
           if (logForThisTime != null) {
-            status = logForThisTime.status == 'taken' || logForThisTime.action == 'took' ? 'taken' : 'skipped';
+            status = (logForThisTime.status == 'taken' ||
+                    logForThisTime.action == 'took')
+                ? 'taken'
+                : 'skipped';
           } else if (medMinutes <= currentMinutes) {
-            status = 'overdue'; // time passed but not taken
+            status = 'overdue';
           }
+
+          // ✅ Localized frequency label (easy_localization works at dart level)
+          final freq = med.days.length == 7
+              ? LocaleKeys.reminder_daily_frequency.tr()
+              : LocaleKeys.reminder_days_per_week
+                  .tr(namedArgs: {'count': '${med.days.length}'});
 
           schedule.add(ReminderModel(
             id: hiveKey.toString(),
             name: med.name,
             dosage: '${med.dose} ${med.unit}',
             pillCount: '${med.dose} ${med.unit}',
-            time: '$h:$m $ampm', // Wait, the original timeStr is HH:mm. Let's keep original format available if needed.
+            time: '$h:$m $ampm',
             status: status,
-            frequency: med.days.length == 7 ? 'يومياً' : '${med.days.length} أيام/أسبوع',
+            frequency: freq,
             isActive: status != 'taken' && status != 'skipped',
           ));
         }
@@ -125,7 +168,8 @@ class ReminderCubit extends Cubit<ReminderState> {
       // Mark the first upcoming/overdue dose as 'next'
       ReminderModel? nextDose;
       for (int i = 0; i < schedule.length; i++) {
-        if (schedule[i].status == 'upcoming' || schedule[i].status == 'overdue') {
+        if (schedule[i].status == 'upcoming' ||
+            schedule[i].status == 'overdue') {
           schedule[i] = schedule[i].copyWith(status: 'next');
           nextDose = schedule[i];
           break;
@@ -134,7 +178,7 @@ class ReminderCubit extends Cubit<ReminderState> {
 
       emit(ReminderLoaded(todaysSchedule: schedule, nextDose: nextDose));
     } catch (e) {
-      log('ReminderCubit.loadTodaysMedications error: $e');
+      log('ReminderCubit._fetchAndEmitLoaded error: $e');
       emit(ReminderError(DatabaseExceptionHandler.handleException(e).message));
     }
   }
@@ -160,10 +204,15 @@ class ReminderCubit extends Cubit<ReminderState> {
 
     try {
       final settingsBox = Hive.box('settings');
-      final firebaseKey = settingsBox.get('firebase_key_$hiveKey') as String? ?? '';
+      final firebaseKey =
+          settingsBox.get('firebase_key_$hiveKey') as String? ?? '';
+
+      // ✅ Bug 3 fix: unique ID generated upfront — never an empty string key
+      final logId =
+          '${DateTime.now().millisecondsSinceEpoch}_$hiveKey';
 
       final logEntry = MedicationLog(
-        logId: '',
+        logId: logId,
         medicationKey: hiveKey,
         medicationId: firebaseKey,
         medicationName: reminder.name,
@@ -176,7 +225,7 @@ class ReminderCubit extends Cubit<ReminderState> {
       );
 
       await logRepository.saveLog(logEntry);
-      loadTodaysMedications(); // refresh state
+      _refreshSilently(); // ✅ Bug 6 fix: no ReminderLoading flash mid-swipe
     } catch (e) {
       log('ReminderCubit._recordAction error: $e');
     }
@@ -229,14 +278,27 @@ class ReminderCubit extends Cubit<ReminderState> {
 
   // ─── Helpers ───
 
+  /// ✅ Bug 2 fix: wrapped in try/catch. Returns 9999 on parse failure so
+  /// malformed time strings sort to the end instead of crashing the cubit.
   int _parseTimeMinutes(String timeStr) {
-    // Format: "9:00 AM" or "02:30 PM"
-    final parts = timeStr.split(' ');
-    final timeParts = parts[0].split(':');
-    int hour = int.parse(timeParts[0]);
-    final int min = int.parse(timeParts[1]);
-    if (parts[1] == 'PM' && hour != 12) hour += 12;
-    if (parts[1] == 'AM' && hour == 12) hour = 0;
-    return hour * 60 + min;
+    try {
+      final timeStrTrimmed = timeStr.trim().toUpperCase();
+      final isPM = timeStrTrimmed.contains('PM');
+      final isAM = timeStrTrimmed.contains('AM');
+      final cleanTime = timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
+      final parts = cleanTime.split(':');
+      if (parts.length < 2) return 9999;
+      
+      int hour = int.parse(parts[0]);
+      final min = int.parse(parts[1]);
+      
+      if (isPM && hour != 12) hour += 12;
+      if (isAM && hour == 12) hour = 24; // 12 AM -> End of day
+      if (!isPM && !isAM && hour == 0) hour = 24; // 00:00 -> End of day
+      
+      return hour * 60 + min;
+    } catch (_) {
+      return 9999;
+    }
   }
 }

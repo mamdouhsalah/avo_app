@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
@@ -45,7 +46,18 @@ class SyncRepository {
         final dose = (medJson['dose'] as num?)?.toDouble() ?? 1.0;
         final unit = medJson['unit'] as String? ?? 'حبة';
         final times = (medJson['times'] as List<dynamic>?)?.cast<String>() ?? [];
-        final days = (medJson['days'] as List<dynamic>?)?.cast<String>() ?? [];
+        final rawDays = (medJson['days'] as List<dynamic>?)?.cast<String>() ?? [];
+        final days = rawDays.map((d) => mapDayToEnglish(d)).toList();
+
+        DateTime? fromDate;
+        if (medJson['fromDate'] != null) {
+          fromDate = DateTime.tryParse(medJson['fromDate'].toString());
+        }
+
+        DateTime? toDate;
+        if (medJson['toDate'] != null) {
+          toDate = DateTime.tryParse(medJson['toDate'].toString());
+        }
         
         final newMedication = Medication(
           name: name,
@@ -54,6 +66,8 @@ class SyncRepository {
           times: times,
           days: days,
           instructions: '',
+          fromDate: fromDate,
+          toDate: toDate,
         );
 
         // Save to Hive and get the auto-incremented local key

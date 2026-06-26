@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,80 +31,73 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     emit(AnalyticsLoading());
     try {
       final now = DateTime.now();
-      final last7Days = List.generate(7, (index) => now.subtract(Duration(days: 6 - index)));
-      
+      final last7Days =
+          List.generate(7, (index) => now.subtract(Duration(days: 6 - index)));
+
       final Map<String, Map<String, int>> weeklyData = {};
       final logBox = HiveService.getMedicationLogBox();
+      // ✅ Issue 13 fix: Hoist medBox reference outside the loop
+      final medBox = HiveService.getMedicationBox();
       final logs = logBox.values.toList();
-      
+
       int totalTakenWeekly = 0;
       int totalScheduledWeekly = 0;
-
-      final fullArabicDays = {
-        1: 'الإثنين',
-        2: 'الثلاثاء',
-        3: 'الأربعاء',
-        4: 'الخميس',
-        5: 'الجمعة',
-        6: 'السبت',
-        7: 'الأحد',
-      };
-
-      final shortArabicDays = {
-        1: 'إثن',
-        2: 'ثلا',
-        3: 'أرب',
-        4: 'خمي',
-        5: 'جمع',
-        6: 'سبت',
-        7: 'أحد',
-      };
 
       for (final date in last7Days) {
         final dayStart = DateTime(date.year, date.month, date.day);
         final dayEnd = dayStart.add(const Duration(days: 1));
-        
-        final dayLogs = logs.where((log) => log.actionDate.isAfter(dayStart) && log.actionDate.isBefore(dayEnd)).toList();
-        
-        int taken = dayLogs.where((l) => l.status == 'taken' || l.action == 'took').length;
-        int skipped = dayLogs.where((l) => l.status == 'skipped' || l.action == 'skipped').length;
-        int overdue = dayLogs.where((l) => l.status == 'overdue').length; 
-        
+
+        final dayLogs = logs
+            .where((log) =>
+                log.actionDate.isAfter(dayStart) &&
+                log.actionDate.isBefore(dayEnd))
+            .toList();
+
+        int taken =
+            dayLogs.where((l) => l.status == 'taken' || l.action == 'took').length;
+        int skipped = dayLogs
+            .where((l) => l.status == 'skipped' || l.action == 'skipped')
+            .length;
+        int overdue = dayLogs.where((l) => l.status == 'overdue').length;
+
         int totalForDay = taken + skipped + overdue;
 
-        // If no logs, approximate total based on current active meds for that day
+        // If no logs, approximate from currently active meds for that day
         if (totalForDay == 0) {
-            final medBox = HiveService.getMedicationBox();
-            final dayName = fullArabicDays[date.weekday];
-            
-            for (final med in medBox.values) {
-              if (med.days.contains(dayName)) {
-                totalForDay += med.times.length;
-              }
+          // ✅ English day name for DB lookup
+          final englishDayName = weekdayToEnglish(date.weekday);
+          for (final med in medBox.values) {
+            if (med.days.contains(englishDayName)) {
+              totalForDay += med.times.length;
             }
+          }
         }
-        
+
         if (taken > totalForDay) totalForDay = taken; // Safeguard
 
-        String dayLabel = shortArabicDays[date.weekday] ?? '';
-        
+        // ✅ Localized short label for chart x-axis
+        final dayLabel = translateDayShort(weekdayToEnglish(date.weekday));
+
         weeklyData[dayLabel] = {
           'taken': taken,
           'skipped': skipped,
           'total': totalForDay,
         };
-        
+
         totalTakenWeekly += taken;
         totalScheduledWeekly += totalForDay;
       }
-      
-      double adherence = totalScheduledWeekly > 0 ? (totalTakenWeekly / totalScheduledWeekly) * 100 : 0.0;
-      
-      emit(AnalyticsLoaded(weeklyData: weeklyData, overallAdherence: adherence));
-      
+
+      final adherence = totalScheduledWeekly > 0
+          ? (totalTakenWeekly / totalScheduledWeekly) * 100
+          : 0.0;
+
+      emit(AnalyticsLoaded(
+          weeklyData: weeklyData, overallAdherence: adherence));
     } catch (e) {
       log('AnalyticsCubit Error: $e');
-      emit(AnalyticsError('حدث خطأ أثناء تحميل التقارير'));
+      // Pass locale key string; screen calls .tr() on it
+      emit(AnalyticsError('reminder.error_loading_reports'));
     }
   }
 }

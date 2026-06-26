@@ -170,8 +170,8 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         listener: (context, state) {
                           if (state is AddMedicationSuccess) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('تم إضافة الدواء وجدولة التذكير بنجاح!'),
+                              SnackBar(
+                                content: Text(LocaleKeys.reminder_medication_added_success.tr()),
                                 backgroundColor: Colors.green,
                               ),
                             );
@@ -193,7 +193,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                             onPressed: () {
                               if (_nameController.text.trim().isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('الرجاء إدخال اسم الدواء')),
+                                  SnackBar(content: Text(LocaleKeys.reminder_please_enter_name.tr())),
                                 );
                                 return;
                               }

@@ -1,6 +1,10 @@
 import 'package:avo_app/app/core/constants/app_imgs.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 /// Header row shown at the top of [ScheduleScreen].
 ///
@@ -12,41 +16,18 @@ class ScheduleHeader extends StatelessWidget {
 
   const ScheduleHeader({super.key, required this.selectedDate});
 
-  /// Maps DateTime.weekday → Arabic day name
-  String _arabicDayName(int weekday) {
-    const names = {
-      1: 'الإثنين',
-      2: 'الثلاثاء',
-      3: 'الأربعاء',
-      4: 'الخميس',
-      5: 'الجمعة',
-      6: 'السبت',
-      7: 'الأحد',
-    };
-    return names[weekday] ?? '';
-  }
-
-  /// Maps month number → Arabic month name
-  String _arabicMonthName(int month) {
-    const names = {
-      1: 'يناير', 2: 'فبراير', 3: 'مارس',
-      4: 'أبريل', 5: 'مايو', 6: 'يونيو',
-      7: 'يوليو', 8: 'أغسطس', 9: 'سبتمبر',
-      10: 'أكتوبر', 11: 'نوفمبر', 12: 'ديسمبر',
-    };
-    return names[month] ?? '';
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     final isToday = _isSameDay(selectedDate, DateTime.now());
-    final dayLabel =
-        isToday ? 'اليوم' : _arabicDayName(selectedDate.weekday);
+    // ✅ Locale-aware day/month names via day_localizer.dart
+    final dayLabel = isToday
+        ? LocaleKeys.schedule_today_label.tr()
+        : translateDay(weekdayToEnglish(selectedDate.weekday));
     final dateLabel =
-        '${selectedDate.day} ${_arabicMonthName(selectedDate.month)} ${selectedDate.year}';
+        '${selectedDate.day} ${translateMonth(selectedDate.month)} ${selectedDate.year}';
 
     return Row(
       children: [

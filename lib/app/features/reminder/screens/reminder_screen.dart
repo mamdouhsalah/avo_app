@@ -131,7 +131,7 @@ class _ReminderScreenState extends State<ReminderScreen> with WidgetsBindingObse
                                       .read<ReminderCubit>()
                                       .loadTodaysMedications(),
                                   icon: const Icon(Icons.refresh_rounded),
-                                  label: const Text('إعادة المحاولة'),
+                                  label: Text(LocaleKeys.schedule_retry.tr()),
                                 ),
                               ],
                             ),
@@ -182,7 +182,7 @@ class _ReminderScreenState extends State<ReminderScreen> with WidgetsBindingObse
                                             color: Colors.green),
                                         SizedBox(width: 8.w),
                                         Text(
-                                          'تم أخذ جميع الأدوية اليوم!',
+                                          LocaleKeys.reminder_all_taken_today.tr(),
                                           style: TextStyle(
                                               fontSize: 16.sp,
                                               color: Colors.green,
@@ -238,7 +238,7 @@ class _ReminderScreenState extends State<ReminderScreen> with WidgetsBindingObse
                                             color: Colors.grey.shade400),
                                         SizedBox(height: 12.h),
                                         Text(
-                                          'لا توجد أدوية مجدولة لهذا اليوم',
+                                          LocaleKeys.reminder_no_medications_today.tr(),
                                           style: TextStyle(
                                               color: Colors.grey.shade600,
                                               fontSize: 16.sp),

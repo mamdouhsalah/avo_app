@@ -23,13 +23,15 @@ class MedicationAdapter extends TypeAdapter<Medication> {
       times: (fields[3] as List).cast<String>(),
       days: (fields[4] as List).cast<String>(),
       instructions: fields[5] as String,
+      fromDate: fields[6] as DateTime?,
+      toDate: fields[7] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Medication obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -41,7 +43,11 @@ class MedicationAdapter extends TypeAdapter<Medication> {
       ..writeByte(4)
       ..write(obj.days)
       ..writeByte(5)
-      ..write(obj.instructions);
+      ..write(obj.instructions)
+      ..writeByte(6)
+      ..write(obj.fromDate)
+      ..writeByte(7)
+      ..write(obj.toDate);
   }
 
   @override

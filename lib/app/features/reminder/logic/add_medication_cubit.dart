@@ -4,6 +4,7 @@ import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/local/notification_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,15 +46,18 @@ class AddMedicationCubit extends Cubit<AddMedicationState> {
     try {
       final timeString =
           '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-      final List<String> days = _getDaysList(frequency);
+      // ✅ Pass fromDate so Weekly/Custom can determine the correct day
+      final List<String> days = _getDaysList(frequency, fromDate);
 
       final newMedication = Medication(
         name: name,
         dose: 1.0,
-        unit: 'حبة',
+        unit: 'pill', // ✅ English key — displayed via tr(LocaleKeys.reminder_pill)
         times: [timeString],
         days: days,
         instructions: '',
+        fromDate: fromDate,
+        toDate: toDate,
       );
 
       // 1. Save locally to Hive — box.add() returns the auto-generated int key
@@ -73,9 +77,9 @@ class AddMedicationCubit extends Cubit<AddMedicationState> {
         data: {
           'name': name,
           'dose': 1.0,
-          'unit': 'حبة',
+          'unit': 'pill', // ✅ English key in Firebase too
           'times': [timeString],
-          'days': days,
+          'days': days, // ✅ English day names: ['Saturday', 'Sunday', ...]
           'frequency': frequency,
           'soundEnabled': soundEnabled,
           'fromDate': fromDate?.toIso8601String(),
@@ -93,22 +97,21 @@ class AddMedicationCubit extends Cubit<AddMedicationState> {
 
       emit(AddMedicationSuccess());
     } catch (e) {
-      emit(AddMedicationError('حدث خطأ: ${e.toString()}'));
+      emit(AddMedicationError(e.toString()));
     }
   }
 
-  List<String> _getDaysList(String frequency) {
-    // All seven Arabic day names used throughout the app
-    const allDays = [
-      'السبت',
-      'الأحد',
-      'الإثنين',
-      'الثلاثاء',
-      'الأربعاء',
-      'الخميس',
-      'الجمعة',
-    ];
-    // TODO: extend to support custom day selection when the UI supports it
-    return allDays;
+  /// Returns the list of English day names to schedule based on [frequency].
+  ///
+  /// - 'Daily'          → all 7 days
+  /// - 'Weekly'/'Custom' → only the day of the week that [fromDate] falls on
+  List<String> _getDaysList(String frequency, DateTime? fromDate) {
+    if (frequency == 'Weekly' || frequency == 'Custom') {
+      final referenceDate = fromDate ?? DateTime.now();
+      // ✅ weekdayToEnglish maps DateTime.weekday (1=Mon…7=Sun) → English key
+      return [weekdayToEnglish(referenceDate.weekday)];
+    }
+    // Default: Daily → all 7 days (English keys only)
+    return List<String>.from(kAllEnglishDays);
   }
 }

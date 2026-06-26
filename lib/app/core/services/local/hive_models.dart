@@ -22,6 +22,12 @@ class Medication extends HiveObject {
   @HiveField(5)
   String instructions;
 
+  @HiveField(6)
+  DateTime? fromDate;
+
+  @HiveField(7)
+  DateTime? toDate;
+
   Medication({
     required this.name,
     required this.dose,
@@ -29,6 +35,8 @@ class Medication extends HiveObject {
     required this.times,
     required this.days,
     required this.instructions,
+    this.fromDate,
+    this.toDate,
   });
 }
 

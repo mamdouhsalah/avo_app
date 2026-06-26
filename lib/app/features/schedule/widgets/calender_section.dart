@@ -61,7 +61,8 @@ class CalendarSection extends StatelessWidget {
         // Selected day
         selectedDecoration: BoxDecoration(
           color: theme.colorScheme.primary,
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(12.r),
+          shape: BoxShape.rectangle,
         ),
         selectedTextStyle: const TextStyle(
             color: Colors.white, fontWeight: FontWeight.bold),
@@ -69,7 +70,8 @@ class CalendarSection extends StatelessWidget {
         // Today (when not selected)
         todayDecoration: BoxDecoration(
           color: theme.colorScheme.primary.withValues(alpha: 0.15),
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(12.r),
+          shape: BoxShape.rectangle,
         ),
         todayTextStyle: TextStyle(
             color: theme.colorScheme.primary, fontWeight: FontWeight.bold),

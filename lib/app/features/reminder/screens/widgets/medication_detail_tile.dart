@@ -111,7 +111,7 @@ class _MedicationDetailTileState extends State<MedicationDetailTile> with Single
           children: [
             Icon(Icons.cancel_outlined, color: Colors.white, size: 22.sp),
             SizedBox(width: 6.w),
-            Text('تخطي',
+            Text(LocaleKeys.reminder_skip_label.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 13.sp,
@@ -136,15 +136,17 @@ class _MedicationDetailTileState extends State<MedicationDetailTile> with Single
           final confirm = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('حذف الدواء'),
-              content: Text('هل تريد حذف "${widget.reminder.name}" نهائياً؟'),
+              title: Text(LocaleKeys.reminder_delete_medication_title.tr()),
+              content: Text(LocaleKeys.reminder_delete_medication_confirm
+                  .tr(namedArgs: {'name': widget.reminder.name})),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx, false),
-                    child: const Text('إلغاء')),
+                    child: Text(LocaleKeys.general_cancel.tr())),
                 TextButton(
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: Text('حذف', style: TextStyle(color: theme.colorScheme.error))),
+                    child: Text(LocaleKeys.general_delete.tr(),
+                        style: TextStyle(color: theme.colorScheme.error))),
               ],
             ),
           ) ?? false;
@@ -329,7 +331,7 @@ class _StatusBadge extends StatelessWidget {
     }
     if (isSkipped) {
       return _chip(
-          label: 'تم التخطي',
+          label: LocaleKeys.reminder_skip_label.tr(),
           color: Colors.orange,
           context: context);
     }
@@ -337,7 +339,7 @@ class _StatusBadge extends StatelessWidget {
       return GestureDetector(
         onTap: onMarkTaken,
         child: _chip(
-            label: 'خذ الآن',
+            label: LocaleKeys.schedule_take_now.tr(),
             color: Theme.of(context).colorScheme.error,
             context: context),
       );

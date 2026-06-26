@@ -1,9 +1,12 @@
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/reminder/logic/analytics_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 class AdherenceReportScreen extends StatefulWidget {
   const AdherenceReportScreen({super.key});
@@ -25,7 +28,7 @@ class _AdherenceReportScreenState extends State<AdherenceReportScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تقرير الالتزام'),
+        title: Text(LocaleKeys.reminder_report_title.tr()),
         centerTitle: true,
       ),
       body: BlocBuilder<AnalyticsCubit, AnalyticsState>(
@@ -37,7 +40,8 @@ class _AdherenceReportScreenState extends State<AdherenceReportScreen> {
           if (state is AnalyticsError) {
             return Center(
               child: Text(
-                state.message,
+                // The cubit emits a locale key string; we call .tr() here
+                state.message.tr(),
                 style: TextStyle(color: theme.colorScheme.error, fontSize: 16.sp),
               ),
             );
@@ -52,7 +56,7 @@ class _AdherenceReportScreenState extends State<AdherenceReportScreen> {
                   _buildOverallAdherenceCard(context, state.overallAdherence),
                   SizedBox(height: AppSpacing.v32),
                   Text(
-                    'الالتزام الأسبوعي',
+                    LocaleKeys.reminder_weekly_adherence.tr(),
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
@@ -87,7 +91,7 @@ class _AdherenceReportScreenState extends State<AdherenceReportScreen> {
       child: Column(
         children: [
           Text(
-            'نسبة الالتزام العامة',
+            LocaleKeys.reminder_overall_adherence.tr(),
             style: TextStyle(
               fontSize: 16.sp,
               color: theme.colorScheme.onSurfaceVariant,
@@ -104,7 +108,9 @@ class _AdherenceReportScreenState extends State<AdherenceReportScreen> {
           ),
           SizedBox(height: AppSpacing.v12),
           Text(
-            isGood ? 'عمل رائع! استمر على هذا المنوال' : 'حاول الالتزام بأدويتك في الوقت المحدد',
+            isGood
+                ? LocaleKeys.reminder_great_job.tr()
+                : LocaleKeys.reminder_try_harder.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14.sp,
@@ -190,11 +196,12 @@ class _AdherenceReportScreenState extends State<AdherenceReportScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildLegendItem(Colors.green, 'تم أخذه'),
+        _buildLegendItem(Colors.green, LocaleKeys.reminder_legend_taken.tr()),
         SizedBox(width: 16.w),
-        _buildLegendItem(Colors.orange, 'تم تخطيه'),
+        _buildLegendItem(Colors.orange, LocaleKeys.reminder_legend_skipped.tr()),
         SizedBox(width: 16.w),
-        _buildLegendItem(Colors.grey.shade300, 'غير معروف/متأخر'),
+        _buildLegendItem(
+            Colors.grey.shade300, LocaleKeys.reminder_legend_unknown.tr()),
       ],
     );
   }

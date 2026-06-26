@@ -15,13 +15,33 @@ import '../../../core/Language/locale_keys.g.dart';
 
 /// Full schedule screen reachable from the "See All" link in [ReminderScreen].
 ///
-/// Data flow:
-///   [CalendarStripWidget] (date picker)
-///     → ScheduleCubit.loadForDate(selectedDate)
-///       → Hive medications + MedicationLog + Hive appointments
-///         → BlocBuilder rebuilds the list
-class ScheduleScreen extends StatelessWidget {
+/// ✅ CRASH FIX: [CalendarStripWidget] is outside [BlocBuilder].
+/// Previously, state rebuilds caused [selectedDay] to reset to [DateTime.now()],
+/// which triggered competing scroll commands in the CalendarStrip's internal
+/// [PageController].
+class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
+
+  @override
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  late DateTime _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDay = DateTime.now();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<ScheduleCubit>().loadForDate(_selectedDay);
+    });
+  }
+
+  void _onDaySelected(DateTime day) {
+    setState(() => _selectedDay = day);
+    context.read<ScheduleCubit>().loadForDate(day);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,32 +63,24 @@ class ScheduleScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: BlocBuilder<ScheduleCubit, ScheduleState>(
-        builder: (context, state) {
-          final cubit = context.read<ScheduleCubit>();
+      body: Column(
+        children: [
+          // ✅ STABLE: CalendarStripWidget lives OUTSIDE BlocBuilder
+          CalendarStripWidget(
+            selectedDay: _selectedDay,
+            onDaySelected: _onDaySelected,
+          ),
 
-          // Determine currently selected date for the calendar strip
-          final selectedDay = state is ScheduleLoaded
-              ? state.selectedDate
-              : DateTime.now();
+          SizedBox(height: AppSpacing.v16),
 
-          return Column(
-            children: [
-              // ── Week calendar strip (real, interactive) ──
-              CalendarStripWidget(
-                selectedDay: selectedDay,
-                onDaySelected: (day) => cubit.loadForDate(day),
-              ),
-
-              SizedBox(height: AppSpacing.v16),
-
-              // ── Content area ──
-              Expanded(
-                child: _buildContent(context, state, cubit),
-              ),
-            ],
-          );
-        },
+          // Only the content area rebuilds on cubit state changes
+          Expanded(
+            child: BlocBuilder<ScheduleCubit, ScheduleState>(
+              builder: (context, state) => _buildContent(
+                  context, state, context.read<ScheduleCubit>()),
+            ),
+          ),
+        ],
       ),
 
       floatingActionButton: AddMedicationFab(
@@ -76,11 +88,7 @@ class ScheduleScreen extends StatelessWidget {
           await context.push(AppRouter.addMedication);
           // Reload after returning from add screen
           if (context.mounted) {
-            final state = context.read<ScheduleCubit>().state;
-            final date = state is ScheduleLoaded
-                ? state.selectedDate
-                : DateTime.now();
-            context.read<ScheduleCubit>().loadForDate(date);
+            context.read<ScheduleCubit>().loadForDate(_selectedDay);
           }
         },
       ),
@@ -110,14 +118,14 @@ class ScheduleScreen extends StatelessWidget {
               Text(
                 state.error,
                 textAlign: TextAlign.center,
-                style:
-                    TextStyle(color: theme.colorScheme.error, fontSize: 16.sp),
+                style: TextStyle(
+                    color: theme.colorScheme.error, fontSize: 16.sp),
               ),
               SizedBox(height: 16.h),
               ElevatedButton.icon(
-                onPressed: () => cubit.loadForDate(DateTime.now()),
+                onPressed: () => cubit.loadForDate(_selectedDay),
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('إعادة المحاولة'),
+                label: Text(LocaleKeys.schedule_retry.tr()),
               ),
             ],
           ),
@@ -141,7 +149,7 @@ class ScheduleScreen extends StatelessWidget {
           if (meds.isNotEmpty) ...[
             _SectionLabel(
               icon: Icons.medication_rounded,
-              label: 'الأدوية',
+              label: LocaleKeys.schedule_medications_label.tr(),
               color: theme.colorScheme.primary,
             ),
             SizedBox(height: AppSpacing.v8),
@@ -158,7 +166,7 @@ class ScheduleScreen extends StatelessWidget {
             SizedBox(height: AppSpacing.v16),
             _SectionLabel(
               icon: Icons.calendar_today_rounded,
-              label: 'المواعيد',
+              label: LocaleKeys.schedule_appointments_label.tr(),
               color: Colors.orange,
             ),
             SizedBox(height: AppSpacing.v8),
@@ -187,8 +195,8 @@ class ScheduleScreen extends StatelessWidget {
             SizedBox(height: 16.h),
             Text(
               isToday
-                  ? 'لا توجد أدوية أو مواعيد اليوم'
-                  : 'لا توجد أدوية أو مواعيد في هذا اليوم',
+                  ? LocaleKeys.schedule_empty_today.tr()
+                  : LocaleKeys.schedule_empty_other_day.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Colors.grey.shade600,
@@ -197,7 +205,7 @@ class ScheduleScreen extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             Text(
-              'اضغط + لإضافة دواء جديد',
+              LocaleKeys.schedule_add_medication_hint.tr(),
               textAlign: TextAlign.center,
               style:
                   TextStyle(color: theme.colorScheme.primary, fontSize: 14.sp),

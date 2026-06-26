@@ -4,12 +4,16 @@ import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
 import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+
+import '../../../core/Language/locale_keys.g.dart';
 
 // ─────────────────────────── States ───────────────────────────
 
@@ -48,69 +52,98 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   }) : super(ScheduleInitial());
 
   /// Loads medications scheduled for [date] and appointments on [date].
-  /// Checks [MedicationLog] to determine real taken/upcoming status.
+  /// Emits [ScheduleLoading] → [ScheduleLoaded] or [ScheduleError].
   void loadForDate(DateTime date) {
     emit(ScheduleLoading());
+    _fetchAndEmitLoaded(date);
+  }
+
+  /// Refreshes data WITHOUT emitting [ScheduleLoading] first.
+  /// ✅ Prevents calendar PageController from receiving competing scroll commands.
+  void _refreshSilently(DateTime date) => _fetchAndEmitLoaded(date);
+
+  void _fetchAndEmitLoaded(DateTime date) {
     try {
-      // Arabic day name mapping (matches what's stored in Hive by AddMedicationCubit)
-      final arabicDays = {
-        1: 'الإثنين',
-        2: 'الثلاثاء',
-        3: 'الأربعاء',
-        4: 'الخميس',
-        5: 'الجمعة',
-        6: 'السبت',
-        7: 'الأحد',
-      };
-      final dayName = arabicDays[date.weekday];
+      // ✅ English day name — matches what AddMedicationCubit now stores
+      final dayName = weekdayToEnglish(date.weekday);
 
       final medBox = HiveService.getMedicationBox();
       final logBox = HiveService.getMedicationLogBox();
 
-      // Collect the logs on the selected date
+      // Hoist box references above loop (Issue 13 fix)
       final dateStart = DateTime(date.year, date.month, date.day);
       final dateEnd = dateStart.add(const Duration(days: 1));
       final dateLogs = logBox.values
           .where((log) =>
               log.actionDate.isAfter(dateStart) &&
               log.actionDate.isBefore(dateEnd) &&
-              (log.status == 'taken' || log.status == 'skipped' || log.action == 'took' || log.action == 'skipped'))
+              (log.status == 'taken' ||
+                  log.status == 'skipped' ||
+                  log.action == 'took' ||
+                  log.action == 'skipped'))
           .toList();
 
-      // Build ReminderModel list for all meds scheduled on this day
+      final dateOnly = DateTime(date.year, date.month, date.day);
+
       final List<ReminderModel> medications = [];
       for (final med in medBox.values) {
-        if (med.days.contains(dayName)) {
-          for (final timeStr in med.times) {
-            final parts = timeStr.split(':');
-            final hour = int.parse(parts[0]);
-            final minute = int.parse(parts[1]);
+        if (!med.days.contains(dayName)) continue;
+        
+        if (med.fromDate != null) {
+          final fromOnly = DateTime(med.fromDate!.year, med.fromDate!.month, med.fromDate!.day);
+          if (dateOnly.isBefore(fromOnly)) continue;
+        }
+        if (med.toDate != null) {
+          final toOnly = DateTime(med.toDate!.year, med.toDate!.month, med.toDate!.day);
+          if (dateOnly.isAfter(toOnly)) continue;
+        }
 
-            final tod = TimeOfDay(hour: hour, minute: minute);
-            final h = tod.hourOfPeriod == 0 ? 12 : tod.hourOfPeriod;
-            final m = tod.minute.toString().padLeft(2, '0');
-            final ampm = tod.period == DayPeriod.am ? 'AM' : 'PM';
+        for (final timeStr in med.times) {
+          final parts = timeStr.split(':');
+          if (parts.length < 2) continue;
+          final hour = int.tryParse(parts[0]);
+          final minute = int.tryParse(parts[1]);
+          if (hour == null || minute == null) continue;
 
-            final hiveKey = med.key as int;
-            
-            String status = 'upcoming';
-            final logForThisTime = dateLogs.where((log) => log.medicationKey == hiveKey && (log.scheduledTime == timeStr || log.scheduledTime.isEmpty)).firstOrNull;
+          final tod = TimeOfDay(hour: hour, minute: minute);
+          final h = tod.hourOfPeriod == 0 ? 12 : tod.hourOfPeriod;
+          final m = tod.minute.toString().padLeft(2, '0');
+          final ampm = tod.period == DayPeriod.am ? 'AM' : 'PM';
 
-            if (logForThisTime != null) {
-              status = logForThisTime.status == 'taken' || logForThisTime.action == 'took' ? 'taken' : 'skipped';
-            }
+          // ✅ Null-safe hive key access
+          final hiveKey = med.key as int?;
+          if (hiveKey == null) continue;
 
-            medications.add(ReminderModel(
-              id: hiveKey.toString(),
-              name: med.name,
-              dosage: '${med.dose} ${med.unit}',
-              pillCount: '${med.dose} ${med.unit}',
-              time: '$h:$m $ampm',
-              status: status,
-              frequency: med.days.length == 7 ? 'يومياً' : '${med.days.length} أيام/أسبوع',
-              isActive: status != 'taken' && status != 'skipped',
-            ));
+          String status = 'upcoming';
+          final logForThisTime = dateLogs
+              .where((log) =>
+                  log.medicationKey == hiveKey &&
+                  (log.scheduledTime == timeStr ||
+                      log.scheduledTime.isEmpty))
+              .firstOrNull;
+
+          if (logForThisTime != null) {
+            status = (logForThisTime.status == 'taken' ||
+                    logForThisTime.action == 'took')
+                ? 'taken'
+                : 'skipped';
           }
+
+          final freq = med.days.length == 7
+              ? LocaleKeys.reminder_daily_frequency.tr()
+              : LocaleKeys.reminder_days_per_week
+                  .tr(namedArgs: {'count': '${med.days.length}'});
+
+          medications.add(ReminderModel(
+            id: hiveKey.toString(),
+            name: med.name,
+            dosage: '${med.dose} ${med.unit}',
+            pillCount: '${med.dose} ${med.unit}',
+            time: '$h:$m $ampm',
+            status: status,
+            frequency: freq,
+            isActive: status != 'taken' && status != 'skipped',
+          ));
         }
       }
 
@@ -131,7 +164,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
         appointments: appointments,
       ));
     } catch (e) {
-      log('ScheduleCubit.loadForDate error: $e');
+      log('ScheduleCubit._fetchAndEmitLoaded error: $e');
       emit(ScheduleError(DatabaseExceptionHandler.handleException(e).message));
     }
   }
@@ -157,15 +190,19 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
     try {
       final settingsBox = Hive.box('settings');
-      final firebaseKey = settingsBox.get('firebase_key_$hiveKey') as String? ?? '';
+      final firebaseKey =
+          settingsBox.get('firebase_key_$hiveKey') as String? ?? '';
+
+      // ✅ Bug 3 fix: unique ID generated upfront — never an empty string key
+      final logId = '${DateTime.now().millisecondsSinceEpoch}_$hiveKey';
 
       final logEntry = MedicationLog(
-        logId: '',
+        logId: logId,
         medicationKey: hiveKey,
         medicationId: firebaseKey,
         medicationName: reminder.name,
         actionDate: DateTime.now(),
-        scheduledTime: _convertTo24Hour(reminder.time), 
+        scheduledTime: _convertTo24Hour(reminder.time),
         status: status,
         action: status,
         timestamp: DateTime.now(),
@@ -174,11 +211,11 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
       await logRepository.saveLog(logEntry);
 
-      // Reload for the currently selected date
+      // Reload for the currently selected date (silently — no loading flash)
       final current = state is ScheduleLoaded
           ? (state as ScheduleLoaded).selectedDate
           : DateTime.now();
-      loadForDate(current);
+      _refreshSilently(current);
     } catch (e) {
       log('ScheduleCubit._recordAction error: $e');
     }
@@ -235,14 +272,26 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
+  /// ✅ Bug 2 fix: wrapped in try/catch. Returns 9999 on parse failure.
   int _parseTimeMinutes(String timeStr) {
-    // Format: "9:00 AM" or "02:30 PM"
-    final parts = timeStr.split(' ');
-    final timeParts = parts[0].split(':');
-    int hour = int.parse(timeParts[0]);
-    final int min = int.parse(timeParts[1]);
-    if (parts[1] == 'PM' && hour != 12) hour += 12;
-    if (parts[1] == 'AM' && hour == 12) hour = 0;
-    return hour * 60 + min;
+    try {
+      final timeStrTrimmed = timeStr.trim().toUpperCase();
+      final isPM = timeStrTrimmed.contains('PM');
+      final isAM = timeStrTrimmed.contains('AM');
+      final cleanTime = timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
+      final parts = cleanTime.split(':');
+      if (parts.length < 2) return 9999;
+      
+      int hour = int.parse(parts[0]);
+      final min = int.parse(parts[1]);
+      
+      if (isPM && hour != 12) hour += 12;
+      if (isAM && hour == 12) hour = 24; // 12 AM -> End of day
+      if (!isPM && !isAM && hour == 0) hour = 24; // 00:00 -> End of day
+      
+      return hour * 60 + min;
+    } catch (_) {
+      return 9999;
+    }
   }
 }

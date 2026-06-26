@@ -16,20 +16,42 @@ import '../../../core/Language/locale_keys.g.dart';
 ///
 /// Layout:
 ///   ┌─────────────────────────────┐
-///   │  ScheduleHeader (real date) │  ← white card
+///   │  ScheduleHeader (real date) │  ← white card (STABLE — outside BlocBuilder)
 ///   │  CalendarSection (month)    │
 ///   └─────────────────────────────┘
 ///   ┌─────────────────────────────┐
-///   │  Medication + Appointment   │  ← scrollable list for selected day
+///   │  Medication + Appointment   │  ← BlocBuilder (only the list rebuilds)
 ///   │  list for selected date     │
 ///   └─────────────────────────────┘
 ///
-/// Data flow:
-///   CalendarSection.onDaySelected
-///     → ScheduleCubit.loadForDate(date)
-///       → BlocBuilder rebuilds the list section
-class PatientScheduleScreen extends StatelessWidget {
+/// ✅ CRASH FIX: [CalendarSection] is outside [BlocBuilder]. Previously, the
+/// calendar's [PageController] received competing scroll commands every time
+/// state changed from ScheduleLoaded → ScheduleLoading → ScheduleLoaded,
+/// because [focusedDay] flipped between the tapped date and [DateTime.now()].
+class PatientScheduleScreen extends StatefulWidget {
   const PatientScheduleScreen({super.key});
+
+  @override
+  State<PatientScheduleScreen> createState() => _PatientScheduleScreenState();
+}
+
+class _PatientScheduleScreenState extends State<PatientScheduleScreen> {
+  late DateTime _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDay = DateTime.now();
+    // Trigger first data load after the widget tree is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<ScheduleCubit>().loadForDate(_selectedDay);
+    });
+  }
+
+  void _onDaySelected(DateTime day) {
+    setState(() => _selectedDay = day);
+    context.read<ScheduleCubit>().loadForDate(day);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,58 +64,51 @@ class PatientScheduleScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: BlocBuilder<ScheduleCubit, ScheduleState>(
-        builder: (context, state) {
-          final cubit = context.read<ScheduleCubit>();
-          final selectedDate = state is ScheduleLoaded
-              ? state.selectedDate
-              : DateTime.now();
-
-          return Column(
-            children: [
-              // ── Top white card: header + full-month calendar ──
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: 16.w, vertical: 8.h),
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.shadow
-                          .withValues(alpha: 0.06),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+      body: Column(
+        children: [
+          // ── Top white card: header + full-month calendar ──
+          // ✅ STABLE: lives outside BlocBuilder — no PageController conflicts
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(20.r),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
-                child: Column(
-                  children: [
-                    ScheduleHeader(selectedDate: selectedDate),
-                    SizedBox(height: 12.h),
-                    CalendarSection(
-                      selectedDay: selectedDate,
-                      onDaySelected: (day) => cubit.loadForDate(day),
-                    ),
-                  ],
+              ],
+            ),
+            child: Column(
+              children: [
+                ScheduleHeader(selectedDate: _selectedDay),
+                SizedBox(height: 12.h),
+                CalendarSection(
+                  selectedDay: _selectedDay,
+                  onDaySelected: _onDaySelected,
                 ),
-              ),
+              ],
+            ),
+          ),
 
-              SizedBox(height: 8.h),
+          SizedBox(height: 8.h),
 
-              // ── Bottom: list for selected date ──
-              Expanded(
-                child: _buildList(context, state, cubit),
-              ),
-            ],
-          );
-        },
+          // ── List section: only this rebuilds on cubit state changes ──
+          Expanded(
+            child: BlocBuilder<ScheduleCubit, ScheduleState>(
+              builder: (context, state) =>
+                  _buildList(context, state, context.read<ScheduleCubit>()),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // ─── List section ────────────────────────────────────────────
+  // ─── List section ──────────────────────────────────────────────────────────
 
   Widget _buildList(
       BuildContext context, ScheduleState state, ScheduleCubit cubit) {
@@ -121,7 +136,7 @@ class PatientScheduleScreen extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => cubit.loadForDate(DateTime.now()),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('إعادة المحاولة'),
+              label: Text(LocaleKeys.schedule_retry.tr()),
             ),
           ],
         ),
@@ -142,7 +157,7 @@ class PatientScheduleScreen extends StatelessWidget {
           if (meds.isNotEmpty) ...[
             _sectionLabel(context,
                 icon: Icons.medication_rounded,
-                label: 'الأدوية',
+                label: LocaleKeys.schedule_medications_label.tr(),
                 color: theme.colorScheme.primary),
             SizedBox(height: 8.h),
             ...meds.map((med) => _MedRow(
@@ -155,7 +170,7 @@ class PatientScheduleScreen extends StatelessWidget {
             if (meds.isNotEmpty) SizedBox(height: 16.h),
             _sectionLabel(context,
                 icon: Icons.calendar_today_rounded,
-                label: 'المواعيد',
+                label: LocaleKeys.schedule_appointments_label.tr(),
                 color: Colors.orange),
             SizedBox(height: 8.h),
             ...apts.map((apt) => _AptRow(appointment: apt)),
@@ -196,8 +211,8 @@ class PatientScheduleScreen extends StatelessWidget {
           SizedBox(height: 12.h),
           Text(
             isToday
-                ? 'لا توجد أدوية أو مواعيد اليوم'
-                : 'لا توجد أدوية أو مواعيد في هذا اليوم',
+                ? LocaleKeys.schedule_empty_today.tr()
+                : LocaleKeys.schedule_empty_other_day.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.grey.shade600,
@@ -245,15 +260,16 @@ class _MedRow extends StatelessWidget {
         return await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('حذف الدواء'),
-                content: Text('هل تريد حذف "${reminder.name}" نهائياً؟'),
+                title: Text(LocaleKeys.schedule_delete_medication_title.tr()),
+                content: Text(LocaleKeys.schedule_delete_medication_confirm
+                    .tr(namedArgs: {'name': reminder.name})),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('إلغاء')),
+                      child: Text(LocaleKeys.schedule_cancel.tr())),
                   TextButton(
                       onPressed: () => Navigator.pop(ctx, true),
-                      child: Text('حذف',
+                      child: Text(LocaleKeys.schedule_delete.tr(),
                           style: TextStyle(
                               color: theme.colorScheme.error))),
                 ],
@@ -321,7 +337,7 @@ class _MedRow extends StatelessWidget {
                       color: theme.colorScheme.primary
                           .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20.r)),
-                  child: Text('خذ الآن',
+                  child: Text(LocaleKeys.schedule_take_now.tr(),
                       style: TextStyle(
                           color: theme.colorScheme.primary,
                           fontSize: 11.sp,
@@ -329,7 +345,7 @@ class _MedRow extends StatelessWidget {
                 ),
               )
             else
-              Text('تم ✓',
+              Text(LocaleKeys.schedule_done_check.tr(),
                   style: TextStyle(
                       color: Colors.green,
                       fontSize: 12.sp,
