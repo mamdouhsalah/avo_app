@@ -118,13 +118,7 @@ class AppRouter {
           GoRoute(path: home, builder: (context, state) => const HomeScreen()),
           GoRoute(
               path: reminder,
-              builder: (context, state) => BlocProvider(
-                create: (_) => ReminderCubit(
-                  firebaseConsumer: FirebaseConsumerImpl(),
-                  logRepository: context.read<LogRepository>(),
-                ),
-                child: const ReminderScreen(),
-              )),
+              builder: (context, state) => const ReminderScreen()),
           GoRoute(
             path: profile,
             builder: (context, state) => const ProfileScreen(

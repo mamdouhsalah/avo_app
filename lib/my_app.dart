@@ -17,6 +17,7 @@ import 'package:avo_app/app/features/auth/logic/auth_cubit.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository_impl.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
+import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
 import 'package:avo_app/app/features/splash/logic/splash_cubit.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -74,6 +75,12 @@ class MyApp extends StatelessWidget {
                 create: (providerContext) => HomeCubit(
                   repository: providerContext.read<HomeRepository>(),
                 )..loadDashboard('1'),
+              ),
+              BlocProvider<ReminderCubit>(
+                create: (providerContext) => ReminderCubit(
+                  firebaseConsumer: providerContext.read<FirebaseConsumer>(),
+                  logRepository: providerContext.read<LogRepository>(),
+                )..loadTodaysMedications(),
               ),
               BlocProvider<AuthCubit>(
                 create: (providerContext) => AuthCubit(

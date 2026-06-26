@@ -56,9 +56,4 @@ class HomeRepositoryImpl implements HomeRepository {
         fromJson: (json) => CategoryModel.fromJson(json));
   }
 
-  @override
-  Future<List<MedicineModel>> getMedicines(String patientId) async {
-    return await _consumer.getList(DatabasePaths.patientMedicines(patientId),
-        fromJson: (json) => MedicineModel.fromJson(json));
-  }
 }

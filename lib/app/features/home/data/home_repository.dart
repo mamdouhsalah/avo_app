@@ -10,6 +10,5 @@ abstract class HomeRepository {
   Future<List<DoctorModel>> getBestDoctors();
   Future<List<PharmacyModel>> getBestPharmacies();
   Future<List<AppointmentModel>> getAppointment(String patientId);
-  Future<List<MedicineModel>> getMedicines(String patientId);
   Future<List<CategoryModel>> getCategories();
 }
