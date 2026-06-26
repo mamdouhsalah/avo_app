@@ -47,119 +47,119 @@ class _ContactCreateAccountSectionState
     final colorScheme = theme.colorScheme;
 
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            LocaleKeys.auth_gender.tr(),
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onSurface,
-            ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          LocaleKeys.auth_gender.tr(),
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            color: colorScheme.onSurface,
           ),
-          SizedBox(height: 8.h),
-
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.cubit.selectedGender = 'male';
-                    });
-                  },
-                  child: Container(
-                    height: 110.h,
-                    decoration: BoxDecoration(
+        ),
+        SizedBox(height: 8.h),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.cubit.selectedGender = 'male';
+                  });
+                },
+                child: Container(
+                  height: 110.h,
+                  decoration: BoxDecoration(
+                    color: widget.cubit.selectedGender == 'male'
+                        ? colorScheme.primary.withValues(alpha: 0.05)
+                        : colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
                       color: widget.cubit.selectedGender == 'male'
-                          ? colorScheme.primary.withValues(alpha: 0.05)
-                          : colorScheme.surface,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
+                          ? colorScheme.primary
+                          : colorScheme.outlineVariant,
+                      width: widget.cubit.selectedGender == 'male' ? 2.w : 1.w,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.male,
+                        size: 44.sp,
                         color: widget.cubit.selectedGender == 'male'
                             ? colorScheme.primary
-                            : colorScheme.outlineVariant,
-                        width: widget.cubit.selectedGender == 'male' ? 2.w : 1.w,
+                            : colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.male,
-                          size: 44.sp,
+                      SizedBox(height: 8.h),
+                      Text(
+                        LocaleKeys.auth_malee.tr(),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
                           color: widget.cubit.selectedGender == 'male'
                               ? colorScheme.primary
-                              : colorScheme.onSurface.withValues(alpha: 0.4),
+                              : colorScheme.onSurface,
                         ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          LocaleKeys.auth_malee.tr(),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: widget.cubit.selectedGender == 'male'
-                                ? colorScheme.primary
-                                : colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.cubit.selectedGender = 'female';
-                    });
-                  },
-                  child: Container(
-                    height: 110.h,
-                    decoration: BoxDecoration(
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.cubit.selectedGender = 'female';
+                  });
+                },
+                child: Container(
+                  height: 110.h,
+                  decoration: BoxDecoration(
+                    color: widget.cubit.selectedGender == 'female'
+                        ? colorScheme.primary.withValues(alpha: 0.05)
+                        : colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
                       color: widget.cubit.selectedGender == 'female'
-                          ? colorScheme.primary.withValues(alpha: 0.05)
-                          : colorScheme.surface,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
+                          ? colorScheme.primary
+                          : colorScheme.outlineVariant,
+                      width:
+                          widget.cubit.selectedGender == 'female' ? 2.w : 1.w,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.female,
+                        size: 44.sp,
                         color: widget.cubit.selectedGender == 'female'
                             ? colorScheme.primary
-                            : colorScheme.outlineVariant,
-                        width: widget.cubit.selectedGender == 'female' ? 2.w : 1.w,
+                            : colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.female,
-                          size: 44.sp,
+                      SizedBox(height: 8.h),
+                      Text(
+                        LocaleKeys.auth_femalee.tr(),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
                           color: widget.cubit.selectedGender == 'female'
                               ? colorScheme.primary
-                              : colorScheme.onSurface.withValues(alpha: 0.4),
+                              : colorScheme.onSurface,
                         ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          LocaleKeys.auth_femalee.tr(),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: widget.cubit.selectedGender == 'female'
-                                ? colorScheme.primary
-                                : colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 20.h),
-
+            ),
+          ],
+        ),
+        SizedBox(height: 20.h),
+        if (widget.cubit.selectedRole != 'doctor') ...[
           Row(
             children: [
               Expanded(
@@ -186,53 +186,53 @@ class _ContactCreateAccountSectionState
             ],
           ),
           SizedBox(height: 20.h),
-
-          Text(
-            LocaleKeys.auth_dob.tr(),
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          InkWell(
-            onTap: () => _selectDate(context),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(10.r),
-                border: Border.all(
-                  color: colorScheme.outlineVariant,
-                  width: 1.w,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.cubit.selectedDob == null
-                        ? LocaleKeys.auth_dob_hint.tr()
-                        : DateFormat('dd / MM / yyyy')
-                            .format(widget.cubit.selectedDob!),
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: widget.cubit.selectedDob == null
-                          ? colorScheme.onSurface.withValues(alpha: 0.5)
-                          : colorScheme.onSurface,
-                    ),
-                  ),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    color: colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 16.h),
         ],
-      );
+        Text(
+          LocaleKeys.auth_dob.tr(),
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        InkWell(
+          onTap: () => _selectDate(context),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(
+                color: colorScheme.outlineVariant,
+                width: 1.w,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.cubit.selectedDob == null
+                      ? LocaleKeys.auth_dob_hint.tr()
+                      : DateFormat('dd / MM / yyyy')
+                          .format(widget.cubit.selectedDob!),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: widget.cubit.selectedDob == null
+                        ? colorScheme.onSurface.withValues(alpha: 0.5)
+                        : colorScheme.onSurface,
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 16.h),
+      ],
+    );
   }
 }

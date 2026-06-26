@@ -6,8 +6,8 @@ class RegisterRequestModel {
   final String phoneNumber;
   final String gender;
   final String dateOfBirth;
-  final num height;
-  final num weight;
+  final num? height;
+  final num? weight;
   final String? image;
 
   RegisterRequestModel({
