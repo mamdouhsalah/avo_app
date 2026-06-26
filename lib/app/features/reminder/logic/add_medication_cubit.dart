@@ -4,6 +4,7 @@ import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/local/notification_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -64,8 +65,11 @@ class AddMedicationCubit extends Cubit<AddMedicationState> {
           newMedication, timeString, 0);
 
       // 3. Push to Firebase and get the remote key
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final path = uid != null ? 'users/$uid/medications' : 'medications';
+      
       final String firebaseKey = await firebaseConsumer.push(
-        'medications',
+        path,
         data: {
           'name': name,
           'dose': 1.0,

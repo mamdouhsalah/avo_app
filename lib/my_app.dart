@@ -4,6 +4,7 @@ import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/core/services/remote/sync_repository.dart';
+import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
 import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
@@ -61,6 +62,11 @@ class MyApp extends StatelessWidget {
               ),
               Provider<SyncRepository>(
                 create: (providerContext) => SyncRepository(
+                  firebaseConsumer: providerContext.read<FirebaseConsumer>(),
+                ),
+              ),
+              Provider<LogRepository>(
+                create: (providerContext) => LogRepository(
                   firebaseConsumer: providerContext.read<FirebaseConsumer>(),
                 ),
               ),

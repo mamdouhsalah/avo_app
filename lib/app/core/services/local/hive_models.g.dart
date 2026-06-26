@@ -248,13 +248,20 @@ class MedicationLogAdapter extends TypeAdapter<MedicationLog> {
       timestamp: fields[1] as DateTime,
       action: fields[2] as String,
       notificationId: fields[3] as int,
+      logId: fields[4] as String,
+      medicationId: fields[5] as String,
+      medicationName: fields[6] as String,
+      actionDate: fields[7] as DateTime,
+      scheduledTime: fields[8] as String,
+      status: fields[9] as String,
+      isSynced: fields[10] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, MedicationLog obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.medicationKey)
       ..writeByte(1)
@@ -262,7 +269,21 @@ class MedicationLogAdapter extends TypeAdapter<MedicationLog> {
       ..writeByte(2)
       ..write(obj.action)
       ..writeByte(3)
-      ..write(obj.notificationId);
+      ..write(obj.notificationId)
+      ..writeByte(4)
+      ..write(obj.logId)
+      ..writeByte(5)
+      ..write(obj.medicationId)
+      ..writeByte(6)
+      ..write(obj.medicationName)
+      ..writeByte(7)
+      ..write(obj.actionDate)
+      ..writeByte(8)
+      ..write(obj.scheduledTime)
+      ..writeByte(9)
+      ..write(obj.status)
+      ..writeByte(10)
+      ..write(obj.isSynced);
   }
 
   @override

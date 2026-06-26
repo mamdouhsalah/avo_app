@@ -4,7 +4,9 @@ import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
+import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -38,8 +40,12 @@ class ScheduleError extends ScheduleState {
 
 class ScheduleCubit extends Cubit<ScheduleState> {
   final FirebaseConsumer firebaseConsumer;
+  final LogRepository logRepository;
 
-  ScheduleCubit({required this.firebaseConsumer}) : super(ScheduleInitial());
+  ScheduleCubit({
+    required this.firebaseConsumer,
+    required this.logRepository,
+  }) : super(ScheduleInitial());
 
   /// Loads medications scheduled for [date] and appointments on [date].
   /// Checks [MedicationLog] to determine real taken/upcoming status.
@@ -61,16 +67,15 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       final medBox = HiveService.getMedicationBox();
       final logBox = HiveService.getMedicationLogBox();
 
-      // Collect the Hive keys of medications marked as "took" on the selected date
+      // Collect the logs on the selected date
       final dateStart = DateTime(date.year, date.month, date.day);
       final dateEnd = dateStart.add(const Duration(days: 1));
-      final takenKeys = logBox.values
+      final dateLogs = logBox.values
           .where((log) =>
-              log.timestamp.isAfter(dateStart) &&
-              log.timestamp.isBefore(dateEnd) &&
-              log.action == 'took')
-          .map((log) => log.medicationKey)
-          .toSet();
+              log.actionDate.isAfter(dateStart) &&
+              log.actionDate.isBefore(dateEnd) &&
+              (log.status == 'taken' || log.status == 'skipped' || log.action == 'took' || log.action == 'skipped'))
+          .toList();
 
       // Build ReminderModel list for all meds scheduled on this day
       final List<ReminderModel> medications = [];
@@ -87,7 +92,13 @@ class ScheduleCubit extends Cubit<ScheduleState> {
             final ampm = tod.period == DayPeriod.am ? 'AM' : 'PM';
 
             final hiveKey = med.key as int;
-            final isTaken = takenKeys.contains(hiveKey);
+            
+            String status = 'upcoming';
+            final logForThisTime = dateLogs.where((log) => log.medicationKey == hiveKey && (log.scheduledTime == timeStr || log.scheduledTime.isEmpty)).firstOrNull;
+
+            if (logForThisTime != null) {
+              status = logForThisTime.status == 'taken' || logForThisTime.action == 'took' ? 'taken' : 'skipped';
+            }
 
             medications.add(ReminderModel(
               id: hiveKey.toString(),
@@ -95,9 +106,9 @@ class ScheduleCubit extends Cubit<ScheduleState> {
               dosage: '${med.dose} ${med.unit}',
               pillCount: '${med.dose} ${med.unit}',
               time: '$h:$m $ampm',
-              status: isTaken ? 'taken' : 'upcoming',
+              status: status,
               frequency: med.days.length == 7 ? 'يومياً' : '${med.days.length} أيام/أسبوع',
-              isActive: true,
+              isActive: status != 'taken' && status != 'skipped',
             ));
           }
         }
@@ -125,20 +136,43 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     }
   }
 
-  /// Marks a medication dose as taken by logging it in [MedicationLog],
-  /// then reloads the current date.
-  Future<void> markAsTaken(ReminderModel reminder) async {
+  String _convertTo24Hour(String timeStr) {
+    try {
+      final parts = timeStr.split(' ');
+      if (parts.length != 2) return timeStr;
+      final timeParts = parts[0].split(':');
+      int hour = int.parse(timeParts[0]);
+      final int min = int.parse(timeParts[1]);
+      if (parts[1] == 'PM' && hour != 12) hour += 12;
+      if (parts[1] == 'AM' && hour == 12) hour = 0;
+      return '${hour.toString().padLeft(2, '0')}:${min.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return timeStr;
+    }
+  }
+
+  Future<void> _recordAction(ReminderModel reminder, String status) async {
     final hiveKey = int.tryParse(reminder.id);
     if (hiveKey == null) return;
 
     try {
-      final logBox = HiveService.getMedicationLogBox();
-      await logBox.add(MedicationLog(
+      final settingsBox = Hive.box('settings');
+      final firebaseKey = settingsBox.get('firebase_key_$hiveKey') as String? ?? '';
+
+      final logEntry = MedicationLog(
+        logId: '',
         medicationKey: hiveKey,
+        medicationId: firebaseKey,
+        medicationName: reminder.name,
+        actionDate: DateTime.now(),
+        scheduledTime: _convertTo24Hour(reminder.time), 
+        status: status,
+        action: status,
         timestamp: DateTime.now(),
-        action: 'took',
         notificationId: 0,
-      ));
+      );
+
+      await logRepository.saveLog(logEntry);
 
       // Reload for the currently selected date
       final current = state is ScheduleLoaded
@@ -146,8 +180,18 @@ class ScheduleCubit extends Cubit<ScheduleState> {
           : DateTime.now();
       loadForDate(current);
     } catch (e) {
-      log('ScheduleCubit.markAsTaken error: $e');
+      log('ScheduleCubit._recordAction error: $e');
     }
+  }
+
+  /// Marks a medication dose as taken
+  Future<void> markAsTaken(ReminderModel reminder) async {
+    await _recordAction(reminder, 'taken');
+  }
+
+  /// Marks a medication dose as skipped
+  Future<void> markAsSkipped(ReminderModel reminder) async {
+    await _recordAction(reminder, 'skipped');
   }
 
   /// Deletes the medication from Hive and best-effort syncs the delete
@@ -166,7 +210,9 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       final firebaseKey = settingsBox.get('firebase_key_$hiveKey') as String?;
       if (firebaseKey != null) {
         try {
-          await firebaseConsumer.delete('medications/$firebaseKey');
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+          final path = uid != null ? 'users/$uid/medications/$firebaseKey' : 'medications/$firebaseKey';
+          await firebaseConsumer.delete(path);
           await settingsBox.delete('firebase_key_$hiveKey');
         } catch (e) {
           log('ScheduleCubit: Firebase delete failed (best effort): $e');

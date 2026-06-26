@@ -148,6 +148,7 @@ class ScheduleScreen extends StatelessWidget {
             ...meds.map((med) => MedicationDetailTile(
                   reminder: med,
                   onMarkTaken: () => cubit.markAsTaken(med),
+                  onMarkSkipped: () => cubit.markAsSkipped(med),
                   onDelete: () => cubit.deleteMedication(med),
                 )),
           ],

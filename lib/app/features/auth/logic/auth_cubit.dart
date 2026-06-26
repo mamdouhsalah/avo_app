@@ -3,12 +3,14 @@ import 'package:avo_app/app/core/models/login_request_model.dart';
 import 'package:avo_app/app/core/models/register_request_model.dart';
 import 'package:avo_app/app/core/services/admin_log_service.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository.dart';
+import 'package:avo_app/app/core/services/remote/sync_repository.dart';
 import 'package:avo_app/app/features/auth/logic/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository repository;
+  final SyncRepository syncRepository;
 
   // Controllers
   final fullNameController = TextEditingController();
@@ -28,7 +30,7 @@ class AuthCubit extends Cubit<AuthState> {
   // Step state
   int currentStep = 0;
 
-  AuthCubit({required this.repository}) : super(AuthInitial());
+  AuthCubit({required this.repository, required this.syncRepository}) : super(AuthInitial());
 
   void setStep(int step) {
     currentStep = step;
@@ -181,6 +183,10 @@ class AuthCubit extends Cubit<AuthState> {
           email: response.email,
           role: response.role,
         );
+
+        // Initial Data Sync: fetch meds from Firebase to local Hive
+        await syncRepository.syncMedicationsFromRemote();
+
         emit(AuthSuccess(response));
       } else {
         emit(AuthNeedVerification());

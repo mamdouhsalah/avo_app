@@ -4,6 +4,9 @@ import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
 import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
+import 'package:avo_app/app/features/reminder/logic/analytics_cubit.dart';
+import 'package:avo_app/app/features/reminder/screens/adherence_report_screen.dart';
 import 'package:avo_app/app/core/layout/main_layout.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
@@ -70,6 +73,7 @@ class AppRouter {
   static const String reminder = '/reminder';
   static const String profile = '/profile';
   static const String profileFull = '/profile/full'; // بدون Bottom Nav
+  static const String adherenceReport = '/adherence-report';
 
   static const String chatBot = '/chat-bot';
   static const String checkout = '/checkout';
@@ -117,6 +121,7 @@ class AppRouter {
               builder: (context, state) => BlocProvider(
                 create: (_) => ReminderCubit(
                   firebaseConsumer: FirebaseConsumerImpl(),
+                  logRepository: context.read<LogRepository>(),
                 ),
                 child: const ReminderScreen(),
               )),
@@ -223,8 +228,18 @@ class AppRouter {
         builder: (context, state) => BlocProvider(
           create: (_) => ScheduleCubit(
             firebaseConsumer: FirebaseConsumerImpl(),
+            logRepository: context.read<LogRepository>(),
           )..loadForDate(DateTime.now()),
           child: const ScheduleScreen(),
+        ),
+      ),
+      GoRoute(
+        path: adherenceReport,
+        builder: (context, state) => BlocProvider(
+          create: (_) => AnalyticsCubit(
+            logRepository: context.read<LogRepository>(),
+          ),
+          child: const AdherenceReportScreen(),
         ),
       ),
       GoRoute(

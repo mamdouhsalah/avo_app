@@ -20,12 +20,26 @@ class ReminderScreen extends StatefulWidget {
   State<ReminderScreen> createState() => _ReminderScreenState();
 }
 
-class _ReminderScreenState extends State<ReminderScreen> {
+class _ReminderScreenState extends State<ReminderScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Load today's schedule from Hive as soon as the screen mounts
     context.read<ReminderCubit>().loadTodaysMedications();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<ReminderCubit>().loadTodaysMedications();
+    }
   }
 
   @override
@@ -56,16 +70,28 @@ class _ReminderScreenState extends State<ReminderScreen> {
                   padding: EdgeInsets.symmetric(
                       vertical: AppSpacing.v16,
                       horizontal: AppSpacing.h20),
-                  child: Center(
-                    child: Text(
-                      LocaleKeys.reminder_title.tr(),
-                      style: TextStyle(
-                        inherit: false,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(width: 40.w), // Placeholder for balance
+                      Text(
+                        LocaleKeys.reminder_title.tr(),
+                        style: TextStyle(
+                          inherit: false,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () => context.push(AppRouter.adherenceReport),
+                        icon: Icon(
+                          Icons.analytics_rounded,
+                          color: theme.colorScheme.onSurface,
+                          size: 28.sp,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -227,6 +253,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
                                       reminder: item,
                                       onMarkTaken: () =>
                                           cubit.markAsTaken(item),
+                                      onMarkSkipped: () =>
+                                          cubit.markAsSkipped(item),
                                       onDelete: () =>
                                           cubit.deleteMedication(item),
                                     )),
