@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
+import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
@@ -43,8 +44,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // 💡 معرفة اللغة الحالية عشان نعلم عليها في الـ BottomSheet
     final bool isArabic = context.locale.languageCode == 'ar';
+    final bool isDarkTheme =
+        context.watch<ThemeCubit>().state == ThemeMode.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -52,18 +54,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // AppBar
       appBar: widget.showAppBar
           ? AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        leading: widget.showDrawer
-            ? Builder(
-          builder: (context) => IconButton(
-            icon: Icon(Icons.menu,
-                color: theme.textTheme.titleLarge?.color,
-                size: 24.sp),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        )
-            : null,
-      )
+              backgroundColor: theme.scaffoldBackgroundColor,
+              leading: widget.showDrawer
+                  ? Builder(
+                      builder: (context) => IconButton(
+                        icon: Icon(Icons.menu,
+                            color: theme.textTheme.titleLarge?.color,
+                            size: 24.sp),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      ),
+                    )
+                  : null,
+            )
           : null,
 
       // Drawer
@@ -137,18 +139,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             context,
                             Icons.lock_outline,
                             LocaleKeys.profile_account_info.tr(), // 🔥 ترجمة
-                                () => context.push(AppRouter.accountInfo)),
-                        _buildListTile(
-                            context,
-                            Icons.person_outline,
-                            LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
-                                () => context.push(AppRouter.personalInfo)),
-                        _buildListTile(context, Icons.credit_card_outlined,
-                            LocaleKeys.profile_cards_details.tr(), () => context.push(AppRouter.checkout)), // 🔥 ترجمة
+                            () => context.push(AppRouter.accountInfo)),
+                        if (!widget.showDrawer)
+                          _buildListTile(
+                              context,
+                              Icons.person_outline,
+                              LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
+                              () => context.push(AppRouter.personalInfo)),
+                        // _buildListTile(
+                        //     context,
+                        //     Icons.credit_card_outlined,
+                        //     LocaleKeys.profile_cards_details.tr(),
+                        //     () => context.push(AppRouter.checkout)), // 🔥 ترجمة
                         ListTile(
-                          leading:
-                          Icon(Icons.translate, color: theme.colorScheme.onSurface),
-                          title: Text(LocaleKeys.profile_app_language.tr(), style: theme.textTheme.bodyLarge), // 🔥 ترجمة
+                          leading: Icon(Icons.translate,
+                              color: theme.colorScheme.onSurface),
+                          title: Text(LocaleKeys.profile_app_language.tr(),
+                              style: theme.textTheme.bodyLarge), // 🔥 ترجمة
                           trailing: IconButton(
                             onPressed: () => _showLanguageBottomSheet(isArabic),
                             icon: Icon(Icons.language,
@@ -167,7 +174,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           trailing: Switch(
                             value: isDarkTheme,
-                            onChanged: (v) => setState(() => isDarkTheme = v),
+                            onChanged: (v) =>
+                                context.read<ProfileCubit>().changeTheme(
+                                      v ? ThemeMode.dark : ThemeMode.light,
+                                      context,
+                                    ),
                             activeTrackColor: theme.colorScheme.primary,
                             inactiveThumbColor: theme.colorScheme.onSurface,
                             trackOutlineColor: WidgetStateProperty.all(
@@ -179,8 +190,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         ListTile(
                           leading: const Icon(Icons.logout, color: Colors.red),
-                          title: Text(LocaleKeys.profile_sign_out.tr(), // 🔥 ترجمة
-                              style: const TextStyle(color: Colors.red)),
+                          title:
+                              Text(LocaleKeys.profile_sign_out.tr(), // 🔥 ترجمة
+                                  style: const TextStyle(color: Colors.red)),
                           onTap: () {
                             cubit.logout();
                           },
@@ -234,11 +246,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // 💡 التعديل هنا: دالة تغيير اللغة باستخدام easy_localization
   void _changeLanguage(String langCode) {
-    Navigator.pop(context); // قفل الشيت الأول
+    Navigator.pop(context);
     if (context.locale.languageCode != langCode) {
-      context.setLocale(Locale(langCode)); // قلب لغة الأبلكيشن!
+      context.read<ProfileCubit>().changeLanguage(langCode, context);
     }
   }
 

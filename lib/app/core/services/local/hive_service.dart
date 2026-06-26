@@ -10,7 +10,7 @@ class HiveService {
     Hive.registerAdapter(WeightAdapter());
     Hive.registerAdapter(HealthMetricAdapter());
     Hive.registerAdapter(MedicationLogAdapter());
-await Hive.openBox('settings');
+    await Hive.openBox('settings');
     await Hive.openBox<Medication>('medications');
     await Hive.openBox<Analysis>('analyses');
     await Hive.openBox<Appointment>('appointments');

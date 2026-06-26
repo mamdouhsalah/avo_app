@@ -72,8 +72,8 @@ class AuthRepositoryImpl implements AuthRepository {
         gender: registerRequestModel.gender,
         dateOfBirth: registerRequestModel.dateOfBirth,
         phoneNumber: registerRequestModel.phoneNumber,
-        height: registerRequestModel.height.toInt(),
-        weight: registerRequestModel.weight.toInt(),
+        height: (registerRequestModel.height ?? 0).toInt(),
+        weight: (registerRequestModel.weight ?? 0).toInt(),
         image: imageUrl,
         isVerified: false, // Admin needs to approve
       );
