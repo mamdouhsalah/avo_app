@@ -18,7 +18,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
 
       _database.setPersistenceEnabled(true);
     } catch (e) {
-      throw DatabaseExceptionHandler.handleException(e);
+      log("Firebase Init Notice: $e");
     }
   }
 
@@ -30,7 +30,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Future<T> get<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) async {
+        required T Function(Map<String, dynamic> json) fromJson}) async {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
@@ -65,7 +65,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Future<List<T>> getList<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) async {
+        required T Function(Map<String, dynamic> json) fromJson}) async {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
@@ -81,7 +81,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Stream<List<T>> streamList<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) {
+        required T Function(Map<String, dynamic> json) fromJson}) {
     try {
       final ref = _getQuery(path, queryParams);
       return ref.onValue.map((event) {

@@ -2,7 +2,6 @@ import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/catogery_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
-import 'package:avo_app/app/core/models/medicine_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/pharmacy_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
@@ -56,9 +55,4 @@ class HomeRepositoryImpl implements HomeRepository {
         fromJson: (json) => CategoryModel.fromJson(json));
   }
 
-  @override
-  Future<List<MedicineModel>> getMedicines(String patientId) async {
-    return await _consumer.getList(DatabasePaths.patientMedicines(patientId),
-        fromJson: (json) => MedicineModel.fromJson(json));
-  }
 }

@@ -1,14 +1,16 @@
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/custom_analog_clock.dart';
 import 'package:avo_app/app/features/reminder/screens/widgets/wave_header_painter.dart';
-import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:ui' as ui;
 
-import '../../../core/Language/locale_keys.g.dart'; // 🔥 الـ LocaleKeys
+import '../../../core/Language/locale_keys.g.dart';
+import '../logic/add_medication_cubit.dart';
 
 class AddMedicationScreen extends StatefulWidget {
   const AddMedicationScreen({super.key});
@@ -18,6 +20,9 @@ class AddMedicationScreen extends StatefulWidget {
 }
 
 class _AddMedicationScreenState extends State<AddMedicationScreen> {
+  // 🔥 إضافة الكونترولر لاسم الدواء
+  final TextEditingController _nameController = TextEditingController();
+
   TimeOfDay selectedTime = const TimeOfDay(hour: 2, minute: 0);
   bool isSelectingHour = true;
 
@@ -27,6 +32,12 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
   DateTime? customDate;
   DateTime? fromDate;
   DateTime? toDate;
+
+  @override
+  void dispose() {
+    _nameController.dispose(); // 🔥 تنظيف الكونترولر لتجنب تسريب الذاكرة
+    super.dispose();
+  }
 
   void _setAMPM(bool isPM) {
     int h = selectedTime.hour;
@@ -153,18 +164,59 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         ],
                       ),
                       const Spacer(),
-                      ElevatedButton(
-                        onPressed: () {
-                          // TODO: حفظ البيانات في قاعدة البيانات
+
+                      // 🔥 زرار الإضافة مربوط بالـ Cubit
+                      BlocConsumer<AddMedicationCubit, AddMedicationState>(
+                        listener: (context, state) {
+                          if (state is AddMedicationSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(LocaleKeys.reminder_medication_added_success.tr()),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            context.pop(); // يرجع للشاشة السابقة بعد النجاح
+                          } else if (state is AddMedicationError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(state.error),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.colorScheme.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-                          minimumSize: Size.zero,
-                        ),
-                        child: Text(LocaleKeys.reminder_add.tr(), // 🔥 ترجمة
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        builder: (context, state) {
+                          if (state is AddMedicationLoading) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          return ElevatedButton(
+                            onPressed: () {
+                              if (_nameController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(LocaleKeys.reminder_please_enter_name.tr())),
+                                );
+                                return;
+                              }
+                              // إرسال البيانات للـ Cubit
+                              context.read<AddMedicationCubit>().addMedication(
+                                name: _nameController.text.trim(),
+                                time: selectedTime,
+                                fromDate: fromDate,
+                                toDate: toDate,
+                                frequency: selectedFrequency,
+                                soundEnabled: soundNotification,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
+                              minimumSize: Size.zero,
+                            ),
+                            child: Text(LocaleKeys.reminder_add.tr(), // 🔥 ترجمة
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -183,7 +235,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   ),
                   SizedBox(height: AppSpacing.v40),
 
+                  // 🔥 حقل إدخال اسم الدواء مربوط بالـ Controller
                   TextField(
+                    controller: _nameController,
                     decoration: InputDecoration(
                       hintText: LocaleKeys.reminder_medication_name.tr(), // 🔥 ترجمة
                       prefixIcon: Icon(Icons.medication_rounded, color: theme.colorScheme.primary),

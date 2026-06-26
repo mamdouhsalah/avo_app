@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:avo_app/app/core/services/local/hive_service.dart';
-import 'package:avo_app/app/core/constants/old_constance.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
+import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +132,12 @@ class NotificationService {
             timestamp: DateTime.now(),
             action: 'took',
             notificationId: notificationId,
+            logId: '',
+            medicationId: '',
+            medicationName: '',
+            actionDate: DateTime.now(),
+            scheduledTime: '',
+            status: '',
           ));
           await AwesomeNotifications().cancel(notificationId);
         } else if (action.buttonKeyPressed == 'SKIPPED') {
@@ -138,6 +146,12 @@ class NotificationService {
             timestamp: DateTime.now(),
             action: 'skipped',
             notificationId: notificationId,
+            logId: '',
+            medicationId: '',
+            medicationName: '',
+            actionDate: DateTime.now(),
+            scheduledTime: '',
+            status: '',
           ));
           await AwesomeNotifications().cancel(notificationId);
         } else if (action.buttonKeyPressed == 'SNOOZE') {
@@ -146,6 +160,12 @@ class NotificationService {
             timestamp: DateTime.now(),
             action: 'snoozed',
             notificationId: notificationId,
+            logId: '',
+            medicationId: '',
+            medicationName: '',
+            actionDate: DateTime.now(),
+            scheduledTime: '',
+            status: '',
           ));
           // Reschedule notification for 15 minutes later
           final med = HiveService.getMedicationBox()
@@ -219,14 +239,6 @@ class NotificationService {
       await handleNotificationAction(initialAction);
     }
 
-    // Listen for notification actions
-    // AwesomeNotifications().setListeners(
-    //   onActionReceivedMethod: (ReceivedAction action) async {
-    //     if (action.channelKey == 'med_channel') {
-    //       await _handleNotificationAction(action);
-    //     }
-    //   },
-    // );
     requestBatteryOptimization();
   }
 
@@ -242,47 +254,52 @@ class NotificationService {
       print('Error in background action handler: $e');
     }
   }
-// static Future<void> initializeBackgroundHandler() async {
-//     AwesomeNotifications().setListeners(
-//       onActionReceivedMethod: (ReceivedAction action) async {
-//         await HiveService.init(); // Reinitialize Hive in background
-//         await _handleNotificationAction(action);
-//       },
-//     );
-//   }
 
   static Future<void> handleNotificationAction(ReceivedAction action) async {
     final payload = action.payload;
     if (payload == null) return;
 
     final medicationKey = int.parse(payload['medicationKey']!);
+    final medicationId = payload['medicationId']!;
+    final medicationName = payload['medicationName']!;
     final notificationId = int.parse(payload['notificationId']!);
     final time = payload['time']!;
-    final logBox = HiveService.getMedicationLogBox();
 
-    if (action.buttonKeyPressed == 'TOOK') {
-      await logBox.add(MedicationLog(
+    // Create a temporary FirebaseConsumer for background usage
+    final firebaseConsumer = FirebaseConsumerImpl();
+    try {
+      await firebaseConsumer.init();
+    } catch (e) {
+      log('Background Firebase init error (might already be initialized): $e');
+    }
+    
+    final logRepository = LogRepository(firebaseConsumer: firebaseConsumer);
+
+    Future<void> recordLog(String status) async {
+      final logEntry = MedicationLog(
+        logId: '', // Will be generated in repository
         medicationKey: medicationKey,
+        medicationId: medicationId,
+        medicationName: medicationName,
+        actionDate: DateTime.now(),
+        scheduledTime: time,
+        status: status,
+        action: status,
         timestamp: DateTime.now(),
-        action: 'took',
         notificationId: notificationId,
-      ));
+      );
+      await logRepository.saveLog(logEntry);
+    }
+
+    if (action.buttonKeyPressed == 'TAKE_ACTION') {
+      await recordLog('taken');
       await AwesomeNotifications().cancel(notificationId);
-    } else if (action.buttonKeyPressed == 'SKIPPED') {
-      await logBox.add(MedicationLog(
-        medicationKey: medicationKey,
-        timestamp: DateTime.now(),
-        action: 'skipped',
-        notificationId: notificationId,
-      ));
+    } else if (action.buttonKeyPressed == 'SKIP_ACTION') {
+      await recordLog('skipped');
       await AwesomeNotifications().cancel(notificationId);
     } else if (action.buttonKeyPressed == 'SNOOZE') {
-      await logBox.add(MedicationLog(
-        medicationKey: medicationKey,
-        timestamp: DateTime.now(),
-        action: 'snoozed',
-        notificationId: notificationId,
-      ));
+      await recordLog('snoozed');
+
       // Reschedule notification for 15 minutes later
       final med = HiveService.getMedicationBox()
           .values
@@ -295,21 +312,19 @@ class NotificationService {
           channelKey: 'med_channel',
           title: 'تذكير بالدواء: ${med.name}',
           body: 'حان وقت أخذ ${med.dose} ${med.unit} من ${med.name}',
-          payload: {
-            'medicationKey': medicationKey.toString(),
-            'notificationId': notificationId.toString(),
-            'time': time,
-          },
+          fullScreenIntent: true,
+          locked: true,
+          payload: payload,
         ),
         actionButtons: [
           NotificationActionButton(
-            key: 'TOOK',
+            key: 'TAKE_ACTION',
             label: 'أخذته',
             color: Colors.green,
             autoDismissible: true,
           ),
           NotificationActionButton(
-            key: 'SKIPPED',
+            key: 'SKIP_ACTION',
             label: 'تخطي',
             color: Colors.red,
             autoDismissible: true,
@@ -343,10 +358,13 @@ class NotificationService {
     final hour = int.parse(timeParts[0]);
     final minute = int.parse(timeParts[1]);
 
+    // Lookup Firebase Key
+    final settingsBox = Hive.box('settings');
+    final firebaseKey = settingsBox.get('firebase_key_${medication.key}') as String? ?? '';
+
     for (var day in medication.days) {
-      final weekday = arabicDayToWeekday[day];
+      final weekday = englishDayToWeekday(day);
       log('weekday: $weekday');
-      if (weekday == null) continue;
 
       // Generate a unique notification ID by including the weekday
       final notificationId = '${medication.key}$index$weekday'.hashCode;
@@ -365,19 +383,21 @@ class NotificationService {
               'حان وقت أخذ ${medication.dose} ${medication.unit} من ${medication.name}',
           payload: {
             'medicationKey': medication.key.toString(),
+            'medicationId': firebaseKey,
+            'medicationName': medication.name,
             'notificationId': notificationId.toString(),
             'time': time,
           },
         ),
         actionButtons: [
           NotificationActionButton(
-            key: 'TOOK',
+            key: 'TAKE_ACTION',
             label: 'أخذته',
             color: Colors.green,
             autoDismissible: true,
           ),
           NotificationActionButton(
-            key: 'SKIPPED',
+            key: 'SKIP_ACTION',
             label: 'تخطي',
             color: Colors.red,
             autoDismissible: true,
@@ -405,7 +425,7 @@ class NotificationService {
   static Future<void> cancelMedicationNotifications(Medication med) async {
     for (int i = 0; i < med.times.length; i++) {
       for (String day in med.days) {
-        final weekday = arabicDayToWeekday[day];
+        final weekday = englishDayToWeekday(day);
         if (weekday != null) {
           await AwesomeNotifications()
               .cancel(med.key.hashCode + i + weekday * 100);

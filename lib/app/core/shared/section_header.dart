@@ -9,11 +9,13 @@ import '../Language/locale_keys.g.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final String? routePath;
+  final VoidCallback? onTap;
 
   const SectionHeader({
     super.key,
     required this.title,
     this.routePath,
+    this.onTap,
   });
 
   @override
@@ -30,10 +32,10 @@ class SectionHeader extends StatelessWidget {
         ),
         const Spacer(),
 
-        if (routePath != null)
+        if (routePath != null || onTap != null)
           InkWell(
-            onTap: () {
-              context.push(routePath!);
+            onTap: onTap ?? () {
+              if (routePath != null) context.push(routePath!);
             },
             child: Text(
               LocaleKeys.general_view_all.tr(),
