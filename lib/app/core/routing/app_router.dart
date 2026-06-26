@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
 import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
 import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';

@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/home/logic/home_state.dart';
 import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
+import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
 import 'package:avo_app/app/core/models/medicine_model.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
@@ -295,13 +296,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               BlocBuilder<ReminderCubit, ReminderState>(
                                 builder: (context, reminderState) {
                                   List<MedicineModel> upcomingMedicines = [];
+                                  List<ReminderModel> upcomingReminders = [];
                                   
                                   if (reminderState is ReminderLoaded) {
-                                    final reminders = reminderState.todaysSchedule
+                                    upcomingReminders = reminderState.todaysSchedule
                                         .where((r) => r.status == 'upcoming' || r.status == 'next' || r.status == 'overdue')
                                         .toList();
                                         
-                                    upcomingMedicines = reminders.map((r) => MedicineModel(
+                                    upcomingMedicines = upcomingReminders.map((r) => MedicineModel(
                                       id: r.id,
                                       name: r.name,
                                       dosage: r.dosage,
@@ -328,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 scrollDirection: Axis.horizontal,
                                                 itemCount: upcomingMedicines.length,
                                                 itemBuilder: (_, i) {
-                                                  final reminder = reminders[i];
+                                                  final reminder = upcomingReminders[i];
                                                   return MedicineCard(
                                                     medicine: upcomingMedicines[i],
                                                     minsUntil: _calculateMinsUntil(reminder.time),
