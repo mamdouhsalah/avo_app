@@ -7,18 +7,20 @@ import 'package:avo_app/app/features/doctor/services/schedule_utils.dart';
 
 class DayViewWidget extends StatelessWidget {
   final DateTime selectedDate;
+  final List<AppointmentModel> appointments;
   final Function(DateTime) onDateChanged;
 
   const DayViewWidget({
     super.key,
     required this.selectedDate,
+    required this.appointments,
     required this.onDateChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final dayAppointments =
-        ScheduleController.getAppointmentsForDate(selectedDate);
+        ScheduleController.getAppointmentsForDate(selectedDate, appointments);
 
     return SingleChildScrollView(
       child: Column(
@@ -143,13 +145,13 @@ class DayViewWidget extends StatelessWidget {
 
     // Sort by time
     allAppointments.sort(
-        (a, b) => a.timeRange.start.hour.compareTo(b.timeRange.start.hour));
+        (a, b) => a.startHour.compareTo(b.startHour));
 
     for (int i = 0; i < 12; i++) {
       int hour = 8 + i;
 
       final appointmentsThisHour = allAppointments
-          .where((apt) => apt.timeRange.start.hour == hour)
+          .where((apt) => apt.startHour == hour)
           .toList();
 
       slots.add(
@@ -229,7 +231,7 @@ class DayViewWidget extends StatelessWidget {
         children: [
           // Time range
           Text(
-            '${ScheduleUtils.formatTime(appointment.timeRange.start)} - ${ScheduleUtils.formatTime(appointment.timeRange.end)}',
+            '${appointment.startTime} - ${appointment.endTime}',
             style: TextStyle(
               fontSize: 10.sp,
               color: Colors.grey[700],
@@ -240,7 +242,7 @@ class DayViewWidget extends StatelessWidget {
 
           // Patient name
           Text(
-            appointment.patient?.fullName ?? 'Unknown Patient',
+            appointment.patientName ?? 'Unknown Patient',
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
@@ -253,7 +255,7 @@ class DayViewWidget extends StatelessWidget {
 
           // Diagnosis
           Text(
-            appointment.patient?.diagnosis ?? 'No diagnosis',
+            appointment.notes ?? 'No diagnosis',
             style: TextStyle(
               fontSize: 10.sp,
               color: Colors.grey[600],
@@ -335,7 +337,7 @@ class DayViewWidget extends StatelessWidget {
                     Icon(Icons.access_time, size: 14.sp, color: borderColor),
                     SizedBox(width: 6.w),
                     Text(
-                      ScheduleUtils.formatTime(appointment.timeRange.start),
+                      appointment.startTime,
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
@@ -380,7 +382,7 @@ class DayViewWidget extends StatelessWidget {
                       SizedBox(width: 8.w),
                       Expanded(
                         child: Text(
-                          appointment.patient?.fullName ?? 'Unknown Patient',
+                          appointment.patientName ?? 'Unknown Patient',
                           style: TextStyle(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w600,
@@ -398,7 +400,7 @@ class DayViewWidget extends StatelessWidget {
                       SizedBox(width: 8.w),
                       Expanded(
                         child: Text(
-                          appointment.patient?.diagnosis ??
+                          appointment.notes ??
                               'No diagnosis recorded',
                           style: TextStyle(
                             fontSize: 12.sp,
@@ -408,44 +410,7 @@ class DayViewWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (appointment.patient?.phoneNumber != null) ...[
-                    SizedBox(height: 8.h),
-                    Row(
-                      children: [
-                        Icon(Icons.phone, size: 14.sp, color: Colors.grey),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: Text(
-                            appointment.patient!.phoneNumber,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (appointment.patient?.email != null) ...[
-                    SizedBox(height: 8.h),
-                    Row(
-                      children: [
-                        Icon(Icons.email, size: 14.sp, color: Colors.grey),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: Text(
-                            appointment.patient!.email,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey[700],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  // Patient contact info removed (not available in flat model)
                 ],
               ),
             ),
@@ -466,7 +431,7 @@ class DayViewWidget extends StatelessWidget {
                       Icon(Icons.medical_information, size: 12.sp),
                       SizedBox(width: 4.w),
                       Text(
-                        appointment.doctor.name,
+                        appointment.doctorName ?? 'Doctor',
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w600,

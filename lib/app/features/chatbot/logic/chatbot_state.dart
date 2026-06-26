@@ -1,7 +1,7 @@
-import 'package:avo_app/app/features/chatbot/data/chat_message_model.dart';
+import 'package:avo_app/app/features/chatbot/data/chatbot_message_model.dart';
 
 class ChatbotState {
-  final List<ChatMessageModel> messages;
+  final List<ChatbotMessageModel> messages;
   final bool isListening;
   final bool isGenerating;
   final bool isSpeaking;
@@ -26,7 +26,7 @@ class ChatbotState {
   });
 
   ChatbotState copyWith({
-    List<ChatMessageModel>? messages,
+    List<ChatbotMessageModel>? messages,
     bool? isListening,
     bool? isGenerating,
     bool? isSpeaking,

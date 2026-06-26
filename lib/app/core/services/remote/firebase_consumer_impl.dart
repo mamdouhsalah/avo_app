@@ -7,7 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class FirebaseConsumerImpl implements FirebaseConsumer {
-  late final FirebaseDatabase _database;
+  FirebaseDatabase get _database => FirebaseDatabase.instance;
 
   @override
   Future<void> init() async {
@@ -15,7 +15,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp();
       }
-      _database = FirebaseDatabase.instance;
+
       _database.setPersistenceEnabled(true);
     } catch (e) {
       throw DatabaseExceptionHandler.handleException(e);

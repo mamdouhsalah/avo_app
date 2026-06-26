@@ -81,8 +81,8 @@ class CustomDrawer extends StatelessWidget {
                 DrawerItem(
                   icon: Icons.chat_outlined,
                   title: 'Chats',
-                  route: AppRouter.chats,
-                  isSelected: currentRoute.contains(AppRouter.chats),
+                  route: AppRouter.doctorChats,
+                  isSelected: currentRoute.contains(AppRouter.doctorChats),
                 ),
                 DrawerItem(
                   icon: Icons.analytics_outlined,

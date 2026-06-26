@@ -1,7 +1,9 @@
+import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 /// Chat Search Bar Widget
 class ChatSearchBar extends StatelessWidget {
@@ -65,12 +67,14 @@ class ChatSearchBar extends StatelessWidget {
 /// Chat Tile Widget
 class ChatTile extends StatelessWidget {
   final ChatModel chat;
+  final String currentUid;
   final VoidCallback onTap;
   final Function(BuildContext)? onLongPress;
 
   const ChatTile({
     super.key,
     required this.chat,
+    required this.currentUid,
     required this.onTap,
     this.onLongPress,
   });
@@ -80,15 +84,7 @@ class ChatTile extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.1),
-          width: 0.5,
-        ),
-      ),
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -109,7 +105,8 @@ class ChatTile extends StatelessWidget {
                 ),
 
                 // ========== TIME & BADGE ==========
-                _buildTimeAndBadge(theme),
+                // لازم نمرر context هنا عشان .format(context) شغالة جواه
+                _buildTimeAndBadge(context, theme),
               ],
             ),
           ),
@@ -123,8 +120,8 @@ class ChatTile extends StatelessWidget {
     return Stack(
       children: [
         Container(
-            width: 56.w,
-            height: 56.w,
+            width: 48.w,
+            height: 48.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -133,8 +130,8 @@ class ChatTile extends StatelessWidget {
               ),
             ),
             child: CustomAvatar(
-              imageUrl: chat.patientImage,
-              radius: 53.r,
+              imageUrl: chat.otherUserImage(currentUid),
+              radius: 22.r,
             )),
         // Online indicator
         if (chat.isOnline)
@@ -142,8 +139,8 @@ class ChatTile extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              width: 16.w,
-              height: 16.w,
+              width: 12.w,
+              height: 12.w,
               decoration: BoxDecoration(
                 color: Colors.green,
                 shape: BoxShape.circle,
@@ -170,15 +167,37 @@ class ChatTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Patient name
-        Text(
-          chat.patient.fullName,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14.sp,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        // Other user's name + Mute Icon
+        Row(
+          children: [
+            Flexible(
+              child: Text(
+                chat.otherUserName(currentUid),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.sp,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            StreamBuilder(
+              stream: FirebaseDatabase.instance
+                  .ref(
+                      '${DatabasePaths.users}/$currentUid/mutedChats/${chat.id}')
+                  .onValue,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.snapshot.value == true) {
+                  return Padding(
+                    padding: EdgeInsets.only(left: 4.w),
+                    child:
+                        Icon(Icons.volume_off, size: 14.sp, color: Colors.grey),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
         ),
         SizedBox(height: 4.h),
 
@@ -199,14 +218,15 @@ class ChatTile extends StatelessWidget {
   }
 
   // ========== TIME & UNREAD BADGE ==========
-  Widget _buildTimeAndBadge(ThemeData theme) {
+  // ✅ التصحيح: بقت تستقبل context كباراميتر عشان TimeOfDay.format(context) يشتغل
+  Widget _buildTimeAndBadge(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // Time
         Text(
-          chat.formattedTime,
+          TimeOfDay.fromDateTime(chat.lastMessageTime).format(context),
           style: TextStyle(
             fontSize: 12.sp,
             color: Colors.grey[600],
