@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:avo_app/app/features/chatbot/logic/chatbot_cubit.dart';
 import 'package:avo_app/app/features/chatbot/logic/chatbot_state.dart';
 
@@ -14,6 +16,7 @@ class ChatInputWidget extends StatefulWidget {
 
 class _ChatInputWidgetState extends State<ChatInputWidget> {
   final TextEditingController _controller = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
   void _sendMessage([String? text]) {
     final messageText = text ?? _controller.text.trim();
@@ -21,6 +24,55 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
       context.read<ChatbotCubit>().sendMessage(messageText);
       _controller.clear();
     }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(source: source, imageQuality: 80);
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        if (mounted) {
+          context.read<ChatbotCubit>().sendMessage(_controller.text, imageBytes: bytes);
+          _controller.clear();
+        }
+      }
+    } catch (e) {
+      // Ignore picker errors or handle them gracefully
+    }
+  }
+
+  void _showImagePickerOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (BuildContext ctx) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera_alt_rounded, color: Theme.of(context).colorScheme.primary),
+                title: Text('الكاميرا (Camera)', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500)),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library_rounded, color: Theme.of(context).colorScheme.primary),
+                title: Text('الاستوديو (Gallery)', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500)),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -33,12 +85,20 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // قائمة الاقتراحات الوهمية كما في ديزاين Figma
-    final List<String> suggestions = [
-      "I need medical advice",
-      "Check symptoms",
-      "Nearby hospitals",
-    ];
+    // Check current locale to provide language-specific suggestions
+    final bool isArabic = context.locale.languageCode == 'ar';
+    
+    final List<String> suggestions = isArabic 
+      ? [
+          "ما هو تطبيق AVO؟",
+          "أحتاج استشارة طبية",
+          "كيف أراجع الأعراض؟",
+        ]
+      : [
+          "What is AVO app?",
+          "I need medical advice",
+          "How to check symptoms?",
+        ];
 
     return Container(
       decoration: BoxDecoration(
@@ -104,7 +164,12 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.add_circle_outline, color: theme.colorScheme.onSurface.withValues(alpha: 0.5), size: 22.sp),
+                              GestureDetector(
+                                onTap: () {
+                                  _showImagePickerOptions(context);
+                                },
+                                child: Icon(Icons.add_circle_outline, color: theme.colorScheme.onSurface.withValues(alpha: 0.5), size: 22.sp),
+                              ),
                               SizedBox(width: AppSpacing.h8),
                               Expanded(
                                 child: TextField(
@@ -120,15 +185,31 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () {
-                                  context.read<ChatbotCubit>().listen((words) {
+                                onTapDown: (_) {
+                                  context.read<ChatbotCubit>().startListening((words) {
                                     _controller.text = words;
                                   });
                                 },
-                                child: Icon(
-                                  state.isListening ? Icons.mic : Icons.mic_none_rounded, 
-                                  color: state.isListening ? theme.colorScheme.error : theme.colorScheme.onSurface.withValues(alpha: 0.5), 
-                                  size: 22.sp
+                                onTapUp: (_) async {
+                                  await context.read<ChatbotCubit>().stopListening();
+                                  // Wait briefly to allow the final recognized words to populate
+                                  Future.delayed(const Duration(milliseconds: 500), () {
+                                    if (_controller.text.isNotEmpty) {
+                                      _sendMessage();
+                                    }
+                                  });
+                                },
+                                onTapCancel: () async {
+                                  await context.read<ChatbotCubit>().stopListening();
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(4.sp),
+                                  color: Colors.transparent,
+                                  child: Icon(
+                                    state.isListening ? Icons.mic : Icons.mic_none_rounded, 
+                                    color: state.isListening ? theme.colorScheme.error : theme.colorScheme.onSurface.withValues(alpha: 0.5), 
+                                    size: 22.sp
+                                  ),
                                 ),
                               ),
                             ],

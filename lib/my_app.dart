@@ -21,6 +21,9 @@ import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
 import 'package:avo_app/app/features/splash/logic/splash_cubit.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:avo_app/app/features/notification/data/repository/notification_repository.dart';
+import 'package:avo_app/app/features/notification/data/repository/notification_repository_impl.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -113,6 +116,14 @@ class MyApp extends StatelessWidget {
               BlocProvider<ThemeCubit>(
                 create: (context) =>
                     ThemeCubit(context.read<PreferencesService>()),
+              ),
+              Provider<NotificationRepository>(
+                create: (context) => NotificationRepositoryImpl(),
+              ),
+              BlocProvider<AppNotificationCubit>(
+                create: (context) => AppNotificationCubit(
+                  repository: context.read<NotificationRepository>(),
+                ),
               ),
             ],
             child: BlocBuilder<ThemeCubit, ThemeMode>(

@@ -3,6 +3,8 @@ import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
 
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_stat_card.dart';
@@ -12,6 +14,7 @@ import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -130,16 +133,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                     const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const NotificationScreen()),
+                    BlocBuilder<AppNotificationCubit, AppNotificationState>(
+                      builder: (context, notifState) {
+                        int unreadCount = 0;
+                        if (notifState is AppNotificationLoaded) {
+                          unreadCount = notifState.unreadCount;
+                        }
+                        return IconButton(
+                          onPressed: () {
+                            context.push(AppRouter.notifications);
+                          },
+                          icon: Badge(
+                            isLabelVisible: unreadCount > 0,
+                            label: Text(unreadCount.toString()),
+                            backgroundColor: Theme.of(context).colorScheme.error,
+                            child: Icon(Icons.notifications_none_outlined,
+                                size: 28.sp, color: theme.colorScheme.primary),
+                          ),
                         );
                       },
-                      icon: Icon(Icons.notifications_none_outlined,
-                          size: 34.sp, color: theme.colorScheme.outlineVariant),
                     ),
                   ],
                 ),

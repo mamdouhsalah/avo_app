@@ -63,6 +63,8 @@ dependencies:
   http: ^1.6.0
   record: ^6.2.1
   audioplayers: ^6.7.1
+  flutter_dotenv: ^5.2.1
+  lottie: ^3.3.3
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +83,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/imgs/logo/
     - assets/imgs/onboard/
     - assets/imgs/appointment/
@@ -95,3 +98,4 @@ flutter:
     - assets/svg/payment/
     - assets/svg/order/
     - assets/svg/roles/
+    - assets/animations/

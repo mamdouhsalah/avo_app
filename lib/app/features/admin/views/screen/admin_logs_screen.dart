@@ -107,6 +107,10 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
           // Logs List
           Expanded(
             child: BlocBuilder<AdminCubit, AdminState>(
+              buildWhen: (prev, curr) => 
+                  curr is AdminLogsLoaded || 
+                  curr is AdminLoading || 
+                  curr is AdminError,
               builder: (context, state) {
                 if (state is AdminLoading) {
                   return const Center(

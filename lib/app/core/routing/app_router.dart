@@ -1,3 +1,4 @@
+import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:avo_app/app/features/reminder/screens/adherence_report_screen.da
 import 'package:avo_app/app/core/layout/main_layout.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:avo_app/app/features/admin/views/screen/admin_approvals_screen.dart';
 import 'package:avo_app/app/features/admin/views/screen/admin_dashboard_screen.dart';
 import 'package:avo_app/app/features/admin/views/screen/admin_logs_screen.dart';
@@ -42,6 +44,7 @@ import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
 import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
 import 'package:avo_app/app/features/onboard/screens/onboard_screen.dart';
+import 'package:avo_app/app/features/favorites/view/screens/favorites_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -77,6 +80,7 @@ class AppRouter {
   static const String adherenceReport = '/adherence-report';
 
   static const String chatBot = '/chat-bot';
+  static const String favorites = '/favorites';
   static const String checkout = '/checkout';
   static const String accountInfo = '/account-info';
   static const String personalInfo = '/personal-info';
@@ -91,6 +95,7 @@ class AppRouter {
   static const String adminApprovals = '/admin-approvals';
   static const String adminUsers = '/admin-users';
   static const String adminChats = '/admin-chats';
+  static const String notifications = '/notifications';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -198,6 +203,9 @@ class AppRouter {
       ),
       GoRoute(path: search, builder: (context, state) => const SearchScreen()),
       GoRoute(
+          path: favorites,
+          builder: (context, state) => const FavoritesScreen()),
+      GoRoute(
           path: checkout, builder: (context, state) => const CheckoutScreen()),
       GoRoute(
           path: accountInfo, builder: (context, state) => AccountInfoScreen()),
@@ -247,6 +255,9 @@ class AppRouter {
       ),
       GoRoute(
           path: chatBot, builder: (context, state) => const ChatBotScreen()),
+      GoRoute(
+          path: notifications,
+          builder: (context, state) => const NotificationScreen()),
 
       // ==================== Admin Routes ====================
       GoRoute(
