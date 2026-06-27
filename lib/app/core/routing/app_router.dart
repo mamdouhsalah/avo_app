@@ -1,3 +1,7 @@
+import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/features/doctor/view/screen/add_doctor_schedule/add_doctor_schedule_screen.dart';
+import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_cubit.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
@@ -62,6 +66,7 @@ class AppRouter {
   static const String patients = '/patients';
   static const String appointments = '/appointments';
   static const String labResults = '/lab-results';
+  static const String addSchedule = '/add-schedule';
   static const String schedule = '/schedule';
   static const String chats = '/chats';
   static const String doctorChats = '/doctor-chats';
@@ -145,6 +150,16 @@ class AppRouter {
       GoRoute(
           path: appointments,
           builder: (context, state) => const AppointmentScreen()),
+      GoRoute(
+          path: addSchedule,
+          builder: (context, state) => BlocProvider(
+                create: (context) => AddDoctorCubit(
+                  repository: DoctorRepositoryImpl(
+                    consumer: context.read<FirebaseConsumer>(),
+                  ),
+                )..loadSchedules(),
+                child: const AddDoctorScheduleScreen(),
+              )),
       GoRoute(
           path: labResults,
           builder: (context, state) => const LabresultScreen()),

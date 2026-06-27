@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/features/doctor/services/labresult_service.dart';

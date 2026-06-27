@@ -13,6 +13,9 @@ class DatabasePaths {
   static const String messages = 'messages';
   static const String chatrooms = 'chatrooms';
 
+  // doctor Schedule
+  static String doctorSchedule(String doctorId) => 'schedules/$doctorId';
+
   // Admin
   static const String logs = 'logs';
   static const String pendingApprovals = 'pending_approvals';

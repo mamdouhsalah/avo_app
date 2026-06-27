@@ -6,6 +6,18 @@
     "reminder": "Reminder",
     "profile": "Profile"
   },
+  "drawer": {
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "appointments": "Appointments",
+    "add_schedule": "Add Schedule",
+    "lab_results": "Lab Results",
+    "schedule": "Schedule",
+    "chats": "Chats",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
   "general": {
     "view_all": "View All",
     "in_mins": "In {mins} min",
@@ -28,7 +40,9 @@
     "skip": "Skip",
     "done": "Done",
     "save": "Save",
-    "edit": "Edit"
+    "edit": "Edit",
+    "exit_title": "Exit App",
+    "exit_confirm": "Are you sure you want to exit?"
   },
   "tracking": {
     "title": "Tracking Order",
@@ -58,7 +72,26 @@
     "delete": "Delete",
     "take_now": "Take Now",
     "done_check": "Done ✓",
-    "today_label": "Today"
+    "today_label": "Today",
+    "add_title": "Add Schedule",
+    "edit_title": "Edit Schedule",
+    "select_day": "Select Day",
+    "start_time": "Start Time",
+    "end_time": "End Time",
+    "choose_start_time": "Choose Start Time",
+    "choose_end_time": "Choose End Time",
+    "max_visits": "Max Visits",
+    "max_visits_hint": "Enter maximum allowed visits",
+    "please_enter_max_visits": "Please enter max visits",
+    "please_enter_valid_number": "Please enter a valid positive number",
+    "please_select_times": "Please select both start and end times",
+    "add_slot_btn": "Add Schedule Slot",
+    "save_all_btn": "Save All Changes",
+    "manage_title": "Manage Schedule",
+    "no_schedules": "No schedules set yet",
+    "tap_to_add": "Tap the button below to add your first schedule",
+    "visits": "visits",
+    "invalid_time_range": "Start time must be before end time"
   },
   "reminder": {
     "active": "Active",

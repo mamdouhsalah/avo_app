@@ -132,16 +132,12 @@ class MyApp extends StatelessWidget {
                       ? context.supportedLocales
                       : const [Locale('en')],
                   locale: isLocalizationInitialized ? context.locale : locale,
-
                   debugShowCheckedModeBanner: false,
                   title: AppStrings.appName,
                   theme: AppTheme.lightTheme,
                   darkTheme: AppTheme.darkTheme,
                   themeMode: themeMode,
-
-                  // --- شاشة البداية ---
                   routerConfig: AppRouter.router,
-
                   builder: DevicePreview.appBuilder,
                 );
               },

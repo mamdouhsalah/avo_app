@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -49,50 +50,56 @@ class CustomDrawer extends StatelessWidget {
               children: [
                 DrawerItem(
                   icon: Icons.grid_view,
-                  title: 'Dashboard',
+                  title: LocaleKeys.drawer_dashboard.tr(),
                   route: AppRouter.dashboard,
                   isSelected: currentRoute.contains(AppRouter.dashboard),
                 ),
                 DrawerItem(
                   icon: Icons.person,
-                  title: 'Patients',
+                  title: LocaleKeys.drawer_patients.tr(),
                   route: AppRouter.patients,
                   isSelected: currentRoute.contains(AppRouter.patients),
                 ),
                 DrawerItem(
                   icon: Icons.add_home_outlined,
-                  title: 'Appointments',
+                  title: LocaleKeys.drawer_appointments.tr(),
                   route: AppRouter.appointments,
                   isSelected: currentRoute.contains(AppRouter.appointments),
                 ),
                 DrawerItem(
+                  icon: Icons.schedule,
+                  title: LocaleKeys.drawer_add_schedule.tr(),
+                  route: AppRouter.addSchedule,
+                  isSelected: currentRoute.contains(AppRouter.addSchedule),
+                ),
+                DrawerItem(
                   icon: Icons.science_outlined,
-                  title: 'Lab results',
+                  title: LocaleKeys.drawer_lab_results.tr(),
                   route: AppRouter.labResults,
                   isSelected: currentRoute.contains(AppRouter.labResults),
                 ),
                 DrawerItem(
                   icon: Icons.calendar_month,
-                  title: 'Schedule',
+                  title: LocaleKeys.drawer_schedule.tr(),
                   route: AppRouter.scheduleAppointment,
                   isSelected:
                       currentRoute.contains(AppRouter.scheduleAppointment),
                 ),
                 DrawerItem(
                   icon: Icons.chat_outlined,
-                  title: 'Chats',
+                  title: LocaleKeys.drawer_chats.tr(),
                   route: AppRouter.doctorChats,
                   isSelected: currentRoute.contains(AppRouter.doctorChats),
                 ),
                 DrawerItem(
                   icon: Icons.analytics_outlined,
-                  title: 'Analytics',
+                  title: LocaleKeys.drawer_analytics.tr(),
                   route: AppRouter.analytics,
                   isSelected: currentRoute.contains(AppRouter.analytics),
                 ),
                 DrawerItem(
                   icon: Icons.settings,
-                  title: 'Settings',
+                  title: LocaleKeys.drawer_settings.tr(),
                   route: AppRouter.profileFull,
                   isSelected: currentRoute.contains(AppRouter.profileFull),
                 ),
@@ -105,9 +112,9 @@ class CustomDrawer extends StatelessWidget {
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             leading: const Icon(Icons.logout, color: Colors.red, size: 26),
-            title: const Text(
-              'Logout',
-              style: TextStyle(
+            title: Text(
+              LocaleKeys.drawer_logout.tr(),
+              style: const TextStyle(
                 color: Colors.red,
                 fontSize: 17,
                 fontWeight: FontWeight.w600,

@@ -7,6 +7,7 @@ import 'package:avo_app/app/features/admin/logic/admin_state.dart';
 import 'package:avo_app/app/features/admin/views/widgets/admin_custom_drawer.dart';
 import 'package:avo_app/app/features/admin/views/widgets/log_tile.dart';
 import 'package:avo_app/app/features/admin/views/widgets/stat_card.dart';
+import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
