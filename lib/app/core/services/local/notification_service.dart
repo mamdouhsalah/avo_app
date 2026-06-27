@@ -314,12 +314,6 @@ class NotificationService {
       await recordLog('skipped');
       await AwesomeNotifications().cancel(notificationId);
     } else if (action.buttonKeyPressed == 'SNOOZE') {
-      await logBox.add(MedicationLog(
-        medicationKey: medicationKey,
-        timestamp: DateTime.now(),
-        action: 'snoozed',
-        notificationId: notificationId,
-      ));
       await recordLog('snoozed');
 
       // Reschedule notification for 15 minutes later
@@ -334,14 +328,9 @@ class NotificationService {
           channelKey: 'med_channel',
           title: 'تذكير بالدواء: ${med.name}',
           body: 'حان وقت أخذ ${med.dose} ${med.unit} من ${med.name}',
-          payload: {
-            'medicationKey': medicationKey.toString(),
-            'notificationId': notificationId.toString(),
-            'time': time,
-          },
+          payload: payload,
           fullScreenIntent: true,
           locked: true,
-          payload: payload,
         ),
         actionButtons: [
           NotificationActionButton(
