@@ -18,7 +18,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
 
       _database.setPersistenceEnabled(true);
     } catch (e) {
-      throw DatabaseExceptionHandler.handleException(e);
+      log("Firebase Init Notice: $e");
     }
   }
 
@@ -30,7 +30,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Future<T> get<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) async {
+        required T Function(Map<String, dynamic> json) fromJson}) async {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
@@ -44,12 +44,17 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
           return result;
         } else {
           throw DatabaseException(
-            'Expected Map data at path: $path, but found: ${rawValue.runtimeType}',
+            'We encountered an issue processing the data. Please try again.',
             'invalid-data-type',
+            'Expected Map data at path: $path, but found: ${rawValue.runtimeType}',
           );
         }
       } else {
-        throw DatabaseException('No data found at path: $path', 'not-found');
+        throw DatabaseException(
+          'The requested information could not be found.',
+          'not-found',
+          'No data found at path: $path',
+        );
       }
     } catch (e) {
       log("GET FAILED: Path: $path, Error: $e");
@@ -60,7 +65,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Future<List<T>> getList<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) async {
+        required T Function(Map<String, dynamic> json) fromJson}) async {
     try {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
@@ -76,7 +81,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
   @override
   Stream<List<T>> streamList<T>(String path,
       {FirebaseQueryParams? queryParams,
-      required T Function(Map<String, dynamic> json) fromJson}) {
+        required T Function(Map<String, dynamic> json) fromJson}) {
     try {
       final ref = _getQuery(path, queryParams);
       return ref.onValue.map((event) {

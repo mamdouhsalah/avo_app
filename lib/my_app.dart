@@ -1,8 +1,11 @@
 import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:avo_app/app/core/services/local/preferences_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
+import 'package:avo_app/app/core/services/remote/sync_repository.dart';
+import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
 import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
@@ -15,6 +18,7 @@ import 'package:avo_app/app/features/auth/logic/auth_cubit.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository_impl.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
+import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
 import 'package:avo_app/app/features/splash/logic/splash_cubit.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,8 +29,12 @@ import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   final FirebaseConsumer firebaseConsumer;
+  final PreferencesService preferencesService;
 
-  const MyApp({super.key, required this.firebaseConsumer});
+  const MyApp(
+      {super.key,
+      required this.firebaseConsumer,
+      required this.preferencesService});
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +48,7 @@ class MyApp extends StatelessWidget {
           builder: (devicePreviewContext) => MultiProvider(
             providers: [
               Provider<FirebaseConsumer>.value(value: firebaseConsumer),
+              Provider<PreferencesService>.value(value: preferencesService),
               Provider<HomeRepository>(
                 create: (providerContext) => HomeRepositoryImpl(
                   consumer: providerContext.read<FirebaseConsumer>(),
@@ -58,14 +67,31 @@ class MyApp extends StatelessWidget {
               Provider<AdminRepository>(
                 create: (context) => AdminRepositoryImpl(),
               ),
+              Provider<SyncRepository>(
+                create: (providerContext) => SyncRepository(
+                  firebaseConsumer: providerContext.read<FirebaseConsumer>(),
+                ),
+              ),
+              Provider<LogRepository>(
+                create: (providerContext) => LogRepository(
+                  firebaseConsumer: providerContext.read<FirebaseConsumer>(),
+                ),
+              ),
               BlocProvider<HomeCubit>(
                 create: (providerContext) => HomeCubit(
                   repository: providerContext.read<HomeRepository>(),
                 )..loadDashboard('1'),
               ),
+              BlocProvider<ReminderCubit>(
+                create: (providerContext) => ReminderCubit(
+                  firebaseConsumer: providerContext.read<FirebaseConsumer>(),
+                  logRepository: providerContext.read<LogRepository>(),
+                )..loadTodaysMedications(),
+              ),
               BlocProvider<AuthCubit>(
                 create: (providerContext) => AuthCubit(
                   repository: providerContext.read<AuthRepository>(),
+                  syncRepository: providerContext.read<SyncRepository>(),
                 ),
               ),
               BlocProvider<ProfileCubit>(
@@ -76,6 +102,7 @@ class MyApp extends StatelessWidget {
               BlocProvider<SplashCubit>(
                 create: (providerContext) => SplashCubit(
                   repository: providerContext.read<AuthRepository>(),
+                  syncRepository: providerContext.read<SyncRepository>(),
                 ),
               ),
               BlocProvider<AdminCubit>(
@@ -84,25 +111,27 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               BlocProvider<ThemeCubit>(
-                create: (context) => ThemeCubit(),
+                create: (context) =>
+                    ThemeCubit(context.read<PreferencesService>()),
               ),
             ],
-            // 🔥 دمجنا الـ BlocBuilder للـ Theme مع حماية الـ EasyLocalization
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
-                final isLocalizationInitialized = EasyLocalization.of(context) != null;
-                
+                final savedLanguage =
+                    context.read<PreferencesService>().getLanguage();
+                final locale = Locale(savedLanguage);
+
+                final isLocalizationInitialized =
+                    EasyLocalization.of(context) != null;
+
                 return MaterialApp.router(
-                  // --- إعدادات اللغات بتاعتك ---
                   localizationsDelegates: isLocalizationInitialized
                       ? context.localizationDelegates
                       : null,
                   supportedLocales: isLocalizationInitialized
                       ? context.supportedLocales
                       : const [Locale('en')],
-                  locale: isLocalizationInitialized
-                      ? context.locale
-                      : const Locale('en'),
+                  locale: isLocalizationInitialized ? context.locale : locale,
 
                   debugShowCheckedModeBanner: false,
                   title: AppStrings.appName,

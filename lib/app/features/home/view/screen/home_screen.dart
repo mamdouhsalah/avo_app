@@ -1,6 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/home/logic/home_state.dart';
+import 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart';
+import 'package:avo_app/app/features/reminder/data/reminder_model.dart';
+import 'package:avo_app/app/core/models/medicine_model.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
@@ -30,6 +33,33 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 2;
   bool isVisible = true;
   int selectedCategoryIndex = -1;
+
+  String _calculateMinsUntil(String timeStr) {
+    try {
+      final timeStrTrimmed = timeStr.trim().toUpperCase();
+      final isPM = timeStrTrimmed.contains('PM');
+      final isAM = timeStrTrimmed.contains('AM');
+      final cleanTime = timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
+      final parts = cleanTime.split(':');
+      if (parts.length < 2) return '--';
+      
+      int hour = int.parse(parts[0]);
+      final min = int.parse(parts[1]);
+      
+      if (isPM && hour != 12) hour += 12;
+      if (isAM && hour == 12) hour = 0;
+      
+      final medMinutes = hour * 60 + min;
+      final now = TimeOfDay.now();
+      final currentMinutes = now.hour * 60 + now.minute;
+      
+      final diff = medMinutes - currentMinutes;
+      if (diff < 0) return '0';
+      return diff.toString();
+    } catch (_) {
+      return '--';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -258,32 +288,60 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(height: 24.h),
                               SectionHeader(
                                 title: LocaleKeys.home_upcoming_medicine.tr(),
-                                routePath: AppRouter.search,
+                                onTap: () {
+                                  context.go(AppRouter.reminder);
+                                },
                               ),
                               SizedBox(height: 16.h),
-                              SizedBox(
-                                height: 200.h,
-                                child: state.medicines.isEmpty
-                                    ? Center(
-                                  child: Text(
-                                    LocaleKeys.home_no_medicines_scheduled.tr(),
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .outline,
-                                      fontSize: 13.sp,
-                                    ),
-                                  ),
-                                )
-                                    : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: state.medicines.length,
-                                  itemBuilder: (_, i) {
-                                    return MedicineCard(
-                                      medicine: state.medicines[i],
-                                    );
-                                  },
-                                ),
+                              BlocBuilder<ReminderCubit, ReminderState>(
+                                builder: (context, reminderState) {
+                                  List<MedicineModel> upcomingMedicines = [];
+                                  List<ReminderModel> upcomingReminders = [];
+                                  
+                                  if (reminderState is ReminderLoaded) {
+                                    upcomingReminders = reminderState.todaysSchedule
+                                        .where((r) => r.status == 'upcoming' || r.status == 'next' || r.status == 'overdue')
+                                        .toList();
+                                        
+                                    upcomingMedicines = upcomingReminders.map((r) => MedicineModel(
+                                      id: r.id,
+                                      name: r.name,
+                                      dosage: r.dosage,
+                                      time: r.time,
+                                      isTaken: false,
+                                    )).toList();
+                                  }
+
+                                  return SizedBox(
+                                    height: 200.h,
+                                    child: (reminderState is ReminderLoading) 
+                                        ? const Center(child: CircularProgressIndicator())
+                                        : upcomingMedicines.isEmpty
+                                            ? Center(
+                                                child: Text(
+                                                  LocaleKeys.home_no_medicines_scheduled.tr(),
+                                                  style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.outline,
+                                                    fontSize: 13.sp,
+                                                  ),
+                                                ),
+                                              )
+                                            : ListView.builder(
+                                                scrollDirection: Axis.horizontal,
+                                                itemCount: upcomingMedicines.length,
+                                                itemBuilder: (_, i) {
+                                                  final reminder = upcomingReminders[i];
+                                                  return MedicineCard(
+                                                    medicine: upcomingMedicines[i],
+                                                    minsUntil: _calculateMinsUntil(reminder.time),
+                                                    onMarkAsTaken: () {
+                                                      context.read<ReminderCubit>().markAsTaken(reminder);
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                  );
+                                },
                               ),
                               SizedBox(height: 24.h),
                               SectionHeader(

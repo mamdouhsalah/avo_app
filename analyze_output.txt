@@ -1,0 +1,13 @@
+Analyzing avo_app...
+
+  error - lib/app/features/home/view/screen/home_screen.dart:298:40 - The name 'ReminderModel' isn't a type, so it can't be used as a type argument. Try correcting the name to an existing type, or defining a type named 'ReminderModel'. - non_type_as_type_argument
+  error - lib/app/features/home/view/screen/home_screen.dart:306:45 - The property 'id' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!'). - unchecked_use_of_nullable_value
+  error - lib/app/features/home/view/screen/home_screen.dart:307:47 - The property 'name' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!'). - unchecked_use_of_nullable_value
+  error - lib/app/features/home/view/screen/home_screen.dart:308:49 - The property 'dosage' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!'). - unchecked_use_of_nullable_value
+  error - lib/app/features/home/view/screen/home_screen.dart:309:47 - The property 'time' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!'). - unchecked_use_of_nullable_value
+warning - lib/app/core/routing/app_router.dart:2:8 - Unused import: 'package:avo_app/app/features/reminder/logic/reminder_cubit.dart'. Try removing the import directive. - unused_import
+warning - lib/app/core/services/local/notification_service.dart:303:21 - The operand can't be 'null', so the condition is always 'true'. Remove the condition. - unnecessary_null_comparison
+warning - lib/app/features/home/data/home_repository.dart:4:8 - Unused import: 'package:avo_app/app/core/models/medicine_model.dart'. Try removing the import directive. - unused_import
+warning - lib/app/features/home/data/home_repository_impl.dart:5:8 - Unused import: 'package:avo_app/app/core/models/medicine_model.dart'. Try removing the import directive. - unused_import
+
+9 issues found.

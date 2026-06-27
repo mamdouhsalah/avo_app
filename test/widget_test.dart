@@ -3,6 +3,7 @@ import 'package:avo_app/app/core/models/user_profile_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository_impl.dart';
+import 'package:avo_app/app/core/services/local/preferences_service.dart';
 import 'package:avo_app/my_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +46,17 @@ class FakeFirebaseConsumer implements FirebaseConsumer {
       {required Map<String, dynamic> data}) async {}
   @override
   Future<void> delete(String path) async {}
+}
+
+class FakePreferencesService implements PreferencesService {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  String getTheme() => 'light';
+
+  @override
+  String getLanguage() => 'en';
 }
 
 void main() {
@@ -129,7 +141,10 @@ void main() {
 
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp(firebaseConsumer: FakeFirebaseConsumer()));
+    await tester.pumpWidget(MyApp(
+      firebaseConsumer: FakeFirebaseConsumer(),
+      preferencesService: FakePreferencesService(),
+    ));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

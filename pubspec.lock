@@ -1697,6 +1697,14 @@ packages:
       sha256: "784a5e34d2eb62e1326f24d6f600aaaee452eb8ca8ef2f384a59244e292d158b"
       url: "https://pub.dev"
     source: hosted
+    version: "0.7.11"
+  timezone:
+    dependency: transitive
+    description:
+      name: timezone
+      sha256: "784a5e34d2eb62e1326f24d6f600aaaee452eb8ca8ef2f384a59244e292d158b"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.11.0"
   timing:
     dependency: transitive

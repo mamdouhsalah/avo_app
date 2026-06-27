@@ -33,10 +33,27 @@ class CalendarStripWidget extends StatelessWidget {
           selectedDecoration: BoxDecoration(
             color: theme.colorScheme.primary,
             borderRadius: BorderRadius.circular(12.r),
+            shape: BoxShape.rectangle,
           ),
           todayDecoration: BoxDecoration(
             color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12.r),
+            shape: BoxShape.rectangle,
+          ),
+          defaultDecoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12.r),
+            shape: BoxShape.rectangle,
+          ),
+          weekendDecoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12.r),
+            shape: BoxShape.rectangle,
+          ),
+          outsideDecoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12.r),
+            shape: BoxShape.rectangle,
           ),
           todayTextStyle: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
           defaultTextStyle: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.w500),

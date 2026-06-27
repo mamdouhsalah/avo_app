@@ -1,7 +1,11 @@
+import 'package:avo_app/app/core/services/local/preferences_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/my_app.dart';
 import 'package:flutter/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'app/core/Language/codegen_loader.g.dart';
 
@@ -14,15 +18,18 @@ import 'package:avo_app/app/core/services/local/fcm_service.dart';
 import 'package:avo_app/app/core/services/remote/presence_service.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  // for firebase initialization
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // 3. تهيئة خدمة الفايربيز الخاصة بيك
   final firebaseConsumer = FirebaseConsumerImpl();
   await firebaseConsumer.init();
 
-  // Initialize Local Services
+  // 4. Initialize Local Services
   await HiveService.init();
   await PointsService.init();
   await HealthMetricsService.init();
@@ -30,6 +37,14 @@ void main() async {
   await NotificationService.init();
   await FCMService.initialize();
   PresenceService.initialize();
+
+  // Services added from chat feature
+  await FCMService.initialize();
+  PresenceService.initialize();
+
+  // Services added from main for localization
+  final preferencesService = PreferencesService();
+  final savedLanguage = preferencesService.getLanguage();
 
   runApp(
     EasyLocalization(
@@ -42,7 +57,8 @@ void main() async {
       useFallbackTranslations: true,
       assetLoader: CodegenLoader(),
       fallbackLocale: const Locale('en'),
-      child: MyApp(firebaseConsumer: firebaseConsumer),
+      startLocale: Locale(savedLanguage),
+      child: MyApp(firebaseConsumer: firebaseConsumer, preferencesService: preferencesService),
     ),
   );
 }
