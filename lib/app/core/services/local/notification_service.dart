@@ -239,6 +239,14 @@ class NotificationService {
       await handleNotificationAction(initialAction);
     }
 
+    // Listen for notification actions
+    // AwesomeNotifications().setListeners(
+    //   onActionReceivedMethod: (ReceivedAction action) async {
+    //     if (action.channelKey == 'med_channel') {
+    //       await _handleNotificationAction(action);
+    //     }
+    //   },
+    // );
     requestBatteryOptimization();
   }
 
@@ -254,6 +262,14 @@ class NotificationService {
       print('Error in background action handler: $e');
     }
   }
+// static Future<void> initializeBackgroundHandler() async {
+//     AwesomeNotifications().setListeners(
+//       onActionReceivedMethod: (ReceivedAction action) async {
+//         await HiveService.init(); // Reinitialize Hive in background
+//         await _handleNotificationAction(action);
+//       },
+//     );
+//   }
 
   static Future<void> handleNotificationAction(ReceivedAction action) async {
     final payload = action.payload;
@@ -298,6 +314,12 @@ class NotificationService {
       await recordLog('skipped');
       await AwesomeNotifications().cancel(notificationId);
     } else if (action.buttonKeyPressed == 'SNOOZE') {
+      await logBox.add(MedicationLog(
+        medicationKey: medicationKey,
+        timestamp: DateTime.now(),
+        action: 'snoozed',
+        notificationId: notificationId,
+      ));
       await recordLog('snoozed');
 
       // Reschedule notification for 15 minutes later
@@ -312,6 +334,11 @@ class NotificationService {
           channelKey: 'med_channel',
           title: 'تذكير بالدواء: ${med.name}',
           body: 'حان وقت أخذ ${med.dose} ${med.unit} من ${med.name}',
+          payload: {
+            'medicationKey': medicationKey.toString(),
+            'notificationId': notificationId.toString(),
+            'time': time,
+          },
           fullScreenIntent: true,
           locked: true,
           payload: payload,

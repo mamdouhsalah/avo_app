@@ -21,14 +21,14 @@ abstract class  LocaleKeys {
   static const general_today = 'general.today';
   static const general_yes = 'general.yes';
   static const general_no = 'general.no';
+  static const general_done = 'general.done';
   static const general_message = 'general.message';
   static const general_cancel = 'general.cancel';
-  static const general_download = 'general.download';
   static const general_delete = 'general.delete';
+  static const general_download = 'general.download';
   static const general_share = 'general.share';
   static const general_search = 'general.search';
   static const general_skip = 'general.skip';
-  static const general_done = 'general.done';
   static const general_save = 'general.save';
   static const general_edit = 'general.edit';
   static const general = 'general';

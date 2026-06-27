@@ -35,6 +35,8 @@ void main() async {
   await HealthMetricsService.init();
   await MedicalAnalysisService().init();
   await NotificationService.init();
+  await FCMService.initialize();
+  PresenceService.initialize();
 
   // Services added from chat feature
   await FCMService.initialize();
