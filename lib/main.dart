@@ -27,11 +27,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 3. تهيئة خدمة الفايربيز الخاصة بيك
   final firebaseConsumer = FirebaseConsumerImpl();
   await firebaseConsumer.init();
 
-  // 4. Initialize Local Services
   await HiveService.init();
   await PointsService.init();
   await HealthMetricsService.init();
@@ -40,11 +38,9 @@ void main() async {
   await FCMService.initialize();
   PresenceService.initialize();
 
-  // Services added from chat feature
   await FCMService.initialize();
   PresenceService.initialize();
 
-  // Services added from main for localization
   final preferencesService = PreferencesService();
   final savedLanguage = preferencesService.getLanguage();
 
@@ -60,7 +56,9 @@ void main() async {
       assetLoader: CodegenLoader(),
       fallbackLocale: const Locale('en'),
       startLocale: Locale(savedLanguage),
-      child: MyApp(firebaseConsumer: firebaseConsumer, preferencesService: preferencesService),
+      child: MyApp(
+          firebaseConsumer: firebaseConsumer,
+          preferencesService: preferencesService),
     ),
   );
 }

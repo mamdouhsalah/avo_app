@@ -15,7 +15,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:avo_app/app/core/constants/database_paths.dart';
-import 'package:avo_app/app/core/services/remote/notification_sender_service.dart';
+import 'package:avo_app/app/features/notification/services/notification_sender_service.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/constants/app_spacing.dart';
 import 'package:record/record.dart';
