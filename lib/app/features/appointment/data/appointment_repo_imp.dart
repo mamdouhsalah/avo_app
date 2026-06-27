@@ -7,7 +7,7 @@ import 'package:avo_app/app/core/models/user_role.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
 import 'package:avo_app/app/features/appointment/data/appointment_repo.dart';
-import 'package:avo_app/app/features/appointment/models/appointment_model.dart';
+import 'package:avo_app/app/features/appointment/models/appointment.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repo.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,50 +19,45 @@ class AppointmentRepoImp implements AppointmentRepo {
   final DoctorRepository _doctorRepository;
   final ProfileRepository _patientRepository; // feels misleading but ...
 
-  
-  AppointmentRepoImp({
-    required FirebaseConsumer consumer,
-    FirebaseAuth? firebaseAuth,
-    required DoctorRepository doctorRepository,
-    required ProfileRepository patientRepository
-  })  : _consumer = consumer,
+  AppointmentRepoImp(
+      {required FirebaseConsumer consumer,
+      FirebaseAuth? firebaseAuth,
+      required DoctorRepository doctorRepository,
+      required ProfileRepository patientRepository})
+      : _consumer = consumer,
         _doctorRepository = doctorRepository,
         _patientRepository = patientRepository,
         _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-/// helper functions
+  /// helper functions
 
-Future<List<AppointmentCardModel>> _buildAppointmentCards(
+  Future<List<AppointmentCardModel>> _buildAppointmentCards(
     List<AppointmentModel> appointments,
-) async {
+  ) async {
+    final List<AppointmentCardModel> cards = [];
 
-  final List<AppointmentCardModel> cards = [];
+    for (final appointment in appointments) {
+      final doctor =
+          await _doctorRepository.getDoctorById(appointment.doctorId);
 
-  for (final appointment in appointments) {
+      UserProfileModel? patient;
 
-    final doctor =
-        await _doctorRepository.getDoctorById(
-            appointment.doctorId);
+      if (appointment.patientId != null && appointment.patientId!.isNotEmpty) {
+        patient = await _patientRepository
+            .getUserIfPatientById(appointment.patientId!);
+      }
 
-    UserProfileModel? patient;
-
-    if (appointment.patientId != null && appointment.patientId!.isNotEmpty) {
-      patient =
-          await _patientRepository.getUserIfPatientById(
-              appointment.patientId!);
+      cards.add(
+        AppointmentCardModel(
+          appointment: appointment,
+          doctor: doctor,
+          patient: patient,
+        ),
+      );
     }
 
-    cards.add(
-      AppointmentCardModel(
-        appointment: appointment,
-        doctor: doctor,
-        patient: patient,
-      ),
-    );
+    return cards;
   }
-
-  return cards;
-}
 
   Future<AppointmentModel> _getAppointmentById(String appointmentId) async {
     try {
@@ -147,32 +142,32 @@ Future<List<AppointmentCardModel>> _buildAppointmentCards(
     }
   }
 
-@override
-Future<List<AppointmentCardModel>> getAllAppointments() async {
-  try {
-    final CurrentUser user = await _getCurrentUser();
+  @override
+  Future<List<AppointmentCardModel>> getAllAppointments() async {
+    try {
+      final CurrentUser user = await _getCurrentUser();
 
-    final List<AppointmentModel> appointments;
+      final List<AppointmentModel> appointments;
 
-    switch (user.role) {
-      case UserRole.patient:
-        appointments = await _getPatientAppointments();
-        break;
+      switch (user.role) {
+        case UserRole.patient:
+          appointments = await _getPatientAppointments();
+          break;
 
-      case UserRole.doctor:
-      default:
-        appointments = await _getDoctorAppointments();
-        break;
+        case UserRole.doctor:
+        default:
+          appointments = await _getDoctorAppointments();
+          break;
+      }
+
+      return await _buildAppointmentCards(appointments);
+    } catch (e) {
+      throw DatabaseException(
+        e.toString(),
+        'failed-to-get-user-appointments',
+      );
     }
-
-    return await _buildAppointmentCards(appointments);
-  } catch (e) {
-    throw DatabaseException(
-      e.toString(),
-      'failed-to-get-user-appointments',
-    );
   }
-}
 
   /// patient methods
   /// TODO : upcomming , canceled , completed , favourite will be handled in cubit
@@ -204,15 +199,15 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
   /// Doctor methods
   /// create update delete complete appointment
   @override
-  Future<void> createAppointment(
+  Future<String> createAppointment(
     AppointmentModel appointment,
   ) async {
     try {
       final CurrentUser user = await _getCurrentUser();
+      final String? generatedId =
+          await _consumer.getRefrence(path: DatabasePaths.appointments);
       if (user.role == UserRole.doctor) {
         // 1. Generate the ID locally (0 network cost, completely offline)
-        final String? generatedId =
-            await _consumer.getRefrence(path: DatabasePaths.appointments);
         final doctorId = user.uid;
         // suppose that the doctor will create the appointment and still witout patient until some patient takes action
         final appointmentWithDoctorId = appointment.copyWith(
@@ -220,6 +215,7 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
         await _consumer.set('${DatabasePaths.appointments}/$generatedId',
             data: appointmentWithDoctorId.toJson());
       }
+      return generatedId!; //
     } catch (e) {
       throw DatabaseException(
           e.toString(), 'failed-to-create-an-appointment-not-authorized');
@@ -227,14 +223,7 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
   }
 
   @override
-  Future<void> updateAppointmentDetails({
-    required String appointmentId,
-    DateTime? appointmentDate,
-    String? timeStart,
-    String? timeEnd,
-    String? room,
-    String? title,
-  }) async {
+  Future<void> updateAppointmentDetails(AppointmentModel updatedAppointment) async {
     try {
       final user = await _getCurrentUser();
 
@@ -245,31 +234,9 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
         );
       }
 
-      final updateData = <String, dynamic>{};
-
-      if (appointmentDate != null) {
-        updateData['appointmentDate'] = appointmentDate.toIso8601String();
-      }
-
-      if (timeStart != null) {
-        updateData['timeStart'] = timeStart;
-      }
-
-      if (timeEnd != null) {
-        updateData['timeEnd'] = timeEnd;
-      }
-
-      if (room != null) {
-        updateData['room'] = room;
-      }
-
-      if (title != null) {
-        updateData['title'] = title;
-      }
-
       await _consumer.update(
-        '${DatabasePaths.appointments}/$appointmentId',
-        data: updateData,
+        '${DatabasePaths.appointments}/${updatedAppointment.id}',
+        data: updatedAppointment.toJson(),
       );
     } catch (e) {
       throw DatabaseException(
@@ -281,7 +248,7 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
 
   @override
   Future<void> completeAppointment(
-    AppointmentModel appointment,
+    String appointmentId,
   ) async {
     try {
       final user = await _getCurrentUser();
@@ -292,9 +259,10 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
           'permission-denied',
         );
       }
-
+      final AppointmentModel appointment =
+          await _getAppointmentById(appointmentId);
       if (appointment.status !=
-              AppointmentStatus.upcoming // must be upcoming first
+              AppointmentStatus.confirmed // must be upcoming first
           ) {
         throw DatabaseException(
           'Only upcoming appointments can be completed',
@@ -319,15 +287,13 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
   @override
 
   ///TODO : later caceled automatically if appointment date == now and it is pending
-  Future<void> cancelAppointment(
-    String appointmentId,
-  ) async {
+  Future<void> cancelAppointment(String appointmentId) async {
     // both doctor and patient can cancel an appointment
     try {
-      final appointment = await _getAppointmentById(appointmentId);
-
       /// to know the appointment was canceled by whome for future statistics
       CurrentUser currentUser = await _getCurrentUser();
+      final AppointmentModel appointment =
+          await _getAppointmentById(appointmentId);
       if (appointment.status == AppointmentStatus.completed) {
         throw DatabaseException(
           'Completed appointments cannot be cancelled',
@@ -343,7 +309,7 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
       }
 
       await _consumer.update(
-        '${DatabasePaths.appointments}/$appointmentId',
+        '${DatabasePaths.appointments}/${appointment.id}',
         data: {
           'status': AppointmentStatus.canceled.value,
           'canceledBy': currentUser.uid
@@ -359,10 +325,12 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
 
   @override
   Future<void> confirmAppointment(
-    AppointmentModel appointment,
+    String appointmentId,
   ) async {
     try {
       final CurrentUser user = await _getCurrentUser();
+      final AppointmentModel appointment =
+          await _getAppointmentById(appointmentId);
 // feel extra thing to do here!!!!
       if (user.role != UserRole.doctor) {
         throw DatabaseException(
@@ -382,9 +350,7 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
       await _consumer.update(
         '${DatabasePaths.appointments}/${appointment.id}',
         data: {
-          'status': AppointmentStatus.upcoming.value,
-
-          /// upcoming/confirmed?!!
+          'status': AppointmentStatus.confirmed.value,
         },
       );
     } catch (e) {
@@ -397,18 +363,19 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
 
   @override // if doctor rejects a pending appointment it becomes available again
   Future<void> rejectAppointment(
-    AppointmentModel appointment,
+    String appointmentId,
   ) async {
     try {
       final CurrentUser user = await _getCurrentUser();
-  // feel extra thing to do here!!!!
+      // feel extra thing to do here!!!!
       if (user.role != UserRole.doctor) {
         throw DatabaseException(
           'Only doctors can reject appointments',
           'permission-denied',
         );
       }
-
+      final AppointmentModel appointment =
+          await _getAppointmentById(appointmentId);
       if ( // must be pending first
           appointment.status != AppointmentStatus.pending) {
         throw DatabaseException(
@@ -444,9 +411,8 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
           'permission-denied',
         );
       }
-
-      final appointment = await _getAppointmentById(appointmentId);
-
+      final AppointmentModel appointment =
+          await _getAppointmentById(appointmentId);
       if (appointment.status != AppointmentStatus.available) {
         throw DatabaseException(
           'Appointment is no longer available',
@@ -455,7 +421,7 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
       }
 
       await _consumer.update(
-        '${DatabasePaths.appointments}/$appointmentId',
+        '${DatabasePaths.appointments}/${appointment.id}',
         data: {
           'patientId': currentUser.uid,
           'status': AppointmentStatus.pending.value,
@@ -471,7 +437,24 @@ Future<List<AppointmentCardModel>> getAllAppointments() async {
       );
     }
   }
+
+  @override
+  Future<void> deleteAppointment(
+    String appointmentId,
+  ) async {
+    try {
+      final CurrentUser currentUser = await _getCurrentUser();
+      // firebase will handle it even it was not exist
+      if(currentUser.role == UserRole.doctor){
+      await _consumer.delete(
+        '${DatabasePaths.appointments}/$appointmentId',
+      );
+      }
+    } catch (e) {
+      throw DatabaseException(
+        e.toString(),
+        'failed-to-delete-appointment',
+      );
+    }
+  }
 }
-/// TODO : get pending ,canceled,available,completed 
-/// appointments and their count in appointment cubit
-///  after getting doctor appointments once!!!
