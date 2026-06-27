@@ -1,9 +1,7 @@
-import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/home/logic/home_state.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

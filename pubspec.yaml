@@ -65,6 +65,7 @@ dependencies:
   audioplayers: ^6.7.1
   flutter_dotenv: ^5.2.1
   lottie: ^3.3.3
+  equatable: ^2.0.8
 
 dev_dependencies:
   flutter_test:

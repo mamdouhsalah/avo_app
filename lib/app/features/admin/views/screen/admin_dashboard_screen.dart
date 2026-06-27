@@ -13,7 +13,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
-import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -398,39 +397,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _showLogoutDialog(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text('Logout',
-            style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w700)),
-        content: Text(
-            'Are you sure you want to logout from the Admin Dashboard?',
-            style: TextStyle(fontSize: 14.sp)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-              elevation: 0,
-            ),
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true && context.mounted) {
-      context.go(AppRouter.login);
-    }
   }
 }
 

@@ -11,8 +11,6 @@ class ThemeCubit extends Cubit<ThemeMode> {
 
   void _loadSavedTheme() {
     final saved = _preferencesService.getTheme();
-    if (saved == null) return;
-
     emit(saved == 'dark' ? ThemeMode.dark : ThemeMode.light);
   }
 

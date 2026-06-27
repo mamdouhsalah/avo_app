@@ -14,8 +14,8 @@ import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/core/services/local/points_service.dart';
 import 'package:avo_app/app/core/services/local/health_metrics_service.dart';
 import 'package:avo_app/app/core/services/local/hive_medical_analysis_service.dart';
-import 'package:avo_app/app/core/services/local/notification_service.dart';
-import 'package:avo_app/app/core/services/local/fcm_service.dart';
+import 'package:avo_app/app/features/notification/services/notification_service.dart';
+import 'package:avo_app/app/features/notification/services/fcm_service.dart';
 import 'package:avo_app/app/core/services/remote/presence_service.dart';
 
 void main() async {
@@ -38,7 +38,6 @@ void main() async {
   await FCMService.initialize();
   PresenceService.initialize();
 
-  await FCMService.initialize();
   PresenceService.initialize();
 
   final preferencesService = PreferencesService();

@@ -9,8 +9,6 @@ import 'package:avo_app/app/features/reminder/logic/analytics_cubit.dart';
 import 'package:avo_app/app/features/reminder/screens/adherence_report_screen.dart';
 import 'package:avo_app/app/core/layout/main_layout.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
-import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:avo_app/app/features/admin/views/screen/admin_approvals_screen.dart';
 import 'package:avo_app/app/features/admin/views/screen/admin_dashboard_screen.dart';
 import 'package:avo_app/app/features/admin/views/screen/admin_logs_screen.dart';

@@ -2,7 +2,6 @@ import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
 
-import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';

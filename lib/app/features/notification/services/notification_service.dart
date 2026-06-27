@@ -259,7 +259,7 @@ class NotificationService {
       await handleNotificationAction(action);
     } catch (e) {
       // Log error (e.g., to native logs or file)
-      print('Error in background action handler: $e');
+      log('Error in background action handler: $e');
     }
   }
 // static Future<void> initializeBackgroundHandler() async {
@@ -442,10 +442,8 @@ class NotificationService {
     for (int i = 0; i < med.times.length; i++) {
       for (String day in med.days) {
         final weekday = englishDayToWeekday(day);
-        if (weekday != null) {
           await AwesomeNotifications()
               .cancel(med.key.hashCode + i + weekday * 100);
-        }
       }
     }
   }

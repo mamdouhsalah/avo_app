@@ -82,15 +82,17 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     if (_isMuted) {
       await ref.remove();
       setState(() => _isMuted = false);
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Notifications unmuted")));
+      }
     } else {
       await ref.set(true);
       setState(() => _isMuted = true);
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Notifications muted")));
+      }
     }
   }
 
