@@ -5,9 +5,11 @@ import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
-import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
 
 import '../../../../core/Language/locale_keys.g.dart';
 
@@ -176,7 +178,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 (doc) => BestDoctorCard(
                               doctor: doc,
                               onFavoriteToggle: () {},
-                              onBook: () {},
+                              onBook: () => context.push(AppRouter.bookPatient, extra: doc.id),
                             ),
                           ),
                         ],

@@ -379,6 +379,16 @@ class CodegenLoader extends AssetLoader{
     "october": "أكتوبر",
     "november": "نوفمبر",
     "december": "ديسمبر"
+  },
+  "booking": {
+    "experience": "خبرة",
+    "treated": "حالة معالجة",
+    "hourly_rate": "سعر الساعة",
+    "schedules": "جدول المواعيد",
+    "no_available_schedules": "لا توجد مواعيد متاحة",
+    "booking_success": "تم حجز الموعد بنجاح!",
+    "select_slot_error": "برجاء اختيار موعد كشف أولاً",
+    "number_of_reviews": "عدد التقييمات"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -746,6 +756,16 @@ static const Map<String,dynamic> _en = {
     "october": "October",
     "november": "November",
     "december": "December"
+  },
+  "booking": {
+    "experience": "Experience",
+    "treated": "Treated",
+    "hourly_rate": "Hourly Rate",
+    "schedules": "Schedules",
+    "no_available_schedules": "No available schedules",
+    "booking_success": "Appointment booked successfully!",
+    "select_slot_error": "Please select a schedule slot first",
+    "number_of_reviews": "No. reviews"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};

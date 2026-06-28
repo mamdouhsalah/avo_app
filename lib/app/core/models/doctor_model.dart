@@ -83,6 +83,53 @@ class DoctorModel extends UserProfileModel {
     );
   }
 
+  factory DoctorModel.fromJsonWithSchedules(Map<String, dynamic>? json) {
+    if (json == null) {
+      return DoctorModel.fromJson(null);
+    }
+    final baseDoc = DoctorModel.fromJson(json);
+    List<ScheduleModel>? schedulesList;
+    if (json['schedules'] != null) {
+      final rawSchedules = json['schedules'];
+      if (rawSchedules is Map) {
+        schedulesList = rawSchedules.entries.map((entry) {
+          final val = Map<String, dynamic>.from(entry.value as Map);
+          if (val['id'] == null) {
+            val['id'] = entry.key.toString();
+          }
+          return ScheduleModel.fromJson(val);
+        }).toList();
+      } else if (rawSchedules is List) {
+        schedulesList = rawSchedules
+            .where((e) => e != null)
+            .map((e) => ScheduleModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+      }
+    }
+    return DoctorModel(
+      id: baseDoc.id,
+      email: baseDoc.email,
+      fullName: baseDoc.fullName,
+      role: baseDoc.role,
+      gender: baseDoc.gender,
+      dateOfBirth: baseDoc.dateOfBirth,
+      phoneNumber: baseDoc.phoneNumber,
+      height: baseDoc.height,
+      weight: baseDoc.weight,
+      image: baseDoc.image,
+      isVerified: baseDoc.isVerified,
+      specialty: baseDoc.specialty,
+      location: baseDoc.location,
+      rating: baseDoc.rating,
+      numberOfReviews: baseDoc.numberOfReviews,
+      price: baseDoc.price,
+      bio: baseDoc.bio,
+      patientsTreated: baseDoc.patientsTreated,
+      isFavorite: baseDoc.isFavorite,
+      schedules: schedulesList,
+    );
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return {

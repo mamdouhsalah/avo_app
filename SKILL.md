@@ -55,6 +55,8 @@ For any new feature (e.g., `doctor`), organize it under `lib/app/features/<featu
 ## Phase 3: Assets & Localization
 
 ### 1. Localization
+* **Strict Rule**: Every word, phrase, and message displayed in the UI must be registered in the localization files (`assets/translations/en.json` and `assets/translations/ar.json`). Never use hardcoded strings in widget or screen implementations.
+* **Code Comments**: Keep the code clean and pure; do not include code comments or placeholders in newly created feature classes.
 * Add English strings to `assets/translations/en.json`.
 * Add Arabic strings to `assets/translations/ar.json`.
 * Update `lib/app/core/Language/locale_keys.g.dart` to expose the new keys under `LocaleKeys`.

@@ -1,3 +1,4 @@
+import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/home/logic/home_state.dart';
@@ -70,9 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         if (state is HomeLoading || state is HomeInitial) {
-          return const Scaffold(
-            body: Center(
-              child: LoadingIndicatorWidget(),
+          return AppExitPopScope(
+            child: const Scaffold(
+              body: Center(
+                child: LoadingIndicatorWidget(),
+              ),
             ),
           );
         } else if (state is HomeError) {
@@ -467,7 +470,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           key: ValueKey(doc.id),
                                           doctor: doc,
                                           onFavoriteToggle: () {},
-                                          onBook: () {},
+                                          onBook: () => context.push(
+                                              AppRouter.bookPatient,
+                                              extra: doc.id),
                                         );
                                       }).toList(),
                                     ),

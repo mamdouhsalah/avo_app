@@ -4,6 +4,9 @@ import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avo_app/app/features/book_patient/presentation/screens/book_patient_screen.dart';
+import 'package:avo_app/app/features/book_patient/presentation/cubit/book_patient_cubit.dart';
+import 'package:avo_app/app/features/book_patient/data/book_patient_repository_impl.dart';
 import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
 import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';
@@ -89,6 +92,7 @@ class AppRouter {
   static const String accountInfo = '/account-info';
   static const String personalInfo = '/personal-info';
   static const String doctorInfo = '/doctor-info';
+  static const String bookPatient = '/book-patient';
   static const String addCard = '/add-card';
   static const String addMedication = '/add-medication';
   static const String detailsPatient = '/details-patient';
@@ -232,6 +236,19 @@ class AppRouter {
           builder: (context, state) {
             final docId = state.extra as String?;
             return DoctorInfoScreen(doctorId: docId);
+          }),
+      GoRoute(
+          path: bookPatient,
+          builder: (context, state) {
+            final docId = state.extra as String?;
+            return BlocProvider(
+              create: (context) => BookPatientCubit(
+                repository: BookPatientRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
+              child: BookPatientScreen(doctorId: docId),
+            );
           }),
       GoRoute(
         path: addCard,

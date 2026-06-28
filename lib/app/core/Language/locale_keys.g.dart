@@ -346,5 +346,14 @@ abstract class  LocaleKeys {
   static const months_november = 'months.november';
   static const months_december = 'months.december';
   static const months = 'months';
+  static const booking_experience = 'booking.experience';
+  static const booking_treated = 'booking.treated';
+  static const booking_hourly_rate = 'booking.hourly_rate';
+  static const booking_schedules = 'booking.schedules';
+  static const booking_no_available_schedules = 'booking.no_available_schedules';
+  static const booking_booking_success = 'booking.booking_success';
+  static const booking_select_slot_error = 'booking.select_slot_error';
+  static const booking_number_of_reviews = 'booking.number_of_reviews';
+  static const booking = 'booking';
 
 }
