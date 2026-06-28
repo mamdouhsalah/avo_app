@@ -1,3 +1,6 @@
+# Environment Variables (API Keys - Never commit!)
+.env
+
 # Miscellaneous
 *.class
 *.log

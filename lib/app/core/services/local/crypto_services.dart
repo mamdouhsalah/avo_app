@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CryptoService {
-  static final _key = enc.Key.fromUtf8('my32lengthsupersecretnooneknows1');
-  static final _iv = enc.IV.fromUtf8('16bytesiv1234567');
-  static final _encrypter = enc.Encrypter(enc.AES(_key, mode: enc.AESMode.cbc));
-  static final _hmacKey = utf8.encode('hmac_secret_key_for_integrity_32!');
+  static enc.Key get _key => enc.Key.fromUtf8(dotenv.env['CRYPTO_AES_KEY'] ?? 'my32lengthsupersecretnooneknows1');
+  static enc.IV get _iv => enc.IV.fromUtf8(dotenv.env['CRYPTO_AES_IV'] ?? '16bytesiv1234567');
+  static enc.Encrypter get _encrypter => enc.Encrypter(enc.AES(_key, mode: enc.AESMode.cbc));
+  static List<int> get _hmacKey => utf8.encode(dotenv.env['CRYPTO_HMAC_KEY'] ?? 'hmac_secret_key_for_integrity_32!');
 
   static String encryptAES(String plainText) {
     if (plainText.isEmpty) return '';
@@ -15,7 +17,7 @@ class CryptoService {
       final encrypted = _encrypter.encrypt(plainText, iv: _iv);
       return encrypted.base64;
     } catch (e) {
-      print('[CryptoService] Encryption Error: $e');
+      debugPrint('[CryptoService] Encryption Error: $e');
       return plainText;
     }
   }
@@ -26,7 +28,7 @@ class CryptoService {
       final decrypted = _encrypter.decrypt64(encryptedBase64, iv: _iv);
       return decrypted;
     } catch (e) {
-      print('[CryptoService] Decryption Error: $e');
+      debugPrint('[CryptoService] Decryption Error: $e');
       return encryptedBase64;
     }
   }
@@ -53,7 +55,7 @@ class CryptoService {
 
   static String? decryptAndVerify(String encryptedData, String hmac) {
     if (!verifyHMAC(encryptedData, hmac)) {
-      print('[CryptoService] ⚠️ HMAC VERIFICATION FAILED - Message tampered!');
+      debugPrint('[CryptoService] ⚠️ HMAC VERIFICATION FAILED - Message tampered!');
       return null;
     }
     return decryptAES(encryptedData);

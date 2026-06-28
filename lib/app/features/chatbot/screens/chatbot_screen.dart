@@ -18,7 +18,6 @@ class ChatBotScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // 🔥 دمجنا الـ BlocProvider بتاع برانش الـ main
     return BlocProvider(
       create: (context) => ChatbotCubit(),
       child: Scaffold(

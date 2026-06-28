@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
-import 'package:avo_app/app/core/services/local/notification_service.dart';
+import 'package:avo_app/app/features/notification/services/notification_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:firebase_auth/firebase_auth.dart';

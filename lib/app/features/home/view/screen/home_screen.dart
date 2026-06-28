@@ -14,13 +14,15 @@ import 'package:avo_app/app/features/home/view/widget/catogery_item.dart';
 import 'package:avo_app/app/core/shared/bestdoctor_card.dart';
 import 'package:avo_app/app/core/shared/medicine_card.dart';
 import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../../core/Language/locale_keys.g.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,26 +35,28 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 2;
   bool isVisible = true;
   int selectedCategoryIndex = -1;
+  bool isAtTop = true;
 
   String _calculateMinsUntil(String timeStr) {
     try {
       final timeStrTrimmed = timeStr.trim().toUpperCase();
       final isPM = timeStrTrimmed.contains('PM');
       final isAM = timeStrTrimmed.contains('AM');
-      final cleanTime = timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
+      final cleanTime =
+          timeStrTrimmed.replaceAll('AM', '').replaceAll('PM', '').trim();
       final parts = cleanTime.split(':');
       if (parts.length < 2) return '--';
-      
+
       int hour = int.parse(parts[0]);
       final min = int.parse(parts[1]);
-      
+
       if (isPM && hour != 12) hour += 12;
       if (isAM && hour == 12) hour = 0;
-      
+
       final medMinutes = hour * 60 + min;
       final now = TimeOfDay.now();
       final currentMinutes = now.hour * 60 + now.minute;
-      
+
       final diff = medMinutes - currentMinutes;
       if (diff < 0) return '0';
       return diff.toString();
@@ -91,13 +95,21 @@ class _HomeScreenState extends State<HomeScreen> {
           return Scaffold(
             body: Stack(
               children: [
-                NotificationListener<UserScrollNotification>(
+                NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
-                    if (notification.direction == ScrollDirection.reverse) {
-                      if (isVisible) setState(() => isVisible = false);
-                    } else if (notification.direction ==
-                        ScrollDirection.forward) {
-                      if (!isVisible) setState(() => isVisible = true);
+                    if (notification is ScrollUpdateNotification) {
+                      final atTop = notification.metrics.pixels <= 10;
+                      if (atTop != isAtTop) {
+                        setState(() => isAtTop = atTop);
+                      }
+                    }
+                    if (notification is UserScrollNotification) {
+                      if (notification.direction == ScrollDirection.reverse) {
+                        if (isVisible) setState(() => isVisible = false);
+                      } else if (notification.direction ==
+                          ScrollDirection.forward) {
+                        if (!isVisible) setState(() => isVisible = true);
+                      }
                     }
                     return false;
                   },
@@ -117,14 +129,31 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         centerTitle: true,
                         actions: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.shopping_bag_outlined,
-                              color: Theme.of(context).colorScheme.onSurface,
-                              size: 24.sp,
-                            ),
-                          )
+                          BlocBuilder<AppNotificationCubit,
+                              AppNotificationState>(
+                            builder: (context, notifState) {
+                              int unreadCount = 0;
+                              if (notifState is AppNotificationLoaded) {
+                                unreadCount = notifState.unreadCount;
+                              }
+                              return IconButton(
+                                onPressed: () =>
+                                    context.push(AppRouter.notifications),
+                                icon: Badge(
+                                  isLabelVisible: unreadCount > 0,
+                                  label: Text(unreadCount.toString()),
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.error,
+                                  child: Icon(
+                                    Icons.notifications_none_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    size: 28.sp,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                       SliverToBoxAdapter(
@@ -151,31 +180,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: ClipOval(
                                       child: user.image != null &&
-                                          user.image!.isNotEmpty
+                                              user.image!.isNotEmpty
                                           ? (user.image!.startsWith('http')
-                                          ? Image.network(
-                                        user.image!,
-                                        width: 55.r,
-                                        height: 55.r,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error,
-                                            stackTrace) =>
-                                            Icon(Icons.person,
-                                                size: 30.r),
-                                      )
-                                          : Image.asset(
-                                        user.image!,
-                                        width: 55.r,
-                                        height: 55.r,
-                                        fit: BoxFit.cover,
-                                      ))
+                                              ? Image.network(
+                                                  user.image!,
+                                                  width: 55.r,
+                                                  height: 55.r,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      Icon(Icons.person,
+                                                          size: 30.r),
+                                                )
+                                              : Image.asset(
+                                                  user.image!,
+                                                  width: 55.r,
+                                                  height: 55.r,
+                                                  fit: BoxFit.cover,
+                                                ))
                                           : Icon(Icons.person, size: 30.r),
                                     ),
                                   ),
                                   SizedBox(width: 8.w),
                                   Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         LocaleKeys.home_welcome.tr(),
@@ -199,11 +228,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                   const Spacer(),
-                                  Icon(
-                                    Icons.favorite_border,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .outlineVariant,
+                                  IconButton(
+                                    onPressed: () {
+                                      context.push(AppRouter.favorites);
+                                    },
+                                    icon: Icon(
+                                      Icons.favorite_border_outlined,
+                                      size: 28.sp,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -224,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .outlineVariant,
                                     ),
                                     color:
-                                    Theme.of(context).colorScheme.surface,
+                                        Theme.of(context).colorScheme.surface,
                                     borderRadius: BorderRadius.circular(12.r),
                                   ),
                                   child: Row(
@@ -257,7 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               SizedBox(height: 25.h),
                               SectionHeader(
-                                title: LocaleKeys.home_upcoming_appointments.tr(),
+                                title:
+                                    LocaleKeys.home_upcoming_appointments.tr(),
                                 routePath: AppRouter.search,
                               ),
                               SizedBox(height: 16.h),
@@ -265,25 +300,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 158.h,
                                 child: state.appointments.isEmpty
                                     ? Center(
-                                  child: Text(
-                                    LocaleKeys.home_no_upcoming_appointments.tr(),
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .outline,
-                                      fontSize: 13.sp,
-                                    ),
-                                  ),
-                                )
+                                        child: Text(
+                                          LocaleKeys
+                                              .home_no_upcoming_appointments
+                                              .tr(),
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline,
+                                            fontSize: 13.sp,
+                                          ),
+                                        ),
+                                      )
                                     : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: state.appointments.length,
-                                  itemBuilder: (_, i) {
-                                    return AppointmentCard(
-                                      appointment: state.appointments[i],
-                                    );
-                                  },
-                                ),
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: state.appointments.length,
+                                        itemBuilder: (_, i) {
+                                          return AppointmentCard(
+                                            appointment: state.appointments[i],
+                                          );
+                                        },
+                                      ),
                               ),
                               SizedBox(height: 24.h),
                               SectionHeader(
@@ -297,45 +334,65 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (context, reminderState) {
                                   List<MedicineModel> upcomingMedicines = [];
                                   List<ReminderModel> upcomingReminders = [];
-                                  
+
                                   if (reminderState is ReminderLoaded) {
-                                    upcomingReminders = reminderState.todaysSchedule
-                                        .where((r) => r.status == 'upcoming' || r.status == 'next' || r.status == 'overdue')
+                                    upcomingReminders = reminderState
+                                        .todaysSchedule
+                                        .where((r) =>
+                                            r.status == 'upcoming' ||
+                                            r.status == 'next' ||
+                                            r.status == 'overdue')
                                         .toList();
-                                        
-                                    upcomingMedicines = upcomingReminders.map((r) => MedicineModel(
-                                      id: r.id,
-                                      name: r.name,
-                                      dosage: r.dosage,
-                                      time: r.time,
-                                      isTaken: false,
-                                    )).toList();
+
+                                    upcomingMedicines = upcomingReminders
+                                        .map((r) => MedicineModel(
+                                              id: r.id,
+                                              name: r.name,
+                                              dosage: r.dosage,
+                                              time: r.time,
+                                              isTaken: false,
+                                            ))
+                                        .toList();
                                   }
 
                                   return SizedBox(
                                     height: 200.h,
-                                    child: (reminderState is ReminderLoading) 
-                                        ? const Center(child: CircularProgressIndicator())
+                                    child: (reminderState is ReminderLoading)
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
                                         : upcomingMedicines.isEmpty
                                             ? Center(
                                                 child: Text(
-                                                  LocaleKeys.home_no_medicines_scheduled.tr(),
+                                                  LocaleKeys
+                                                      .home_no_medicines_scheduled
+                                                      .tr(),
                                                   style: TextStyle(
-                                                    color: Theme.of(context).colorScheme.outline,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .outline,
                                                     fontSize: 13.sp,
                                                   ),
                                                 ),
                                               )
                                             : ListView.builder(
-                                                scrollDirection: Axis.horizontal,
-                                                itemCount: upcomingMedicines.length,
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemCount:
+                                                    upcomingMedicines.length,
                                                 itemBuilder: (_, i) {
-                                                  final reminder = upcomingReminders[i];
+                                                  final reminder =
+                                                      upcomingReminders[i];
                                                   return MedicineCard(
-                                                    medicine: upcomingMedicines[i],
-                                                    minsUntil: _calculateMinsUntil(reminder.time),
+                                                    medicine:
+                                                        upcomingMedicines[i],
+                                                    minsUntil:
+                                                        _calculateMinsUntil(
+                                                            reminder.time),
                                                     onMarkAsTaken: () {
-                                                      context.read<ReminderCubit>().markAsTaken(reminder);
+                                                      context
+                                                          .read<ReminderCubit>()
+                                                          .markAsTaken(
+                                                              reminder);
                                                     },
                                                   );
                                                 },
@@ -350,44 +407,45 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               state.categories.isEmpty
                                   ? Padding(
-                                padding:
-                                EdgeInsets.symmetric(vertical: 20.h),
-                                child: Center(
-                                  child: Text(LocaleKeys.home_no_categories.tr()),
-                                ),
-                              )
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 20.h),
+                                      child: Center(
+                                        child: Text(
+                                            LocaleKeys.home_no_categories.tr()),
+                                      ),
+                                    )
                                   : GridView.builder(
-                                shrinkWrap: true,
-                                physics:
-                                const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.only(top: 16.h),
-                                gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  mainAxisSpacing: 16.h,
-                                  crossAxisSpacing: 19.w,
-                                ),
-                                itemCount: state.categories.length > 8
-                                    ? 8
-                                    : state.categories.length,
-                                itemBuilder: (_, index) {
-                                  return CategoryItem(
-                                    category: state.categories[index],
-                                    isSelected:
-                                    selectedCategoryIndex == index,
-                                    onTap: () {
-                                      setState(() {
-                                        selectedCategoryIndex = index;
-                                      });
-                                    },
-                                    onDoubleTap: () {
-                                      setState(() {
-                                        selectedCategoryIndex = -1;
-                                      });
-                                    },
-                                  );
-                                },
-                              ),
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.only(top: 16.h),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4,
+                                        mainAxisSpacing: 16.h,
+                                        crossAxisSpacing: 19.w,
+                                      ),
+                                      itemCount: state.categories.length > 8
+                                          ? 8
+                                          : state.categories.length,
+                                      itemBuilder: (_, index) {
+                                        return CategoryItem(
+                                          category: state.categories[index],
+                                          isSelected:
+                                              selectedCategoryIndex == index,
+                                          onTap: () {
+                                            setState(() {
+                                              selectedCategoryIndex = index;
+                                            });
+                                          },
+                                          onDoubleTap: () {
+                                            setState(() {
+                                              selectedCategoryIndex = -1;
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
                               SizedBox(height: 24.h),
                               SectionHeader(
                                 title: LocaleKeys.home_best_doctors.tr(),
@@ -396,22 +454,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(height: 16.h),
                               state.bestDoctors.isEmpty
                                   ? Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 20.h),
-                                  child: Text(LocaleKeys.home_no_doctors.tr()),
-                                ),
-                              )
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 20.h),
+                                        child: Text(
+                                            LocaleKeys.home_no_doctors.tr()),
+                                      ),
+                                    )
                                   : Column(
-                                children: state.bestDoctors.map((doc) {
-                                  return BestDoctorCard(
-                                    key: ValueKey(doc.id),
-                                    doctor: doc,
-                                    onFavoriteToggle: () {},
-                                    onBook: () {},
-                                  );
-                                }).toList(),
-                              ),
+                                      children: state.bestDoctors.map((doc) {
+                                        return BestDoctorCard(
+                                          key: ValueKey(doc.id),
+                                          doctor: doc,
+                                          onFavoriteToggle: () {},
+                                          onBook: () {},
+                                        );
+                                      }).toList(),
+                                    ),
                               SizedBox(height: 16.h),
                               SectionHeader(
                                 title: LocaleKeys.home_best_pharmacies.tr(),
@@ -420,23 +479,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(height: 16.h),
                               state.bestPharmacies.isEmpty
                                   ? Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 20.h),
-                                  child: Text(LocaleKeys.home_no_pharmacies.tr()),
-                                ),
-                              )
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 20.h),
+                                        child: Text(
+                                            LocaleKeys.home_no_pharmacies.tr()),
+                                      ),
+                                    )
                                   : Column(
-                                children:
-                                state.bestPharmacies.map((pharmacy) {
-                                  return BestPharmacyCard(
-                                    key: ValueKey(pharmacy.id),
-                                    pharmacy: pharmacy,
-                                    onTap: () {},
-                                    onFavoriteToggle: () {},
-                                  );
-                                }).toList(),
-                              ),
+                                      children:
+                                          state.bestPharmacies.map((pharmacy) {
+                                        return BestPharmacyCard(
+                                          key: ValueKey(pharmacy.id),
+                                          pharmacy: pharmacy,
+                                          onTap: () {},
+                                          onFavoriteToggle: () {},
+                                        );
+                                      }).toList(),
+                                    ),
                               SizedBox(height: 100.h),
                             ],
                           ),
@@ -483,6 +543,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 70.h,
                               width: 70.w),
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  bottom: isAtTop ? -40.h : -150.h,
+                  left: 0,
+                  right: 0,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    opacity: isAtTop ? 1.0 : 0.0,
+                    child: Center(
+                      child: Lottie.asset(
+                        'assets/animations/Scroll.json',
+                        width: 150.w,
+                        height: 150.h,
                       ),
                     ),
                   ),

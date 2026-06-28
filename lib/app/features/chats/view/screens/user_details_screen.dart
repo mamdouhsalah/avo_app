@@ -1,6 +1,3 @@
-import 'package:avo_app/app/core/models/chatmodel.dart';
-import 'package:avo_app/app/core/models/patient_model.dart';
-import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';

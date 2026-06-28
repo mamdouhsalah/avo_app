@@ -111,6 +111,11 @@ class _AdminApprovalsScreenState extends State<AdminApprovalsScreen> {
           // List
           Expanded(
             child: BlocConsumer<AdminCubit, AdminState>(
+              buildWhen: (prev, curr) => 
+                  curr is AdminApprovalsLoaded || 
+                  curr is AdminLoading || 
+                  curr is AdminError || 
+                  curr is AdminActionSuccess,
               listener: (context, state) {
                 if (state is AdminActionSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(

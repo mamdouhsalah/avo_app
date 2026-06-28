@@ -112,7 +112,7 @@ class _AudioBubbleState extends State<AudioBubble> {
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 14.r),
                 trackHeight: 2.h,
                 activeTrackColor: color,
-                inactiveTrackColor: color.withOpacity(0.3),
+                inactiveTrackColor: color.withValues(alpha: 0.3),
                 thumbColor: color,
               ),
               child: Slider(

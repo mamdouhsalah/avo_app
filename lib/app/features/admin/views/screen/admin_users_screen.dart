@@ -18,8 +18,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Stream<List<Map<String, dynamic>>>? _usersStream;
   String _filterRole = 'all';
 
-  final _filters = ['all', 'patient', 'doctor', 'admin', 'verified', 'pending'];
-  final _labels = ['All', 'Patient', 'Doctor', 'Admin', 'Verified', 'Pending'];
+  final _filters = ['all', 'patient', 'doctor', 'pharmacy_specialist', 'admin', 'verified'];
+  final _labels = ['All', 'Patient', 'Doctor', 'Pharmacy', 'Admin', 'Verified'];
 
   @override
   void initState() {
@@ -72,8 +72,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         return const Color(0xFF735BF2);
       case 'verified':
         return const Color(0xFF00A991); // Green
-      case 'pending':
-        return const Color(0xFFFBC02D); // Yellow
+      case 'pharmacy_specialist':
+      case 'pharmacy':
+        return const Color(0xFFFBC02D); // Yellow/Orange
       default:
         return AppColors.lightSecondaryText;
     }
@@ -156,10 +157,15 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 if (_filterRole != 'all') {
                   if (_filterRole == 'verified') {
                     users = users.where((u) => u['isVerified'] == true || u['is_verified'] == true).toList();
-                  } else if (_filterRole == 'pending') {
-                    users = users.where((u) => u['isVerified'] != true && u['is_verified'] != true).toList();
+                  } else if (_filterRole == 'patient') {
+                    users = users.where((u) {
+                      final role = u['role']?.toString().toLowerCase();
+                      // Treat users without a specific doctor/admin/pharmacy role as patients
+                      return role == 'patient' || 
+                          (role != 'doctor' && role != 'admin' && role != 'pharmacy_specialist' && role != 'pharmacy');
+                    }).toList();
                   } else {
-                    users = users.where((u) => u['role'] == _filterRole).toList();
+                    users = users.where((u) => u['role']?.toString().toLowerCase() == _filterRole).toList();
                   }
                 }
 

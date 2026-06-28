@@ -326,7 +326,7 @@ class WeekViewWidget extends StatelessWidget {
                       SizedBox(width: 4.w),
                       Text(
                         DateFormat('MMM dd, yyyy')
-                            .format(DateTime.parse(apt.date ?? '')),
+                            .format(DateTime.parse(apt.date)),
                         style:
                             TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
                       ),

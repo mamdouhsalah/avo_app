@@ -2,7 +2,6 @@ import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/constants/database_paths.dart';
-import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,7 +18,6 @@ class NewChatScreen extends StatefulWidget {
 
 class _NewChatScreenState extends State<NewChatScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late final DoctorRepositoryImpl _doctorRepo;
   late final FirestoreChatService _chatService;
   final String _currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
   Future<List<PatientModel>>? _patientsFuture;
@@ -28,7 +26,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
   @override
   void initState() {
     super.initState();
-    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
     _chatService = FirestoreChatService();
     _patientsFuture = _fetchAllUsersForTesting();
   }
@@ -53,7 +50,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
       return list;
     } catch (e) {
-      print('Error fetching all users: $e');
+      debugPrint('Error fetching all users: $e');
       throw Exception(e.toString());
     }
   }

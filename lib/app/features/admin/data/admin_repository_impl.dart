@@ -70,17 +70,45 @@ class AdminRepositoryImpl implements AdminRepository {
 
   @override
   Future<Map<String, int>> getStats() async {
-    final stats = <String, int>{};
+    final stats = <String, int>{
+      DatabasePaths.users: 0,
+      DatabasePaths.doctors: 0,
+      DatabasePaths.appointments: 0,
+      DatabasePaths.logs: 0,
+      DatabasePaths.pendingApprovals: 0,
+    };
     try {
-      final paths = [
-        DatabasePaths.users,
-        DatabasePaths.doctors,
+      // 1. Get users and doctors count from the users node based on role
+      final usersSnap = await _db.ref(DatabasePaths.users).get();
+      int patientsCount = 0;
+      int doctorsCount = 0;
+      
+      if (usersSnap.exists && usersSnap.value != null) {
+        final val = usersSnap.value;
+        if (val is Map) {
+          for (var user in val.values) {
+            if (user is Map) {
+              final role = user['role']?.toString().toLowerCase();
+              if (role == 'doctor') {
+                doctorsCount++;
+              } else if (role != 'admin' && role != 'pharmacy_specialist' && role != 'pharmacy') {
+                patientsCount++;
+              }
+            }
+          }
+        }
+      }
+      stats[DatabasePaths.users] = patientsCount;
+      stats[DatabasePaths.doctors] = doctorsCount;
+
+      // 2. Count appointments, logs, and pending approvals
+      final otherPaths = [
         DatabasePaths.appointments,
         DatabasePaths.logs,
         DatabasePaths.pendingApprovals,
       ];
 
-      for (final path in paths) {
+      for (final path in otherPaths) {
         final snap = await _db.ref(path).get();
         int count = 0;
         if (snap.exists && snap.value != null) {

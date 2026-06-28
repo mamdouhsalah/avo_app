@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:avo_app/app/core/models/chatmodel.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/core/constants/database_paths.dart';
 
@@ -178,7 +179,7 @@ class FirestoreChatService {
       }
       await batch.commit();
     } catch (e) {
-      print('Error in markMessagesAsRead: $e');
+      debugPrint('Error in markMessagesAsRead: $e');
     }
   }
 
