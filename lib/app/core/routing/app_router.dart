@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/features/doctor/view/screen/add_doctor_schedule/add_doctor_schedule_screen.dart';
 import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_cubit.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
@@ -131,7 +132,7 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
-          GoRoute(path: home, builder: (context, state) => const HomeScreen()),
+          GoRoute(path: home, builder: (context, state) => AppExitPopScope(child: const HomeScreen())),
           GoRoute(
               path: reminder,
               builder: (context, state) => const ReminderScreen()),

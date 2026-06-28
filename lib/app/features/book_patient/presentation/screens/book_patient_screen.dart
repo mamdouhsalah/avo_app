@@ -209,6 +209,28 @@ class _BookPatientScreenState extends State<BookPatientScreen> {
                                 ),
                                 const Divider(),
                                 SizedBox(height: 16.h),
+                                if (doctor.bio.isNotEmpty) ...[
+                                  Text(
+                                    LocaleKeys.booking_bio.tr(),
+                                    style: TextStyle(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  Text(
+                                    doctor.bio,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: colorScheme.onSurfaceVariant,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                  SizedBox(height: 16.h),
+                                  const Divider(),
+                                  SizedBox(height: 16.h),
+                                ],
                                 Text(
                                   LocaleKeys.booking_schedules.tr(),
                                   style: TextStyle(

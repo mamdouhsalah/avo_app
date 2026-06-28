@@ -354,6 +354,7 @@ abstract class  LocaleKeys {
   static const booking_booking_success = 'booking.booking_success';
   static const booking_select_slot_error = 'booking.select_slot_error';
   static const booking_number_of_reviews = 'booking.number_of_reviews';
+  static const booking_bio = 'booking.bio';
   static const booking = 'booking';
 
 }

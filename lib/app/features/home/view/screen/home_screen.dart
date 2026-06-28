@@ -1,4 +1,3 @@
-import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/home/logic/home_state.dart';
@@ -71,11 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         if (state is HomeLoading || state is HomeInitial) {
-          return AppExitPopScope(
-            child: const Scaffold(
-              body: Center(
-                child: LoadingIndicatorWidget(),
-              ),
+          return const Scaffold(
+            body: Center(
+              child: LoadingIndicatorWidget(),
             ),
           );
         } else if (state is HomeError) {
@@ -94,7 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         } else if (state is HomeLoaded) {
           final user = state.currentUser;
-
           return Scaffold(
             body: Stack(
               children: [
@@ -337,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (context, reminderState) {
                                   List<MedicineModel> upcomingMedicines = [];
                                   List<ReminderModel> upcomingReminders = [];
-
+          
                                   if (reminderState is ReminderLoaded) {
                                     upcomingReminders = reminderState
                                         .todaysSchedule
@@ -346,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             r.status == 'next' ||
                                             r.status == 'overdue')
                                         .toList();
-
+          
                                     upcomingMedicines = upcomingReminders
                                         .map((r) => MedicineModel(
                                               id: r.id,
@@ -357,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ))
                                         .toList();
                                   }
-
+          
                                   return SizedBox(
                                     height: 200.h,
                                     child: (reminderState is ReminderLoading)

@@ -372,6 +372,7 @@
     "no_available_schedules": "No available schedules",
     "booking_success": "Appointment booked successfully!",
     "select_slot_error": "Please select a schedule slot first",
-    "number_of_reviews": "No. reviews"
+    "number_of_reviews": "No. reviews",
+    "bio": "Bio"
   }
 }
