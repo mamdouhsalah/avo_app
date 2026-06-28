@@ -1,11 +1,17 @@
 import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/shared/appointment_card.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
 import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
+import 'package:avo_app/app/features/appointment/data/appointment_repo.dart';
+import 'package:avo_app/app/features/appointment/data/appointment_repo_imp.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repo.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repo_imp.dart';
 import 'package:avo_app/app/features/home/data/home_repository.dart';
 import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
@@ -86,6 +92,23 @@ class MyApp extends StatelessWidget {
               BlocProvider<ThemeCubit>(
                 create: (context) => ThemeCubit(),
               ),
+             Provider<DoctorRepository>(
+              create: (context) => DoctorRepositoryImp(
+                consumer: context.read<FirebaseConsumer>(),
+              ),
+            ),
+              // appointment 
+              Provider<AppointmentRepo>(
+              create: (context) => AppointmentRepoImp(
+                consumer: context.read<FirebaseConsumer>(),
+                doctorRepository: context.read<DoctorRepository>(),
+                patientRepository: context.read<ProfileRepository>(),
+              ),
+            ),
+
+              BlocProvider<AppointmentCubit>(
+                create: ((context) =>  AppointmentCubit(context.read<AppointmentRepo>())
+              )),
             ],
             // 🔥 دمجنا الـ BlocBuilder للـ Theme مع حماية الـ EasyLocalization
             child: BlocBuilder<ThemeCubit, ThemeMode>(

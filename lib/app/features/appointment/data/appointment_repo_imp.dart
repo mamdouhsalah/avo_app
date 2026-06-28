@@ -223,28 +223,30 @@ class AppointmentRepoImp implements AppointmentRepo {
   }
 
   @override
-  Future<void> updateAppointmentDetails(AppointmentModel updatedAppointment) async {
-    try {
-      final user = await _getCurrentUser();
+Future<void> updateAppointmentDetails(
+    AppointmentModel updatedAppointment,
+) async {
+  try {
+    final user = await _getCurrentUser();
 
-      if (user.role != UserRole.doctor) {
-        throw DatabaseException(
-          'Only doctors can update appointments',
-          'permission-denied',
-        );
-      }
-
-      await _consumer.update(
-        '${DatabasePaths.appointments}/${updatedAppointment.id}',
-        data: updatedAppointment.toJson(),
-      );
-    } catch (e) {
+    if (user.role != UserRole.doctor) {
       throw DatabaseException(
-        e.toString(),
-        'failed-to-update-appointment',
+        'Only doctors can update appointments',
+        'permission-denied',
       );
     }
+
+    await _consumer.update(
+      '${DatabasePaths.appointments}/${updatedAppointment.id}',
+      data: updatedAppointment.toJson(),
+    );
+  } catch (e) {
+    throw DatabaseException(
+      e.toString(),
+      'failed-to-update-appointment',
+    );
   }
+}
 
   @override
   Future<void> completeAppointment(
