@@ -6,6 +6,18 @@
     "reminder": "التذكير",
     "profile": "حسابي"
   },
+  "drawer": {
+    "dashboard": "لوحة التحكم",
+    "patients": "المرضى",
+    "appointments": "المواعيد",
+    "add_schedule": "إضافة جدول مواعيد",
+    "lab_results": "نتائج التحاليل",
+    "schedule": "جدول المواعيد",
+    "chats": "الدردشة",
+    "analytics": "التحليلات",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
   "general": {
     "view_all": "عرض الكل",
     "in_mins": "خلال {mins} دقيقة",
@@ -28,7 +40,9 @@
     "search": "بحث",
     "skip": "تخطي",
     "save": "حفظ",
-    "edit": "تعديل"
+    "edit": "تعديل",
+    "exit_title": "خروج من التطبيق",
+    "exit_confirm": "هل أنت متأكد من رغبتك في الخروج؟"
   },
   "tracking": {
     "title": "تتبع الطلب",
@@ -58,7 +72,26 @@
     "delete": "حذف",
     "take_now": "خذ الآن",
     "done_check": "تم ✓",
-    "today_label": "اليوم"
+    "today_label": "اليوم",
+    "add_title": "إضافة جدول مواعيد",
+    "edit_title": "تعديل جدول مواعيد",
+    "select_day": "اختر اليوم",
+    "start_time": "وقت البدء",
+    "end_time": "وقت الانتهاء",
+    "choose_start_time": "اختر وقت البدء",
+    "choose_end_time": "اختر وقت الانتهاء",
+    "max_visits": "أقصى عدد للزيارات",
+    "max_visits_hint": "أدخل أقصى عدد للزيارات",
+    "please_enter_max_visits": "الرجاء إدخال أقصى عدد للزيارات",
+    "please_enter_valid_number": "الرجاء إدخال رقم صحيح وموجب",
+    "please_select_times": "الرجاء اختيار وقت البدء والانتهاء",
+    "add_slot_btn": "إضافة موعد بالجدول",
+    "save_all_btn": "حفظ جميع التغييرات",
+    "manage_title": "إدارة المواعيد",
+    "no_schedules": "لا يوجد مواعيد مسجلة حتى الآن",
+    "tap_to_add": "اضغط على الزر بالأسفل لإضافة أول موعد بالجدول",
+    "visits": "زيارات",
+    "invalid_time_range": "يجب أن يكون وقت البدء قبل وقت الانتهاء"
   },
   "reminder": {
     "active": "نشط",
@@ -132,7 +165,9 @@
     "english": "الإنجليزية",
     "arabic": "العربية",
     "app_theme": "مظهر التطبيق",
-    "sign_out": "تسجيل الخروج"
+    "sign_out": "تسجيل الخروج",
+    "doctor_info": "بيانات الطبيب",
+    "doctor_info_update_success": "تم تحديث بيانات الطبيب بنجاح"
   },
   "payment": {
     "formatted_card": "{cardType} **** {digits}",
@@ -279,7 +314,25 @@
     "forgot_password_appbar": "نسيت كلمة المرور",
     "forgot_password_title": "هل نسيت كلمة مرورك؟",
     "forgot_password_subtitle": "أدخل البريد الإلكتروني المرتبط بحسابك وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
-    "send_code": "إرسال الرابط"
+    "send_code": "إرسال الرابط",
+    "location": "الموقع",
+    "location_hint": "أدخل موقع عيادتك",
+    "specialty": "التخصص",
+    "specialty_hint": "اختر تخصصك",
+    "price": "سعر الكشف",
+    "price_hint": "أدخل سعر الكشف",
+    "specialties": {
+      "cardiologist": "طبيب قلب",
+      "neurosurgeon": "جراح أعصاب",
+      "orthopedic": "طبيب عظام",
+      "pediatrician": "طبيب أطفال",
+      "dermatologist": "طبيب جلدية",
+      "gynecologist": "طبيب نساء وتوليد",
+      "dentist": "طبيب أسنان",
+      "ent": "طبيب أنف وأذن وحنجرة",
+      "ophthalmologist": "طبيب عيون",
+      "general_practitioner": "طبيب عام"
+    }
   },
   "days": {
     "monday": "الإثنين",
@@ -310,5 +363,16 @@
     "october": "أكتوبر",
     "november": "نوفمبر",
     "december": "ديسمبر"
+  },
+  "booking": {
+    "experience": "خبرة",
+    "treated": "حالة معالجة",
+    "hourly_rate": "سعر الساعة",
+    "schedules": "جدول المواعيد",
+    "no_available_schedules": "لا توجد مواعيد متاحة",
+    "booking_success": "تم حجز الموعد بنجاح!",
+    "select_slot_error": "برجاء اختيار موعد كشف أولاً",
+    "number_of_reviews": "عدد التقييمات",
+    "bio": "نبذة عن الطبيب"
   }
 }

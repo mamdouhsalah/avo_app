@@ -1,80 +1,158 @@
-class DoctorModel {
-  final String id;
-  final String name;
+import 'package:avo_app/app/core/models/schedule_model.dart';
+import 'package:avo_app/app/core/models/user_profile_model.dart';
+
+class DoctorModel extends UserProfileModel {
   final String specialty;
-  final String? hospital;
+  final String? location;
   final double rating;
-  final int reviews;
-  final double hourlyRate;
-  final int experience;
+  final int numberOfReviews;
+  final double price;
+  final String bio;
   final int patientsTreated;
-  final String openTime;
-  final String closeTime;
+  final List<ScheduleModel>? schedules;
   final bool isFavorite;
-  final String? imageUrl;
+
+  String get imageUrl => image;
+  String get name => fullName;
 
   const DoctorModel({
-    required this.id,
-    required this.name,
+    required super.id,
+    required super.email,
+    required super.fullName,
+    required super.role,
+    required super.gender,
+    required super.dateOfBirth,
+    required super.phoneNumber,
+    super.height,
+    super.weight,
+    required super.image,
+    required super.isVerified,
     required this.specialty,
-    this.hospital,
+    this.location,
     required this.rating,
-    required this.reviews,
-    this.hourlyRate = 0.0,
-    this.experience = 0,
+    required this.numberOfReviews,
+    this.price = 0.0,
+    this.bio = '',
     this.patientsTreated = 0,
-    required this.openTime,
-    required this.closeTime,
+    this.schedules,
     this.isFavorite = false,
-    this.imageUrl,
   });
 
   factory DoctorModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return const DoctorModel(
         id: '',
-        name: '',
+        email: '',
+        fullName: '',
+        role: 'doctor',
+        gender: '',
+        dateOfBirth: '',
+        phoneNumber: '',
+        height: null,
+        weight: null,
+        image: '',
+        isVerified: false,
         specialty: '',
         rating: 0.0,
-        reviews: 0,
-        openTime: '',
-        closeTime: '',
+        numberOfReviews: 0,
+        price: 0.0,
+        bio: '',
+        patientsTreated: 0,
       );
     }
     return DoctorModel(
       id: json['id']?.toString() ?? '',
-      // Support both 'name' and 'full_name' from RTDB
-      name: json['name']?.toString() ?? json['full_name']?.toString() ?? '',
-      specialty: json['specialty']?.toString() ?? json['role']?.toString() ?? '',
-      hospital: json['hospital']?.toString(),
+      email: json['email']?.toString() ?? '',
+      fullName: json['fullName']?.toString() ?? json['full_name']?.toString() ?? '',
+      role: json['role']?.toString() ?? 'doctor',
+      gender: json['gender']?.toString() ?? '',
+      dateOfBirth: json['date_of_birth']?.toString() ?? json['dateOfBirth']?.toString() ?? '',
+      phoneNumber: json['phone_number']?.toString() ?? json['phoneNumber']?.toString() ?? '',
+      height: json['height'] != null ? (json['height'] as num).toInt() : null,
+      weight: json['weight'] != null ? (json['weight'] as num).toInt() : null,
+      image: json['imageUrl']?.toString() ?? json['image']?.toString() ?? '',
+      isVerified: json['is_verified'] as bool? ?? json['isVerified'] as bool? ?? false,
+      specialty: json['specialty']?.toString() ?? '',
+      location: json['location']?.toString(),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      reviews: (json['reviews'] as num?)?.toInt() ?? 0,
-      hourlyRate: (json['hourlyRate'] as num?)?.toDouble() ?? 0.0,
-      experience: (json['experience'] as num?)?.toInt() ?? 0,
+      numberOfReviews: (json['numberOfReviews'] as num?)?.toInt() ?? json['reviews'] as int? ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      bio: json['bio']?.toString() ?? '',
       patientsTreated: (json['patientsTreated'] as num?)?.toInt() ?? 0,
-      openTime: json['openTime']?.toString() ?? '09:00',
-      closeTime: json['closeTime']?.toString() ?? '17:00',
       isFavorite: json['isFavorite'] as bool? ?? false,
-      // Support both 'imageUrl' and 'image' from RTDB
-      imageUrl: json['imageUrl']?.toString() ?? json['image']?.toString(),
     );
   }
 
+  factory DoctorModel.fromJsonWithSchedules(Map<String, dynamic>? json) {
+    if (json == null) {
+      return DoctorModel.fromJson(null);
+    }
+    final baseDoc = DoctorModel.fromJson(json);
+    List<ScheduleModel>? schedulesList;
+    if (json['schedules'] != null) {
+      final rawSchedules = json['schedules'];
+      if (rawSchedules is Map) {
+        schedulesList = rawSchedules.entries.map((entry) {
+          final val = Map<String, dynamic>.from(entry.value as Map);
+          if (val['id'] == null) {
+            val['id'] = entry.key.toString();
+          }
+          return ScheduleModel.fromJson(val);
+        }).toList();
+      } else if (rawSchedules is List) {
+        schedulesList = rawSchedules
+            .where((e) => e != null)
+            .map((e) => ScheduleModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+      }
+    }
+    return DoctorModel(
+      id: baseDoc.id,
+      email: baseDoc.email,
+      fullName: baseDoc.fullName,
+      role: baseDoc.role,
+      gender: baseDoc.gender,
+      dateOfBirth: baseDoc.dateOfBirth,
+      phoneNumber: baseDoc.phoneNumber,
+      height: baseDoc.height,
+      weight: baseDoc.weight,
+      image: baseDoc.image,
+      isVerified: baseDoc.isVerified,
+      specialty: baseDoc.specialty,
+      location: baseDoc.location,
+      rating: baseDoc.rating,
+      numberOfReviews: baseDoc.numberOfReviews,
+      price: baseDoc.price,
+      bio: baseDoc.bio,
+      patientsTreated: baseDoc.patientsTreated,
+      isFavorite: baseDoc.isFavorite,
+      schedules: schedulesList,
+    );
+  }
+
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'email': email,
+      'fullName': fullName,
+      'full_name': fullName,
+      'role': role,
+      'gender': gender,
+      'date_of_birth': dateOfBirth,
+      'phone_number': phoneNumber,
+      if (height != null) 'height': height,
+      if (weight != null) 'weight': weight,
+      'image': image,
+      'is_verified': isVerified,
       'specialty': specialty,
-      'hospital': hospital,
+      'location': location,
       'rating': rating,
-      'reviews': reviews,
-      'hourlyRate': hourlyRate,
-      'experience': experience,
+      'numberOfReviews': numberOfReviews,
+      'price': price,
+      'bio': bio,
       'patientsTreated': patientsTreated,
-      'openTime': openTime,
-      'closeTime': closeTime,
       'isFavorite': isFavorite,
-      'imageUrl': imageUrl,
     };
   }
 }

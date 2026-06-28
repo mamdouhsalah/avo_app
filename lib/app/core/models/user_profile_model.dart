@@ -6,12 +6,12 @@ class UserProfileModel {
   final String gender;
   final String dateOfBirth;
   final String phoneNumber;
-  final int height;
-  final int weight;
+  final int? height;
+  final int? weight;
   final String image;
   final bool isVerified;
 
-  UserProfileModel({
+  const UserProfileModel({
     required this.id,
     required this.email,
     required this.fullName,
@@ -19,8 +19,8 @@ class UserProfileModel {
     required this.gender,
     required this.dateOfBirth,
     required this.phoneNumber,
-    required this.height,
-    required this.weight,
+    this.height,
+    this.weight,
     required this.image,
     required this.isVerified,
   });
@@ -34,8 +34,8 @@ class UserProfileModel {
       gender: json['gender'] ?? '',
       dateOfBirth: json['date_of_birth'] ?? json['dateOfBirth'] ?? '',
       phoneNumber: json['phone_number'] ?? json['phoneNumber'] ?? '',
-      height: (json['height'] as num?)?.toInt() ?? 0,
-      weight: (json['weight'] as num?)?.toInt() ?? 0,
+      height: json['height'] != null ? (json['height'] as num).toInt() : null,
+      weight: json['weight'] != null ? (json['weight'] as num).toInt() : null,
       image: json['image'] ?? '',
       isVerified: json['is_verified'] ?? json['isVerified'] ?? false,
     );
@@ -50,8 +50,8 @@ class UserProfileModel {
       'gender': gender,
       'date_of_birth': dateOfBirth,
       'phone_number': phoneNumber,
-      'height': height,
-      'weight': weight,
+      if (height != null) 'height': height,
+      if (weight != null) 'weight': weight,
       'image': image,
       'is_verified': isVerified,
     };

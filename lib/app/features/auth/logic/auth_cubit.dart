@@ -20,12 +20,15 @@ class AuthCubit extends Cubit<AuthState> {
   final weightController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final locationController = TextEditingController();
+  final priceController = TextEditingController();
 
   // Selection states
   String selectedRole = 'patient';
   String? selectedGender;
   DateTime? selectedDob;
   String? profileImagePath;
+  String? selectedSpecialty;
 
   // Step state
   int currentStep = 0;
@@ -125,6 +128,9 @@ class AuthCubit extends Cubit<AuthState> {
         height: double.tryParse(heightController.text.trim()),
         weight: double.tryParse(weightController.text.trim()),
         image: profileImagePath,
+        location: locationController.text.trim().isEmpty ? null : locationController.text.trim(),
+        specialty: selectedSpecialty,
+        price: double.tryParse(priceController.text.trim()),
       );
 
       final response = await repository.register(request);
@@ -226,6 +232,8 @@ class AuthCubit extends Cubit<AuthState> {
     weightController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    locationController.dispose();
+    priceController.dispose();
     return super.close();
   }
 }

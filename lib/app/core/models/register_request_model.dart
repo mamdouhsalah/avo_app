@@ -9,6 +9,9 @@ class RegisterRequestModel {
   final num? height;
   final num? weight;
   final String? image;
+  final String? location;
+  final String? specialty;
+  final num? price;
 
   RegisterRequestModel({
     required this.fullName,
@@ -18,9 +21,12 @@ class RegisterRequestModel {
     required this.phoneNumber,
     required this.gender,
     required this.dateOfBirth,
-    required this.height,
-    required this.weight,
+    this.height,
+    this.weight,
     this.image,
+    this.location,
+    this.specialty,
+    this.price,
   });
 
   factory RegisterRequestModel.fromJson(Map<String, dynamic>? json) {
@@ -33,8 +39,11 @@ class RegisterRequestModel {
         phoneNumber: '',
         gender: '',
         dateOfBirth: '',
-        height: 0,
-        weight: 0,
+        height: null,
+        weight: null,
+        location: null,
+        specialty: null,
+        price: null,
       );
     }
     return RegisterRequestModel(
@@ -45,9 +54,12 @@ class RegisterRequestModel {
       phoneNumber: json['phone_number']?.toString() ?? '',
       gender: json['gender']?.toString() ?? '',
       dateOfBirth: json['date_of_birth']?.toString() ?? '',
-      height: json['height'] as num? ?? 0,
-      weight: json['weight'] as num? ?? 0,
+      height: json['height'] as num?,
+      weight: json['weight'] as num?,
       image: json['image']?.toString(),
+      location: json['location']?.toString(),
+      specialty: json['specialty']?.toString(),
+      price: json['price'] as num?,
     );
   }
 
@@ -60,9 +72,12 @@ class RegisterRequestModel {
       'phone_number': phoneNumber,
       'gender': gender,
       'date_of_birth': dateOfBirth,
-      'height': height,
-      'weight': weight,
+      if (height != null) 'height': height,
+      if (weight != null) 'weight': weight,
       if (image != null) 'image': image,
+      if (location != null) 'location': location,
+      if (specialty != null) 'specialty': specialty,
+      if (price != null) 'price': price,
     };
   }
 }

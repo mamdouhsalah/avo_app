@@ -4,6 +4,8 @@ import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class AdminUsersScreen extends StatefulWidget {
@@ -233,6 +235,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         ],
                       ),
                       child: ListTile(
+                        onTap: role == 'doctor'
+                            ? () {
+                                context.push(AppRouter.doctorInfo, extra: user['id']?.toString());
+                              }
+                            : null,
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 14.w, vertical: 6.h),
                         leading: Stack(

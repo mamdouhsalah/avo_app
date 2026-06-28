@@ -91,7 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         } else if (state is HomeLoaded) {
           final user = state.currentUser;
-
           return Scaffold(
             body: Stack(
               children: [
@@ -334,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (context, reminderState) {
                                   List<MedicineModel> upcomingMedicines = [];
                                   List<ReminderModel> upcomingReminders = [];
-
+          
                                   if (reminderState is ReminderLoaded) {
                                     upcomingReminders = reminderState
                                         .todaysSchedule
@@ -343,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             r.status == 'next' ||
                                             r.status == 'overdue')
                                         .toList();
-
+          
                                     upcomingMedicines = upcomingReminders
                                         .map((r) => MedicineModel(
                                               id: r.id,
@@ -354,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ))
                                         .toList();
                                   }
-
+          
                                   return SizedBox(
                                     height: 200.h,
                                     child: (reminderState is ReminderLoading)
@@ -467,7 +466,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           key: ValueKey(doc.id),
                                           doctor: doc,
                                           onFavoriteToggle: () {},
-                                          onBook: () {},
+                                          onBook: () => context.push(
+                                              AppRouter.bookPatient,
+                                              extra: doc.id),
                                         );
                                       }).toList(),
                                     ),

@@ -1,5 +1,13 @@
+import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
+import 'package:avo_app/app/features/doctor/view/screen/add_doctor_schedule/add_doctor_schedule_screen.dart';
+import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_cubit.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avo_app/app/features/book_patient/presentation/screens/book_patient_screen.dart';
+import 'package:avo_app/app/features/book_patient/presentation/cubit/book_patient_cubit.dart';
+import 'package:avo_app/app/features/book_patient/data/book_patient_repository_impl.dart';
 import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
 import 'package:avo_app/app/features/reminder/screens/schedule_screen.dart';
@@ -38,6 +46,7 @@ import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
 import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
+import 'package:avo_app/app/features/profile/screens/doctor_info_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
 import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
@@ -63,6 +72,7 @@ class AppRouter {
   static const String patients = '/patients';
   static const String appointments = '/appointments';
   static const String labResults = '/lab-results';
+  static const String addSchedule = '/add-schedule';
   static const String schedule = '/schedule';
   static const String chats = '/chats';
   static const String doctorChats = '/doctor-chats';
@@ -82,6 +92,8 @@ class AppRouter {
   static const String checkout = '/checkout';
   static const String accountInfo = '/account-info';
   static const String personalInfo = '/personal-info';
+  static const String doctorInfo = '/doctor-info';
+  static const String bookPatient = '/book-patient';
   static const String addCard = '/add-card';
   static const String addMedication = '/add-medication';
   static const String detailsPatient = '/details-patient';
@@ -120,7 +132,7 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
-          GoRoute(path: home, builder: (context, state) => const HomeScreen()),
+          GoRoute(path: home, builder: (context, state) => AppExitPopScope(child: const HomeScreen())),
           GoRoute(
               path: reminder,
               builder: (context, state) => const ReminderScreen()),
@@ -148,6 +160,16 @@ class AppRouter {
       GoRoute(
           path: appointments,
           builder: (context, state) => const AppointmentScreen()),
+      GoRoute(
+          path: addSchedule,
+          builder: (context, state) => BlocProvider(
+                create: (context) => AddDoctorCubit(
+                  repository: DoctorRepositoryImpl(
+                    consumer: context.read<FirebaseConsumer>(),
+                  ),
+                )..loadSchedules(),
+                child: const AddDoctorScheduleScreen(),
+              )),
       GoRoute(
           path: labResults,
           builder: (context, state) => const LabresultScreen()),
@@ -210,6 +232,25 @@ class AppRouter {
       GoRoute(
           path: personalInfo,
           builder: (context, state) => const PersonalInfoScreen()),
+      GoRoute(
+          path: doctorInfo,
+          builder: (context, state) {
+            final docId = state.extra as String?;
+            return DoctorInfoScreen(doctorId: docId);
+          }),
+      GoRoute(
+          path: bookPatient,
+          builder: (context, state) {
+            final docId = state.extra as String?;
+            return BlocProvider(
+              create: (context) => BookPatientCubit(
+                repository: BookPatientRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
+              child: BookPatientScreen(doctorId: docId),
+            );
+          }),
       GoRoute(
         path: addCard,
         builder: (context, state) {
