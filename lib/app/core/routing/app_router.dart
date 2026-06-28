@@ -42,6 +42,7 @@ import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
 import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
+import 'package:avo_app/app/features/profile/screens/doctor_info_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
 import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
@@ -87,6 +88,7 @@ class AppRouter {
   static const String checkout = '/checkout';
   static const String accountInfo = '/account-info';
   static const String personalInfo = '/personal-info';
+  static const String doctorInfo = '/doctor-info';
   static const String addCard = '/add-card';
   static const String addMedication = '/add-medication';
   static const String detailsPatient = '/details-patient';
@@ -225,6 +227,12 @@ class AppRouter {
       GoRoute(
           path: personalInfo,
           builder: (context, state) => const PersonalInfoScreen()),
+      GoRoute(
+          path: doctorInfo,
+          builder: (context, state) {
+            final docId = state.extra as String?;
+            return DoctorInfoScreen(doctorId: docId);
+          }),
       GoRoute(
         path: addCard,
         builder: (context, state) {

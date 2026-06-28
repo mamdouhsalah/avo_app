@@ -90,12 +90,19 @@ class _NewChatScreenState extends State<NewChatScreen> {
     } catch (_) {
       doctorData = DoctorModel(
         id: _currentUid,
-        name: 'Doctor',
+        email: '',
+        fullName: 'Doctor',
+        role: 'doctor',
+        gender: '',
+        dateOfBirth: '',
+        phoneNumber: '',
+        image: '',
+        isVerified: true,
         specialty: 'Doctor',
-        rating: 0,
-        reviews: 0,
-        openTime: '09:00',
-        closeTime: '17:00',
+        rating: 0.0,
+        numberOfReviews: 0,
+        price: 0.0,
+        bio: '',
       );
     }
 

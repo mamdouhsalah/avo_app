@@ -165,7 +165,9 @@
     "english": "الإنجليزية",
     "arabic": "العربية",
     "app_theme": "مظهر التطبيق",
-    "sign_out": "تسجيل الخروج"
+    "sign_out": "تسجيل الخروج",
+    "doctor_info": "بيانات الطبيب",
+    "doctor_info_update_success": "تم تحديث بيانات الطبيب بنجاح"
   },
   "payment": {
     "formatted_card": "{cardType} **** {digits}",
@@ -312,7 +314,25 @@
     "forgot_password_appbar": "نسيت كلمة المرور",
     "forgot_password_title": "هل نسيت كلمة مرورك؟",
     "forgot_password_subtitle": "أدخل البريد الإلكتروني المرتبط بحسابك وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
-    "send_code": "إرسال الرابط"
+    "send_code": "إرسال الرابط",
+    "location": "الموقع",
+    "location_hint": "أدخل موقع عيادتك",
+    "specialty": "التخصص",
+    "specialty_hint": "اختر تخصصك",
+    "price": "سعر الكشف",
+    "price_hint": "أدخل سعر الكشف",
+    "specialties": {
+      "cardiologist": "طبيب قلب",
+      "neurosurgeon": "جراح أعصاب",
+      "orthopedic": "طبيب عظام",
+      "pediatrician": "طبيب أطفال",
+      "dermatologist": "طبيب جلدية",
+      "gynecologist": "طبيب نساء وتوليد",
+      "dentist": "طبيب أسنان",
+      "ent": "طبيب أنف وأذن وحنجرة",
+      "ophthalmologist": "طبيب عيون",
+      "general_practitioner": "طبيب عام"
+    }
   },
   "days": {
     "monday": "الإثنين",

@@ -71,7 +71,22 @@ class FirestoreChatService {
             fromJson: (json) => DoctorModel.fromJson(json),
           );
         } catch (e) {
-          doctor = DoctorModel(id: doctorId, name: 'Unknown Doctor', specialty: '', rating: 0, reviews: 0, openTime: '', closeTime: '');
+          doctor = DoctorModel(
+            id: doctorId,
+            email: '',
+            fullName: 'Unknown Doctor',
+            role: 'doctor',
+            gender: '',
+            dateOfBirth: '',
+            phoneNumber: '',
+            image: '',
+            isVerified: true,
+            specialty: '',
+            rating: 0.0,
+            numberOfReviews: 0,
+            price: 0.0,
+            bio: '',
+          );
         }
 
         try {

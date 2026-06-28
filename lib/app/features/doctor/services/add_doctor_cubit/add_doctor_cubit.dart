@@ -81,8 +81,6 @@ class AddDoctorCubit extends Cubit<AddDoctorState> {
           endTime: schedule.endTime,
           maxVisits: schedule.maxVisits,
           currentVisits: schedule.currentVisits,
-          doctorName: schedule.doctorName,
-          doctorImage: schedule.doctorImage,
         );
         _localSchedules.add(savedSchedule);
         emit(AddDoctorScheduleActionSuccess("Schedule added successfully"));

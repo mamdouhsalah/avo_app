@@ -5,8 +5,6 @@ class ScheduleModel {
   final String endTime;
   final int maxVisits;
   final int currentVisits;
-  final String doctorName;
-  final String doctorImage;
 
   ScheduleModel({
     required this.id,
@@ -15,8 +13,6 @@ class ScheduleModel {
     required this.endTime,
     required this.maxVisits,
     required this.currentVisits,
-    this.doctorName = '',
-    this.doctorImage = '',
   });
 
   bool get isFull => currentVisits >= maxVisits;
@@ -29,8 +25,6 @@ class ScheduleModel {
       endTime: json['endTime'] ?? '',
       maxVisits: json['maxVisits'] ?? 0,
       currentVisits: json['currentVisits'] ?? 0,
-      doctorName: json['doctorName'] ?? '',
-      doctorImage: json['doctorImage'] ?? '',
     );
   }
 
@@ -41,8 +35,6 @@ class ScheduleModel {
       'endTime': endTime,
       'maxVisits': maxVisits,
       'currentVisits': currentVisits,
-      'doctorName': doctorName,
-      'doctorImage': doctorImage,
     };
   }
 }

@@ -186,6 +186,114 @@ class _ContactCreateAccountSectionState
             ],
           ),
           SizedBox(height: 20.h),
+        ] else ...[
+          CustomTextFormField(
+            controller: widget.cubit.locationController,
+            labelText: LocaleKeys.auth_location.tr(),
+            hintText: LocaleKeys.auth_location_hint.tr(),
+            prefixIcon: const Icon(Icons.location_on_outlined),
+            textInputAction: TextInputAction.next,
+          ),
+          SizedBox(height: 20.h),
+          CustomTextFormField(
+            controller: widget.cubit.priceController,
+            labelText: LocaleKeys.auth_price.tr(),
+            hintText: LocaleKeys.auth_price_hint.tr(),
+            prefixIcon: const Icon(Icons.attach_money_outlined),
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.next,
+          ),
+          SizedBox(height: 20.h),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                LocaleKeys.auth_specialty.tr(),
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              DropdownButtonFormField<String>(
+                initialValue: widget.cubit.selectedSpecialty,
+                hint: Text(
+                  LocaleKeys.auth_specialty_hint.tr(),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+                decoration: InputDecoration(
+                  prefixIcon: IconTheme(
+                    data: IconThemeData(
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      size: 20.sp,
+                    ),
+                    child: const Icon(Icons.stars_outlined),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surface,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant,
+                      width: 1.w,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant,
+                      width: 1.w,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 1.w,
+                    ),
+                  ),
+                ),
+                items: [
+                  'cardiologist',
+                  'neurosurgeon',
+                  'orthopedic',
+                  'pediatrician',
+                  'dermatologist',
+                  'gynecologist',
+                  'dentist',
+                  'ent',
+                  'ophthalmologist',
+                  'general_practitioner',
+                ].map((spec) {
+                  String transKey = 'auth.specialties.$spec';
+                  return DropdownMenuItem<String>(
+                    value: spec,
+                    child: Text(
+                      transKey.tr(),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  setState(() {
+                    widget.cubit.selectedSpecialty = val;
+                  });
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: 20.h),
         ],
         Text(
           LocaleKeys.auth_dob.tr(),

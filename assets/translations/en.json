@@ -165,7 +165,9 @@
     "english": "English",
     "arabic": "Arabic",
     "app_theme": "App Theme",
-    "sign_out": "Sign Out"
+    "sign_out": "Sign Out",
+    "doctor_info": "Doctor Information",
+    "doctor_info_update_success": "Doctor information updated successfully"
   },
   "payment": {
     "formatted_card": "{cardType} **** {digits}",
@@ -312,7 +314,25 @@
     "forgot_password_appbar": "Forgot Password",
     "forgot_password_title": "Forgot your password?",
     "forgot_password_subtitle": "Enter the email address associated with your account and we will send you a verification code.",
-    "send_code": "Send Code"
+    "send_code": "Send Code",
+    "location": "Location",
+    "location_hint": "Enter your clinic location",
+    "specialty": "Specialty",
+    "specialty_hint": "Select your specialty",
+    "price": "Price per visit",
+    "price_hint": "Enter price per visit",
+    "specialties": {
+      "cardiologist": "Cardiologist",
+      "neurosurgeon": "Neurosurgeon",
+      "orthopedic": "Orthopedic",
+      "pediatrician": "Pediatrician",
+      "dermatologist": "Dermatologist",
+      "gynecologist": "Gynecologist",
+      "dentist": "Dentist",
+      "ent": "ENT Specialist",
+      "ophthalmologist": "Ophthalmologist",
+      "general_practitioner": "General Practitioner"
+    }
   },
   "days": {
     "monday": "Monday",

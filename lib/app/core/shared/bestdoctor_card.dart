@@ -107,16 +107,6 @@ class BestDoctorCard extends StatelessWidget {
                         SizedBox(width: 2.w),
                         Icon(Icons.star,
                             color: AppColors.lightOrangeOutLine, size: 14.sp),
-                        SizedBox(width: 8.w),
-                        Icon(Icons.access_time, size: 16.sp),
-                        SizedBox(width: 4.w),
-                        Expanded(
-                          child: Text(
-                            "${doctor.openTime} - ${doctor.closeTime}",
-                            style: TextStyle(fontSize: 12.sp),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
                       ],
                     ),
                   ],

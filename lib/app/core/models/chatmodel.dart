@@ -67,7 +67,7 @@ class ChatModel {
 
   /// اسم الطرف التاني (لو أنا دكتور يبقى اسم المريض، والعكس)
   String otherUserName(String currentUid) =>
-      iAmDoctor(currentUid) ? patient.fullName : doctor.name;
+      iAmDoctor(currentUid) ? patient.fullName : doctor.fullName;
 
   /// صورة الطرف التاني
   String? otherUserImage(String currentUid) =>

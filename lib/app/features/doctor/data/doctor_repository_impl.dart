@@ -104,7 +104,7 @@ class DoctorRepositoryImpl implements DoctorRepository {
         '${DatabasePaths.users}/$doctorId',
         fromJson: (json) => json,
       );
-      doctorName = docData['name']?.toString() ?? docData['full_name']?.toString() ?? '';
+      doctorName = docData['name']?.toString() ?? docData['fullName']?.toString() ?? docData['full_name']?.toString() ?? '';
       doctorImage = docData['imageUrl']?.toString() ?? docData['image']?.toString() ?? '';
     } catch (_) {}
 
@@ -112,10 +112,16 @@ class DoctorRepositoryImpl implements DoctorRepository {
     data['doctorName'] = doctorName;
     data['doctorImage'] = doctorImage;
 
-    return await _consumer.push(
-      DatabasePaths.doctorSchedule(doctorId),
+    final String scheduleId = await _consumer.push(
+      'users/$doctorId/schedules',
       data: data,
     );
+
+    data['id'] = scheduleId;
+    await _consumer.update('users/$doctorId/schedules/$scheduleId', data: data);
+    await _consumer.update('doctors/$doctorId/schedules/$scheduleId', data: data);
+
+    return scheduleId;
   }
 
   @override
@@ -129,7 +135,7 @@ class DoctorRepositoryImpl implements DoctorRepository {
         '${DatabasePaths.users}/$doctorId',
         fromJson: (json) => json,
       );
-      doctorName = docData['name']?.toString() ?? docData['full_name']?.toString() ?? '';
+      doctorName = docData['name']?.toString() ?? docData['fullName']?.toString() ?? docData['full_name']?.toString() ?? '';
       doctorImage = docData['imageUrl']?.toString() ?? docData['image']?.toString() ?? '';
     } catch (_) {}
 
@@ -138,7 +144,11 @@ class DoctorRepositoryImpl implements DoctorRepository {
     data['doctorImage'] = doctorImage;
 
     await _consumer.update(
-      '${DatabasePaths.doctorSchedule(doctorId)}/${schedule.id}',
+      'users/$doctorId/schedules/${schedule.id}',
+      data: data,
+    );
+    await _consumer.update(
+      'doctors/$doctorId/schedules/${schedule.id}',
       data: data,
     );
   }
@@ -146,9 +156,8 @@ class DoctorRepositoryImpl implements DoctorRepository {
   @override
   Future<void> deleteDoctorSchedule(String scheduleId) async {
     final String doctorId = _firebaseAuth.currentUser?.uid ?? '';
-    await _consumer.delete(
-      '${DatabasePaths.doctorSchedule(doctorId)}/$scheduleId',
-    );
+    await _consumer.delete('users/$doctorId/schedules/$scheduleId');
+    await _consumer.delete('doctors/$doctorId/schedules/$scheduleId');
   }
 
   @override
@@ -156,7 +165,7 @@ class DoctorRepositoryImpl implements DoctorRepository {
     final String doctorId = _firebaseAuth.currentUser?.uid ?? '';
     try {
       return await _consumer.getList(
-        DatabasePaths.doctorSchedule(doctorId),
+        'users/$doctorId/schedules',
         fromJson: (json) => ScheduleModel.fromJson(json),
       );
     } catch (e) {

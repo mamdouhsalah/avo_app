@@ -14,7 +14,7 @@ class CodegenLoader extends AssetLoader{
     return Future.value(mapLocales[locale.toString()]);
   }
 
-  static const Map<String,dynamic> _en = {
+  static const Map<String,dynamic> _ar = {
   "bottom_nav": {
     "Scanner": "ماسح ضوئي",
     "Chat": "الدردشة",
@@ -181,7 +181,9 @@ class CodegenLoader extends AssetLoader{
     "english": "الإنجليزية",
     "arabic": "العربية",
     "app_theme": "مظهر التطبيق",
-    "sign_out": "تسجيل الخروج"
+    "sign_out": "تسجيل الخروج",
+    "doctor_info": "بيانات الطبيب",
+    "doctor_info_update_success": "تم تحديث بيانات الطبيب بنجاح"
   },
   "payment": {
     "formatted_card": "{cardType} **** {digits}",
@@ -328,7 +330,25 @@ class CodegenLoader extends AssetLoader{
     "forgot_password_appbar": "نسيت كلمة المرور",
     "forgot_password_title": "هل نسيت كلمة مرورك؟",
     "forgot_password_subtitle": "أدخل البريد الإلكتروني المرتبط بحسابك وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
-    "send_code": "إرسال الرابط"
+    "send_code": "إرسال الرابط",
+    "location": "الموقع",
+    "location_hint": "أدخل موقع عيادتك",
+    "specialty": "التخصص",
+    "specialty_hint": "اختر تخصصك",
+    "price": "سعر الكشف",
+    "price_hint": "أدخل سعر الكشف",
+    "specialties": {
+      "cardiologist": "طبيب قلب",
+      "neurosurgeon": "جراح أعصاب",
+      "orthopedic": "طبيب عظام",
+      "pediatrician": "طبيب أطفال",
+      "dermatologist": "طبيب جلدية",
+      "gynecologist": "طبيب نساء وتوليد",
+      "dentist": "طبيب أسنان",
+      "ent": "طبيب أنف وأذن وحنجرة",
+      "ophthalmologist": "طبيب عيون",
+      "general_practitioner": "طبيب عام"
+    }
   },
   "days": {
     "monday": "الإثنين",
@@ -528,7 +548,9 @@ static const Map<String,dynamic> _en = {
     "english": "English",
     "arabic": "Arabic",
     "app_theme": "App Theme",
-    "sign_out": "Sign Out"
+    "sign_out": "Sign Out",
+    "doctor_info": "Doctor Information",
+    "doctor_info_update_success": "Doctor information updated successfully"
   },
   "payment": {
     "formatted_card": "{cardType} **** {digits}",
@@ -675,7 +697,25 @@ static const Map<String,dynamic> _en = {
     "forgot_password_appbar": "Forgot Password",
     "forgot_password_title": "Forgot your password?",
     "forgot_password_subtitle": "Enter the email address associated with your account and we will send you a verification code.",
-    "send_code": "Send Code"
+    "send_code": "Send Code",
+    "location": "Location",
+    "location_hint": "Enter your clinic location",
+    "specialty": "Specialty",
+    "specialty_hint": "Select your specialty",
+    "price": "Price per visit",
+    "price_hint": "Enter price per visit",
+    "specialties": {
+      "cardiologist": "Cardiologist",
+      "neurosurgeon": "Neurosurgeon",
+      "orthopedic": "Orthopedic",
+      "pediatrician": "Pediatrician",
+      "dermatologist": "Dermatologist",
+      "gynecologist": "Gynecologist",
+      "dentist": "Dentist",
+      "ent": "ENT Specialist",
+      "ophthalmologist": "Ophthalmologist",
+      "general_practitioner": "General Practitioner"
+    }
   },
   "days": {
     "monday": "Monday",
@@ -709,5 +749,4 @@ static const Map<String,dynamic> _en = {
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};
-
 }

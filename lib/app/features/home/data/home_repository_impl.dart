@@ -27,7 +27,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<List<DoctorModel>> getBestDoctors() async {
-    return await _consumer.getList(DatabasePaths.doctors,
+    return await _consumer.getList(DatabasePaths.schedules,
         fromJson: (json) => DoctorModel.fromJson(json),
         queryParams: FirebaseQueryParams(
             orderByChild: 'isBest', equalTo: true, limitToFirst: 5));

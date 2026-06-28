@@ -284,24 +284,6 @@ class _AddDoctorScheduleDialogState extends State<AddDoctorScheduleDialog> {
                               return;
                             }
 
-                            final start = _parseTimeString(cubit.startTime);
-                            final end = _parseTimeString(cubit.endTime);
-                            if (start != null && end != null) {
-                              final startMins = start.hour * 60 + start.minute;
-                              final endMins = end.hour * 60 + end.minute;
-                              if (startMins >= endMins) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(LocaleKeys
-                                        .schedule_invalid_time_range
-                                        .tr()),
-                                    backgroundColor: colorScheme.error,
-                                  ),
-                                );
-                                return;
-                              }
-                            }
-
                             cubit.saveScheduleSlot();
                             Navigator.pop(context);
                           }

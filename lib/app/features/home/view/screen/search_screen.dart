@@ -61,7 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
         } else if (state is HomeLoaded) {
           final doctors = state.bestDoctors
               .where((d) =>
-          d.name.toLowerCase().contains(query.toLowerCase()) ||
+          d.fullName.toLowerCase().contains(query.toLowerCase()) ||
               d.specialty.toLowerCase().contains(query.toLowerCase()))
               .toList();
 

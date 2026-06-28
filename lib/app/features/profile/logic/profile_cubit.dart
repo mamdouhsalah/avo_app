@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
@@ -19,6 +20,12 @@ class ProfileCubit extends Cubit<ProfileState> {
   final heightController = TextEditingController();
   final weightController = TextEditingController();
   final dobController = TextEditingController();
+
+  // Doctor-specific Controllers
+  final docLocationController = TextEditingController();
+  final docPriceController = TextEditingController();
+  final docBioController = TextEditingController();
+  String? selectedSpecialty;
 
   String selectedGender = 'Male';
   String imageUrl = '';
@@ -41,8 +48,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       // Populate controllers
       fullNameController.text = profile.fullName;
       phoneController.text = profile.phoneNumber;
-      heightController.text = profile.height.toString();
-      weightController.text = profile.weight.toString();
+      heightController.text = profile.height?.toString() ?? '';
+      weightController.text = profile.weight?.toString() ?? '';
       dobController.text = profile.dateOfBirth;
 
       // Populate state fields
@@ -51,7 +58,52 @@ class ProfileCubit extends Cubit<ProfileState> {
           : '${profile.gender[0].toUpperCase()}${profile.gender.substring(1).toLowerCase()}';
       imageUrl = profile.image;
 
+      if (profile is DoctorModel) {
+        docLocationController.text = profile.location ?? '';
+        docPriceController.text = profile.price.toString();
+        docBioController.text = profile.bio;
+        selectedSpecialty = profile.specialty.toLowerCase();
+      }
+
       emit(ProfileSuccess(profile));
+    } catch (e) {
+      emit(ProfileFailure(e.toString()));
+    }
+  }
+
+  Future<void> getDoctorProfile(String doctorId) async {
+    try {
+      emit(ProfileLoading());
+      final profile = await repository.getProfile(doctorId);
+      if (profile is DoctorModel) {
+        docLocationController.text = profile.location ?? '';
+        docPriceController.text = profile.price.toString();
+        docBioController.text = profile.bio;
+        selectedSpecialty = profile.specialty.toLowerCase();
+      }
+      emit(ProfileSuccess(profile));
+    } catch (e) {
+      emit(ProfileFailure(e.toString()));
+    }
+  }
+
+  Future<void> updateDoctorProfile(String doctorId) async {
+    try {
+      emit(ProfileLoading());
+      final updates = {
+        'location': docLocationController.text.trim(),
+        'price': double.tryParse(docPriceController.text.trim()) ?? 0.0,
+        'bio': docBioController.text.trim(),
+        'specialty': selectedSpecialty ?? '',
+      };
+      await repository.updateProfile(doctorId, updates);
+      
+      final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (doctorId == currentUid) {
+        await getProfile();
+      } else {
+        await getDoctorProfile(doctorId);
+      }
     } catch (e) {
       emit(ProfileFailure(e.toString()));
     }
@@ -143,6 +195,9 @@ class ProfileCubit extends Cubit<ProfileState> {
     heightController.dispose();
     weightController.dispose();
     dobController.dispose();
+    docLocationController.dispose();
+    docPriceController.dispose();
+    docBioController.dispose();
     return super.close();
   }
 }
