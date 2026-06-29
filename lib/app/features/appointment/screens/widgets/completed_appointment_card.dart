@@ -55,7 +55,7 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
           SizedBox(height: 16.h),
 
           SizedBox(
-            height: 225.h,
+            height: 240.h,
             child: Container(
               width: 343.w,
               margin: EdgeInsetsDirectional.only(end: 33.w),
@@ -130,7 +130,7 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
                             ),
 
                             Text(
-                              "(${widget.appointmentDoctor.doctor.specialty}  ${widget.appointmentDoctor.doctor.clinic})",
+                              "(${widget.appointmentDoctor.doctor.specialty}${widget.appointmentDoctor.doctor.clinic})",
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.w400,
@@ -200,7 +200,10 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
                       text: widget.appointmentDoctor.appointment.status == AppointmentStatus.confirmed
                           ? LocaleKeys.appointment_cancel_appointment.tr()
                           : LocaleKeys.appointment_reschedule.tr(),
-                      onPressed: () {})
+                      onPressed: () {
+
+                      }
+                    )
                 ],
               ),
             ),

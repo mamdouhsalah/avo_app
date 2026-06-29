@@ -275,7 +275,10 @@ class CodegenLoader extends AssetLoader{
     "write_message_hint": "اكتب رسالة للدكتور....",
     "hourly_rate": "سعر الكشف: {price}",
     "selected_date": "تاريخ الحجز",
-    "selected_time": "وقت الحجز"
+    "selected_time": "وقت الحجز",
+    "no_canceled_to_display": "لا يوجد حجوزات ملغية",
+    "no_upcoming_to_display": "لا يوجد حجوزات قادمة",
+    "no_completed_to_display": "لا يوجد حجوزات مكتملة"
   },
   "auth": {
     "create_account": "إنشاء حساب",
@@ -388,7 +391,8 @@ class CodegenLoader extends AssetLoader{
     "no_available_schedules": "لا توجد مواعيد متاحة",
     "booking_success": "تم حجز الموعد بنجاح!",
     "select_slot_error": "برجاء اختيار موعد كشف أولاً",
-    "number_of_reviews": "عدد التقييمات"
+    "number_of_reviews": "عدد التقييمات",
+    "bio": "نبذة عن الطبيب"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -765,7 +769,8 @@ static const Map<String,dynamic> _en = {
     "no_available_schedules": "No available schedules",
     "booking_success": "Appointment booked successfully!",
     "select_slot_error": "Please select a schedule slot first",
-    "number_of_reviews": "No. reviews"
+    "number_of_reviews": "No. reviews",
+    "bio": "Bio"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};

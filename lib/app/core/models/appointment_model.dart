@@ -63,8 +63,8 @@ class AppointmentModel {
       'date': date,
       'startTime': startTime,
       'endTime': endTime,
-      if (patientName != null) 'patientName': patientName,
-      if (doctorName != null) 'doctorName': doctorName,
+      // if (patientName != null) 'patientName': patientName,
+      // if (doctorName != null) 'doctorName': doctorName,
       if (notes != null) 'notes': notes,
     };
   }
@@ -123,8 +123,8 @@ class AppointmentModel {
     date: date ?? this.date,
     startTime: startTime ?? this.startTime,
     endTime: endTime ?? this.endTime,
-    patientName: patientName ?? this.patientName,
-    doctorName: doctorName ?? this.doctorName,
+    // patientName: patientName ?? this.patientName,
+    // doctorName: doctorName ?? this.doctorName,
     notes: notes ?? this.notes,
   );
 }

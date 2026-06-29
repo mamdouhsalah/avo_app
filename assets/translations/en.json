@@ -259,7 +259,10 @@
     "write_message_hint": "Write a message for the doctor ....",
     "hourly_rate": "Hourly Rate: {price}",
     "selected_date": "Selected Date",
-    "selected_time": "Selected Time"
+    "selected_time": "Selected Time",
+    "no_canceled_to_display" :"No Canceled Appointments to display",
+    "no_upcoming_to_display" :"No Canceled Appointments to display",
+    "no_completed_to_display" :"No Canceled Appointments to display"
   },
   "auth": {
     "create_account": "Create Account",

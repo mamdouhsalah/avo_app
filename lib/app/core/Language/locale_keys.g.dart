@@ -246,6 +246,9 @@ abstract class  LocaleKeys {
   static const appointment_hourly_rate = 'appointment.hourly_rate';
   static const appointment_selected_date = 'appointment.selected_date';
   static const appointment_selected_time = 'appointment.selected_time';
+  static const appointment_no_canceled_to_display = 'appointment.no_canceled_to_display';
+  static const appointment_no_upcoming_to_display = 'appointment.no_upcoming_to_display';
+  static const appointment_no_completed_to_display = 'appointment.no_completed_to_display';
   static const appointment = 'appointment';
   static const auth_create_account = 'auth.create_account';
   static const auth_choose_role = 'auth.choose_role';

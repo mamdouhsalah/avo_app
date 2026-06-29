@@ -96,14 +96,14 @@ class ProfileRepositoryImpl extends ProfileRepository {
     try {
       final user = _consumer.get<PatientModel>(
           '${DatabasePaths.users}/$patientId',
-          fromJson: (json) => PatientModel.fromJson(json, id: patientId));
+          fromJson: (json) => PatientModel.fromJson(json));
       return user;
     } catch (e) {
       throw DatabaseException(
           e.toString(), 'user is not found or is not a patient');
     }
   }
-
+@override
   String? getSavedLanguage() => _preferencesService.getLanguage();
 
   @override

@@ -34,8 +34,8 @@ class AppointmentCard extends StatelessWidget {
           Text(
             // isToday(date: appointmentDoctor.appointment.date)
             //     ? LocaleKeys.general_today.tr()
-            //     :/
-                 "${translateDay(appointmentDoctor.appointment.date)}",
+            //     :
+            "${translateDay(appointmentDoctor.appointment.date)}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -45,166 +45,181 @@ class AppointmentCard extends StatelessWidget {
           SizedBox(height: 16.h),
 
           SizedBox(
-            height: 170.h,
-            child: Container(
-              width: 343.w,
-              margin: EdgeInsetsDirectional.only(end: 33.w),
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(
-                  color: colorScheme.primary,
-                  width: 1.w,
-                ),
-              ),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// ================= TOP =================
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  /// Image
-                  Container(
-                    width: 55.r,
-                    height: 55.r,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colorScheme.primary,
-                        width: 2,
-                      ),
-                    ),
-                    child: ClipOval(
-                      child: appointmentDoctor.doctor.imageUrl.isNotEmpty
-                          ? Image.network(
-                              appointmentDoctor.doctor.imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/imgs/doctor/doctor1.png',
-                                  fit: BoxFit.cover,
-                                );
-                              },
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const Center(
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                );
-                              },
-                            )
-                          : Image.asset(
-                              'assets/imgs/doctor/doctor1.png',
-                              fit: BoxFit.cover,
-                            ),
+            height: 185.h,
+            child: Stack(
+              children: [
+                Container(
+                  width: 343.w,
+                  margin: EdgeInsetsDirectional.only(end: 33.w),
+                  padding: EdgeInsets.all(16.w),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: colorScheme.primary,
+                      width: 1.w,
                     ),
                   ),
-
-                      SizedBox(width: 16.w),
-
-                      /// Info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              appointmentDoctor.doctor.name,
-                              style: TextStyle(
-                                color: colorScheme.onSurface,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.sp,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// ================= TOP =================
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /// Image
+                          Container(
+                            width: 55.r,
+                            height: 55.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: colorScheme.primary,
+                                width: 2,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-
-                            Text(
-                              "(${appointmentDoctor.doctor.specialty}   ${appointmentDoctor.doctor.clinic})",
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12.sp,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            child: ClipOval(
+                              child: appointmentDoctor.doctor.imageUrl.isNotEmpty
+                                  ? Image.network(
+                                      appointmentDoctor.doctor.imageUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/imgs/doctor/doctor1.png',
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return const Center(
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 2),
+                                        );
+                                      },
+                                    )
+                                  : Image.asset(
+                                      'assets/imgs/doctor/doctor1.png',
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
+                          ),
 
-                            SizedBox(height: 16.h),
+                          SizedBox(width: 16.w),
 
-                            Row(
+                          /// Info
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                /// rating
-                                Text(
-                                  "${appointmentDoctor.doctor.rating}",
-                                  style: TextStyle(
-                                      color: colorScheme.onSurface,
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w400),
-                                ),
-
-                                SizedBox(width: 10.w),
-
-                                Icon(
-                                  Icons.star,
-                                  color: AppColors.lightOrangeOutLine,
-                                  size: 18.sp,
-                                ),
-
-                                SizedBox(width: 10.w),
-
-                                Icon(
-                                  Icons.access_time,
-                                  color: colorScheme.onSurface,
-                                  size: 18.sp,
-                                ),
-
-                                SizedBox(width: 10.w),
+                                /// leave space for the heart button at top right
+                                SizedBox(width: 24.w),
 
                                 Text(
-                                  "${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.endTime}",
+                                  appointmentDoctor.doctor.name,
                                   style: TextStyle(
-                                      color: colorScheme.onSurface,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400),
+                                    color: colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16.sp,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
+
+                                Text(
+                                  "(${appointmentDoctor.doctor.specialty}${appointmentDoctor.doctor.clinic})",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12.sp,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+
+                                SizedBox(height: 16.h),
+
+                                Row(
+                                  children: [
+                                    /// rating
+                                    Text(
+                                      "${appointmentDoctor.doctor.rating}",
+                                      style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+
+                                    SizedBox(width: 10.w),
+
+                                    Icon(
+                                      Icons.star,
+                                      color: AppColors.lightOrangeOutLine,
+                                      size: 18.sp,
+                                    ),
+
+                                    SizedBox(width: 10.w),
+
+                                    Icon(
+                                      Icons.access_time,
+                                      color: colorScheme.onSurface,
+                                      size: 18.sp,
+                                    ),
+
+                                    SizedBox(width: 10.w),
+
+                                    Text(
+                                      "${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.endTime}",
+                                      style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w400),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
 
-                      /// Favorite icon => will be toutchable in the future
-                      /// TODO: Speak with team about this
-                      /// add the doctor to favorite list or remove it from favorite list
-                      IconButton(
-                        onPressed: () {
-                          //set doctor as favorite or remove it from favorite list
-                        },
-                        icon: Icon(
-                          appointmentDoctor.doctor.isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: AppColors.lightOrangeOutLine,
-                          size: 24.sp,
-                        ),
-                        )
+                      SizedBox(height: 20.h),
+
+                      /// button
+                      MainButton(
+                          text: appointmentDoctor.appointment.status ==
+                                  AppointmentStatus.confirmed
+                              ? LocaleKeys.appointment_cancel_appointment.tr()
+                              : LocaleKeys.appointment_reschedule.tr(),
+                          onPressed: () {})
                     ],
                   ),
+                ),
 
-                  SizedBox(height: 20.h),
-
-                  /// button
-                  MainButton(
-                      text: appointmentDoctor.appointment.status == AppointmentStatus.confirmed
-                          ? LocaleKeys.appointment_cancel_appointment.tr()
-                          : LocaleKeys.appointment_reschedule.tr(),
-                      onPressed: () {})
-                ],
-              ),
+                /// Favorite icon => will be touchable in the future
+                /// TODO: Speak with team about this
+                /// add the doctor to favorite list or remove it from favorite list
+                PositionedDirectional(
+                  top: 8.h,
+                  end: 41.w, // accounts for the end margin of the container
+                  child: IconButton(
+                    onPressed: () {
+                      // set doctor as favorite or remove it from favorite list
+                    },
+                    icon: Icon(
+                      appointmentDoctor.doctor.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: AppColors.lightOrangeOutLine,
+                      size: 24.sp,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
