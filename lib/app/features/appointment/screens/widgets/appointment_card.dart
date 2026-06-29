@@ -1,6 +1,9 @@
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/core/utils/is_today.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +13,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/Language/locale_keys.g.dart';
 
 class AppointmentCard extends StatelessWidget {
-  final Appointment appointment;
+  final AppointmentCardModel appointmentDoctor;
 
   const AppointmentCard({
     super.key,
-    required this.appointment,
+    required this.appointmentDoctor,
   });
 
   @override
@@ -27,11 +30,12 @@ class AppointmentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // date on day for the oppointment
+          /// TODO: after modify date , uncomment this and make it a real date not just a day
           Text(
-            isToday(date: appointment.dateTime)
-                ? LocaleKeys.general_today.tr()
-                : "${appointment.dateTime.day} ${getMonthNameFromDate(date: appointment.date)}",
+            // isToday(date: appointmentDoctor.appointment.date)
+            //     ? LocaleKeys.general_today.tr()
+            //     :/
+                 "${translateDay(appointmentDoctor.appointment.date)}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -62,24 +66,41 @@ class AppointmentCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// Image
-                      Container(
-                        width: 55.r,
-                        height: 55.r,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            appointment.doctorPictureUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                  /// Image
+                  Container(
+                    width: 55.r,
+                    height: 55.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.primary,
+                        width: 2,
                       ),
+                    ),
+                    child: ClipOval(
+                      child: appointmentDoctor.doctor.imageUrl.isNotEmpty
+                          ? Image.network(
+                              appointmentDoctor.doctor.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/imgs/doctor/doctor1.png',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              'assets/imgs/doctor/doctor1.png',
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
 
                       SizedBox(width: 16.w),
 
@@ -89,7 +110,7 @@ class AppointmentCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              appointment.doctorName,
+                              appointmentDoctor.doctor.name,
                               style: TextStyle(
                                 color: colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
@@ -100,7 +121,7 @@ class AppointmentCard extends StatelessWidget {
                             ),
 
                             Text(
-                              "(${appointment.specialty} | ${appointment.clinic})",
+                              "(${appointmentDoctor.doctor.specialty}   ${appointmentDoctor.doctor.clinic})",
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.w400,
@@ -116,7 +137,7 @@ class AppointmentCard extends StatelessWidget {
                               children: [
                                 /// rating
                                 Text(
-                                  "${appointment.rating}",
+                                  "${appointmentDoctor.doctor.rating}",
                                   style: TextStyle(
                                       color: colorScheme.onSurface,
                                       fontSize: 16.sp,
@@ -142,7 +163,7 @@ class AppointmentCard extends StatelessWidget {
                                 SizedBox(width: 10.w),
 
                                 Text(
-                                  "${appointment.timeStart} - ${appointment.timeEnd}",
+                                  "${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.endTime}",
                                   style: TextStyle(
                                       color: colorScheme.onSurface,
                                       fontSize: 12.sp,
@@ -157,13 +178,20 @@ class AppointmentCard extends StatelessWidget {
                       ),
 
                       /// Favorite icon => will be toutchable in the future
-                      Icon(
-                        appointment.isFavorite
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: appointment.isFavorite ? Colors.red : Colors.grey,
-                        size: 24.sp,
-                      ),
+                      /// TODO: Speak with team about this
+                      /// add the doctor to favorite list or remove it from favorite list
+                      IconButton(
+                        onPressed: () {
+                          //set doctor as favorite or remove it from favorite list
+                        },
+                        icon: Icon(
+                          appointmentDoctor.doctor.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: AppColors.lightOrangeOutLine,
+                          size: 24.sp,
+                        ),
+                        )
                     ],
                   ),
 
@@ -171,7 +199,7 @@ class AppointmentCard extends StatelessWidget {
 
                   /// button
                   MainButton(
-                      text: appointment.status == AppointmentStatus.upcoming
+                      text: appointmentDoctor.appointment.status == AppointmentStatus.confirmed
                           ? LocaleKeys.appointment_cancel_appointment.tr()
                           : LocaleKeys.appointment_reschedule.tr(),
                       onPressed: () {})

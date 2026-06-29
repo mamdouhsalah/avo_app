@@ -1,3 +1,6 @@
+# Environment Variables (API Keys - Never commit!)
+.env
+
 # Miscellaneous
 *.class
 *.log
@@ -44,3 +47,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/gradle/wrapper/
+/android/build/

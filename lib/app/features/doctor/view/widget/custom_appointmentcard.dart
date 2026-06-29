@@ -1,5 +1,5 @@
 import 'package:avo_app/app/core/models/appointment_model.dart';
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:math';
@@ -32,18 +32,30 @@ class CustomAppointmentCard extends StatelessWidget {
       Colors.pink,
     ];
 
-    final Random random = Random();
+    final Random random = Random(appointment.id.hashCode);
     final flagColor = flagColors[random.nextInt(flagColors.length)];
 
-    final patient = appointment.patient;
-    final displayName = patient?.fullName ?? appointment.doctor.name;
-    final displaySubtitle =
-        subtitle ?? patient?.diagnosis ?? appointment.doctor.specialty;
-    final displayHoure = time ?? appointment.timeRange.start.format(context);
-    final displayDate = "${appointment.date.day.toString().padLeft(2, '0')}/"
-        "${appointment.date.month.toString().padLeft(2, '0')}/"
-        "${appointment.date.year}";
-    final displayRoom = room ?? "Room ${appointment.id.hashCode % 400 + 100}";
+    final displayName = appointment.patientName ?? 'Patient';
+    final displaySubtitle = subtitle ?? appointment.status;
+    final displayTime = time ?? appointment.startTime;
+    final displayDate = appointment.formattedDate;
+    final displayRoom = room ?? "Room ${appointment.id.hashCode.abs() % 400 + 100}";
+
+    // Status color
+    Color statusColor;
+    switch (appointment.status.toLowerCase()) {
+      case 'confirmed':
+        statusColor = Colors.green;
+        break;
+      case 'cancelled':
+        statusColor = Colors.red;
+        break;
+      case 'completed':
+        statusColor = Colors.blue;
+        break;
+      default:
+        statusColor = Colors.orange;
+    }
 
     return Container(
       padding: EdgeInsets.all(12.sp),
@@ -67,7 +79,6 @@ class CustomAppointmentCard extends StatelessWidget {
       child: Row(
         children: [
           CustomAvatar(
-            imageUrl: patient?.image ?? appointment.doctor.imageUrl,
             size: 52.r,
             radius: 50.r,
             borderColor: flagColor,
@@ -86,19 +97,26 @@ class CustomAppointmentCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 4.h),
-                Text(
-                  displaySubtitle,
-                  style: TextStyle(
-                    color: theme.textTheme.bodyMedium?.color
-                        ?.withValues(alpha: 0.7),
-                    fontSize: 13.5.sp,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    displaySubtitle,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 SizedBox(height: 8.h),
                 Row(
                   children: [
                     Text(
-                      displayDate.toString(),
+                      displayDate,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14.sp,
@@ -106,7 +124,7 @@ class CustomAppointmentCard extends StatelessWidget {
                     ),
                     SizedBox(width: 8.w),
                     Text(
-                      displayHoure,
+                      displayTime,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14.sp,
@@ -188,13 +206,10 @@ class CustomGridAppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final patient = appointment.patient;
-    final displayName = patient?.fullName ?? appointment.doctor.name;
-    final displaySubtitle =
-        patient?.diagnosis ?? appointment.doctor.specialty;
-
-    final displayTime = appointment.timeRange.start.format(context);
-    final displayRoom = "Room ${appointment.id.hashCode % 400 + 100}";
+    final displayName = appointment.patientName ?? 'Patient';
+    final displaySubtitle = appointment.status;
+    final displayTime = appointment.startTime;
+    final displayRoom = "Room ${appointment.id.hashCode.abs() % 400 + 100}";
 
     final List<Color> flagColors = [
       Colors.deepPurple,
@@ -206,7 +221,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
       Colors.pink,
     ];
 
-    final Random random = Random();
+    final Random random = Random(appointment.id.hashCode);
     final flagColor = flagColors[random.nextInt(flagColors.length)];
 
     return Container(
@@ -235,7 +250,6 @@ class CustomGridAppointmentCard extends StatelessWidget {
             children: [
               Center(
                 child: CustomAvatar(
-                  imageUrl: patient?.image ?? appointment.doctor.imageUrl,
                   size: 58.r,
                   radius: 50.r,
                   borderColor: flagColor,
@@ -330,7 +344,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Icon(
                 Icons.flag_rounded,
                 color: flagColor,

@@ -1,14 +1,15 @@
 import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/current_user.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
 import 'package:avo_app/app/core/models/user_role.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
 import 'package:avo_app/app/features/appointment/data/appointment_repo.dart';
-import 'package:avo_app/app/features/appointment/models/appointment.dart';
-import 'package:avo_app/app/features/doctor/data/doctor_repo.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -40,12 +41,8 @@ class AppointmentRepoImp implements AppointmentRepo {
       final doctor =
           await _doctorRepository.getDoctorById(appointment.doctorId);
 
-      UserProfileModel? patient;
-
-      if (appointment.patientId != null && appointment.patientId!.isNotEmpty) {
-        patient = await _patientRepository
-            .getUserIfPatientById(appointment.patientId!);
-      }
+      PatientModel patient = await _patientRepository
+            .getUserIfPatientById(appointment.patientId);
 
       cards.add(
         AppointmentCardModel(
@@ -171,57 +168,9 @@ class AppointmentRepoImp implements AppointmentRepo {
 
   /// patient methods
   /// TODO : upcomming , canceled , completed , favourite will be handled in cubit
-  @override
-  Future<void> setFavourite(String appointmentId) async {
-    try {
-      // updating based on appointmentId not based on the isFav from ui
-      final appointment = await _getAppointmentById(appointmentId);
-      await _consumer.update('${DatabasePaths.appointments}/',
-          data: {'isFavourite': !appointment.isFavorite});
-    } catch (e) {
-      throw DatabaseException(e.toString(),
-          'failed-to-set-appointment-$appointmentId-as-favourite-or-appointment-not-found');
-    }
-  }
 
-  /// rate only after completing appointment
-  @override
-  Future<void> rate(String appointmentId, double rate) async {
-    try {
-      await _consumer.update('${DatabasePaths.appointments}/$appointmentId',
-          data: {'rate': rate});
-    } catch (e) {
-      throw DatabaseException(
-          e.toString(), 'failed-to-rate-or-appointment-not-found');
-    }
-  }
 
   /// Doctor methods
-  /// create update delete complete appointment
-  @override
-  Future<String> createAppointment(
-    AppointmentModel appointment,
-  ) async {
-    try {
-      final CurrentUser user = await _getCurrentUser();
-      final String? generatedId =
-          await _consumer.getRefrence(path: DatabasePaths.appointments);
-      if (user.role == UserRole.doctor) {
-        // 1. Generate the ID locally (0 network cost, completely offline)
-        final doctorId = user.uid;
-        // suppose that the doctor will create the appointment and still witout patient until some patient takes action
-        final appointmentWithDoctorId = appointment.copyWith(
-            id: generatedId, doctorId: doctorId, patientId: "");
-        await _consumer.set('${DatabasePaths.appointments}/$generatedId',
-            data: appointmentWithDoctorId.toJson());
-      }
-      return generatedId!; //
-    } catch (e) {
-      throw DatabaseException(
-          e.toString(), 'failed-to-create-an-appointment-not-authorized');
-    }
-  }
-
   @override
 Future<void> updateAppointmentDetails(
     AppointmentModel updatedAppointment,
@@ -275,7 +224,7 @@ Future<void> updateAppointmentDetails(
       await _consumer.update(
         '${DatabasePaths.appointments}/${appointment.id}',
         data: {
-          'status': AppointmentStatus.completed.value,
+          'status': AppointmentStatus.completed,
         },
       );
     } catch (e) {
@@ -313,7 +262,7 @@ Future<void> updateAppointmentDetails(
       await _consumer.update(
         '${DatabasePaths.appointments}/${appointment.id}',
         data: {
-          'status': AppointmentStatus.canceled.value,
+          'status': AppointmentStatus.canceled,
           'canceledBy': currentUser.uid
         },
       );
@@ -352,90 +301,13 @@ Future<void> updateAppointmentDetails(
       await _consumer.update(
         '${DatabasePaths.appointments}/${appointment.id}',
         data: {
-          'status': AppointmentStatus.confirmed.value,
+          'status': AppointmentStatus.confirmed,
         },
       );
     } catch (e) {
       throw DatabaseException(
         e.toString(),
         'failed-to-confirm-appointment',
-      );
-    }
-  }
-
-  @override // if doctor rejects a pending appointment it becomes available again
-  Future<void> rejectAppointment(
-    String appointmentId,
-  ) async {
-    try {
-      final CurrentUser user = await _getCurrentUser();
-      // feel extra thing to do here!!!!
-      if (user.role != UserRole.doctor) {
-        throw DatabaseException(
-          'Only doctors can reject appointments',
-          'permission-denied',
-        );
-      }
-      final AppointmentModel appointment =
-          await _getAppointmentById(appointmentId);
-      if ( // must be pending first
-          appointment.status != AppointmentStatus.pending) {
-        throw DatabaseException(
-          'Appointment is not pending',
-          'invalid-status',
-        );
-      }
-
-      await _consumer.update(
-        '${DatabasePaths.appointments}/${appointment.id}',
-        data: {
-          'status': AppointmentStatus.available.value,
-
-          /// upcoming/confirmed?!!
-        },
-      );
-    } catch (e) {
-      throw DatabaseException(
-        e.toString(),
-        'failed-to-confirm-appointment',
-      );
-    }
-  }
-
-  @override
-  Future<void> bookAppointment(String appointmentId) async {
-    try {
-      final currentUser = await _getCurrentUser();
-
-      if (currentUser.role != UserRole.patient) {
-        throw DatabaseException(
-          'Only patients can book appointments',
-          'permission-denied',
-        );
-      }
-      final AppointmentModel appointment =
-          await _getAppointmentById(appointmentId);
-      if (appointment.status != AppointmentStatus.available) {
-        throw DatabaseException(
-          'Appointment is no longer available',
-          'appointment-not-available',
-        );
-      }
-
-      await _consumer.update(
-        '${DatabasePaths.appointments}/${appointment.id}',
-        data: {
-          'patientId': currentUser.uid,
-          'status': AppointmentStatus.pending.value,
-        },
-      );
-
-      // Later:
-      // NotificationService.sendBookingRequestToDoctor(...)
-    } catch (e) {
-      throw DatabaseException(
-        e.toString(),
-        'failed-to-book-appointment',
       );
     }
   }

@@ -1,4 +1,4 @@
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

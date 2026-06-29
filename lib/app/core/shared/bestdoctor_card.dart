@@ -1,11 +1,9 @@
-import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
-import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../Language/locale_keys.g.dart';
-
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
+import 'package:avo_app/app/core/shared/main_button.dart';
 
 class BestDoctorCard extends StatelessWidget {
   final DoctorModel doctor;
@@ -19,101 +17,134 @@ class BestDoctorCard extends StatelessWidget {
     required this.onBook,
   });
 
+  String _getWorkingHours() {
+    if (doctor.schedules == null || doctor.schedules!.isEmpty) {
+      return "09:00 AM - 05:00 PM";
+    }
+    final first = doctor.schedules!.first;
+    return "${first.startTime} - ${first.endTime}";
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Container(
       width: double.infinity,
-      height: 170.h,
-      margin: EdgeInsets.only(bottom: 12.h), // 💡 المسافة السفلية مش محتاجة Directional
+      margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: theme.colorScheme.primary,
+          color: colorScheme.primary.withValues(alpha: 0.2),
           width: 1.2.sp,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           )
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          /// 🔹 Top Row
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// 👨‍⚕️ Image
               Container(
-                width: 55.r,
-                height: 55.r,
-                padding: const EdgeInsets.all(0),
+                width: 60.r,
+                height: 60.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: theme.colorScheme.primary,
-                    width: 2,
+                    color: colorScheme.primary,
+                    width: 2.r,
                   ),
                 ),
                 child: ClipOval(
-                  child: Image.asset(
-                    doctor.imageUrl.toString(),
-                    width: 55.r,
-                    height: 55.r,
-                    fit: BoxFit.cover,
-                  ),
+                  child: doctor.imageUrl.isNotEmpty
+                      ? Image.network(
+                          doctor.imageUrl,
+                          width: 60.r,
+                          height: 60.r,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.person, size: 30.r, color: colorScheme.onSurfaceVariant),
+                        )
+                      : Icon(Icons.person, size: 30.r, color: colorScheme.onSurfaceVariant),
                 ),
               ),
-
               SizedBox(width: 12.w),
-
-              /// 📌 Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      doctor.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15.sp,
-                        color: theme.colorScheme.onSurface,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            doctor.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                              color: colorScheme.onSurface,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: onFavoriteToggle,
+                          child: Icon(
+                            doctor.isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: doctor.isFavorite ? Colors.red : colorScheme.outlineVariant,
+                            size: 24.sp,
+                          ),
+                        ),
+                      ],
                     ),
-
                     SizedBox(height: 4.h),
-
                     Text(
-                      "(${doctor.specialty})",
+                      doctor.location != null && doctor.location!.isNotEmpty
+                          ? "${doctor.specialty} | ${doctor.location}"
+                          : doctor.specialty,
                       style: TextStyle(
-                        fontSize: 12.sp,
-                        color: theme.colorScheme.outlineVariant,
+                        fontSize: 13.sp,
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-
                     SizedBox(height: 8.h),
-
-                    /// ⭐ Rating + Time
                     Row(
                       children: [
-                        Text("${doctor.rating}",
-                            style: TextStyle(fontSize: 12.sp)),
+                        Text(
+                          "${doctor.rating}",
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
                         SizedBox(width: 2.w),
-                        Icon(Icons.star,
-                            color: AppColors.lightOrangeOutLine, size: 14.sp),
-                        SizedBox(width: 8.w),
-                        Icon(Icons.access_time, size: 16.sp),
+                        Icon(Icons.star, color: Colors.amber, size: 14.sp),
+                        SizedBox(width: 12.w),
+                        Icon(Icons.access_time, color: colorScheme.outlineVariant, size: 14.sp),
                         SizedBox(width: 4.w),
                         Expanded(
                           child: Text(
-                            "${doctor.openTime} - ${doctor.closeTime}",
-                            style: TextStyle(fontSize: 12.sp),
+                            _getWorkingHours(),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -122,41 +153,14 @@ class BestDoctorCard extends StatelessWidget {
                   ],
                 ),
               ),
-
-              /// ❤️ Favorite
-              IconButton(
-                onPressed: onFavoriteToggle,
-                icon: Icon(
-                  doctor.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: doctor.isFavorite
-                      ? theme.colorScheme.error
-                      : theme.colorScheme.outlineVariant,
-                  size: 22.sp,
-                ),
-              ),
             ],
           ),
-
-          const Spacer(),
-          InkWell(
-            onTap: onBook, // 💡 تأكدت إن الـ onBook متوصل بالزرار بدل ما كان فاضي () {}
-            child: Container(
-              width: double.infinity,
-              height: 40.h,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Text(
-                LocaleKeys.general_book_appointment.tr(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.onPrimary),
-              ),
-            ),
+          SizedBox(height: 16.h),
+          MainButton(
+            width: double.infinity,
+            height: 44.h,
+            text: LocaleKeys.general_book_appointment.tr(),
+            onPressed: onBook,
           ),
         ],
       ),

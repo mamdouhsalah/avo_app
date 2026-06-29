@@ -41,6 +41,8 @@ class _SplashScreenState extends State<SplashScreen> {
               // TODO when pharmacy exist
             } else if (state.role == UserRole.laboratorySpecialist) {
               // TODO when laboratory exist
+            } else if (state.role == UserRole.admin) {
+              context.go(AppRouter.adminDashboard);
             } else {
               // TODO when any other role
             }

@@ -9,10 +9,14 @@ import '../Language/locale_keys.g.dart';
 
 class MedicineCard extends StatelessWidget {
   final MedicineModel medicine;
+  final VoidCallback? onMarkAsTaken;
+  final String minsUntil;
 
   const MedicineCard({
     super.key,
     required this.medicine,
+    this.onMarkAsTaken,
+    required this.minsUntil,
   });
 
   @override
@@ -51,7 +55,7 @@ class MedicineCard extends StatelessWidget {
                 child: Center(
                   child: Text(
                     LocaleKeys.general_in_mins.tr(namedArgs: {
-                      'mins': medicine.time[medicine.time.length - 1]
+                      'mins': minsUntil
                     }),
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -120,7 +124,7 @@ class MedicineCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
-              onPressed: () {},
+              onPressed: onMarkAsTaken,
               child: Text(
                 LocaleKeys.general_mark_as_taken.tr(),
                 style: TextStyle(fontSize: 14.sp),

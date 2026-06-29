@@ -1,12 +1,19 @@
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
-import 'package:avo_app/app/features/doctor/data/data.dart';
-import 'package:avo_app/app/features/doctor/view/screen/notification_screen.dart';
+
+import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
-import 'package:avo_app/app/features/doctor/view/widget/custom_statCard.dart';
+import 'package:avo_app/app/features/doctor/view/widget/custom_stat_card.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,11 +27,28 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final ScrollController _scrollController = ScrollController();
   bool isVisible = true;
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  DoctorModel? currentDoctor;
 
   @override
   void initState() {
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    _fetchDoctorData();
     super.initState();
     _scrollController.addListener(_scrollListener);
+  }
+
+  Future<void> _fetchDoctorData() async {
+    try {
+      final docData = await FirebaseConsumerImpl().get(
+        'users/$_doctorId',
+        fromJson: (json) => DoctorModel.fromJson(json),
+      );
+      setState(() => currentDoctor = docData);
+    } catch (e) {
+      // Ignore or handle
+    }
   }
 
   void _scrollListener() {
@@ -44,7 +68,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dataDoctor = DataRepository.doctors.first;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -82,7 +105,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Row(
                   children: [
                     CustomAvatar(
-                      imageUrl: dataDoctor.imageUrl,
+                      imageUrl: currentDoctor?.imageUrl,
                       size: 55.sp,
                       radius: 53.r,
                       borderColor: theme.colorScheme.primary,
@@ -99,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               color: theme.colorScheme.outlineVariant),
                         ),
                         Text(
-                          'Dr. ${dataDoctor.name}',
+                          currentDoctor != null ? 'Dr. ${currentDoctor!.fullName}' : 'Loading...',
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.bold,
@@ -109,16 +132,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                     const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const NotificationScreen()),
+                    BlocBuilder<AppNotificationCubit, AppNotificationState>(
+                      builder: (context, notifState) {
+                        int unreadCount = 0;
+                        if (notifState is AppNotificationLoaded) {
+                          unreadCount = notifState.unreadCount;
+                        }
+                        return IconButton(
+                          onPressed: () {
+                            context.push(AppRouter.notifications);
+                          },
+                          icon: Badge(
+                            isLabelVisible: unreadCount > 0,
+                            label: Text(unreadCount.toString()),
+                            backgroundColor: Theme.of(context).colorScheme.error,
+                            child: Icon(Icons.notifications_none_outlined,
+                                size: 28.sp, color: theme.colorScheme.primary),
+                          ),
                         );
                       },
-                      icon: Icon(Icons.notifications_none_outlined,
-                          size: 34.sp, color: theme.colorScheme.outlineVariant),
                     ),
                   ],
                 ),
@@ -174,16 +206,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                ListView.separated(
-                  itemCount: DataRepository.appointments.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    return CustomAppointmentCard(
-                      appointment: DataRepository.appointments[index],
+                StreamBuilder<List<AppointmentModel>>(
+                  stream: _doctorRepo.streamDoctorAppointments(_doctorId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    final appointments = snapshot.data ?? [];
+                    
+                    if (appointments.isEmpty) {
+                      return const Center(child: Text('No upcoming appointments'));
+                    }
+
+                    return ListView.separated(
+                      itemCount: appointments.length > 5 ? 5 : appointments.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                      itemBuilder: (context, index) {
+                        return CustomAppointmentCard(
+                          appointment: appointments[index],
+                        );
+                      },
                     );
-                  },
+                  }
                 ),
 
                 SizedBox(height: 160.h), // مساحة إضافية

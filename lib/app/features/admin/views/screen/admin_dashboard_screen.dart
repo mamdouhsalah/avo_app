@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
+import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -64,9 +66,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             SliverAppBar(
               expandedHeight: 140.h,
               pinned: true,
-              backgroundColor: isDark
-                  ? const Color(0xFF121212)
-                  : AppColors.lightBackground,
+              backgroundColor:
+                  isDark ? const Color(0xFF121212) : AppColors.lightBackground,
               actions: [
                 IconButton(
                   icon: _isRefreshing
@@ -157,13 +158,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               ),
                               const Spacer(),
                               // Logout
-                              IconButton(
-                                icon: Icon(
-                                  Icons.logout_rounded,
-                                  color: AppColors.error,
-                                  size: 22.sp,
-                                ),
-                                onPressed: () => _showLogoutDialog(context),
+                              BlocBuilder<AppNotificationCubit,
+                                  AppNotificationState>(
+                                builder: (context, notifState) {
+                                  int unreadCount = 0;
+                                  if (notifState is AppNotificationLoaded) {
+                                    unreadCount = notifState.unreadCount;
+                                  }
+                                  return IconButton(
+                                    icon: Badge(
+                                      isLabelVisible: unreadCount > 0,
+                                      label: Text(unreadCount.toString()),
+                                      backgroundColor: Theme.of(context).colorScheme.error,
+                                      child: Icon(
+                                        Icons.notifications_none_outlined,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        size: 28.sp,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      context.push(AppRouter.notifications);
+                                    },
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -216,7 +235,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         childAspectRatio: 1.25,
                         children: [
                           StatCard(
-                            title: 'Users',
+                            title: 'Patients',
                             value: '${stats[DatabasePaths.users] ?? 0}',
                             icon: Icons.people_rounded,
                             color: AppColors.lightPrimary,
@@ -228,13 +247,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             icon: Icons.medical_services_rounded,
                             color: const Color(0xFF0095FF),
                             onTap: () {
-                              // TODO: Add Admin Doctors Screen
+                              context.push(AppRouter.adminUsers);
                             },
                           ),
                           StatCard(
                             title: 'Appointments',
-                            value:
-                                '${stats[DatabasePaths.appointments] ?? 0}',
+                            value: '${stats[DatabasePaths.appointments] ?? 0}',
                             icon: Icons.calendar_month_rounded,
                             color: const Color(0xFF735BF2),
                             onTap: () {
@@ -247,8 +265,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 '${stats[DatabasePaths.pendingApprovals] ?? 0}',
                             icon: Icons.pending_actions_rounded,
                             color: const Color(0xFFFBC02D),
-                            onTap: () =>
-                                context.push(AppRouter.adminApprovals),
+                            onTap: () => context.push(AppRouter.adminApprovals),
                           ),
                         ],
                       );
@@ -380,39 +397,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _showLogoutDialog(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text('Logout',
-            style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w700)),
-        content: Text(
-            'Are you sure you want to logout from the Admin Dashboard?',
-            style: TextStyle(fontSize: 14.sp)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-              elevation: 0,
-            ),
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true && context.mounted) {
-      context.go(AppRouter.login);
-    }
   }
 }
 

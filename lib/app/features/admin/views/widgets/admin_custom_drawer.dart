@@ -74,6 +74,12 @@ class AdminCustomDrawer extends StatelessWidget {
                   route: AppRouter.adminLogs,
                   isSelected: currentRoute == AppRouter.adminLogs,
                 ),
+                _DrawerItem(
+                  icon: Icons.chat_rounded,
+                  title: 'Chats',
+                  route: AppRouter.adminChats,
+                  isSelected: currentRoute == AppRouter.adminChats,
+                ),
               ],
             ),
           ),
@@ -109,7 +115,7 @@ class AdminCustomDrawer extends StatelessWidget {
                   onChanged: (value) {
                     context.read<ThemeCubit>().toggleTheme();
                   },
-                  activeColor: AppColors.lightPrimary,
+                  activeThumbColor: AppColors.lightPrimary,
                 ),
               ],
             ),

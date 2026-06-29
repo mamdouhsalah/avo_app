@@ -1,5 +1,5 @@
 import 'package:avo_app/app/core/shared/main_button.dart';
-import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
+import 'package:avo_app/app/features/appointment/models/appointment.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

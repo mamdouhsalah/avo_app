@@ -1,7 +1,11 @@
 // ====================== ANALYTICS SCREEN ======================
 
-import 'package:avo_app/app/features/doctor/data/data.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,14 +30,21 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   ChartViewType bottomChartView = ChartViewType.week;
   bool bottomShowLineChart = false;
 
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  Future<List<PatientModel>>? _patientsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    _patientsFuture = _doctorRepo.getDoctorPatients(_doctorId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    final totalPatients = DataRepository.patients.length * 200;
-    final completedAppointments = DataRepository.appointments.length * 400;
-    final avgWaitTime = 18;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -67,48 +78,62 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ===================== STATS =====================
+            
+            FutureBuilder<List<PatientModel>>(
+              future: _patientsFuture,
+              builder: (context, snapshotPatients) {
+                return StreamBuilder<List<AppointmentModel>>(
+                  stream: _doctorRepo.streamDoctorAppointments(_doctorId),
+                  builder: (context, snapshotAppts) {
+                    final patientsCount = snapshotPatients.data?.length ?? 0;
+                    final apptsCount = snapshotAppts.data?.length ?? 0;
+                    final avgWaitTime = 18; // Mocked for UI purposes
 
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 1.45,
-              children: [
-                _buildStatCard(
-                  context,
-                  "Total Patients",
-                  totalPatients.toString(),
-                  "+12% from last month",
-                  Colors.blue,
-                  Icons.people,
-                ),
-                _buildStatCard(
-                  context,
-                  "Appointments",
-                  completedAppointments.toString(),
-                  "+8% from last month",
-                  Colors.green,
-                  Icons.check_circle,
-                ),
-                _buildStatCard(
-                  context,
-                  "Wait Time",
-                  "$avgWaitTime min",
-                  "-2 min improved",
-                  Colors.orange,
-                  Icons.timer,
-                ),
-                _buildStatCard(
-                  context,
-                  "Satisfaction",
-                  "98%",
-                  "+0.2% growth",
-                  Colors.purple,
-                  Icons.star,
-                ),
-              ],
+                    return GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                      childAspectRatio: 1.45,
+                      children: [
+                        _buildStatCard(
+                          context,
+                          "Total Patients",
+                          patientsCount.toString(),
+                          "+12% from last month",
+                          Colors.blue,
+                          Icons.people,
+                        ),
+                        _buildStatCard(
+                          context,
+                          "Appointments",
+                          apptsCount.toString(),
+                          "+8% from last month",
+                          Colors.green,
+                          Icons.check_circle,
+                        ),
+                        _buildStatCard(
+                          context,
+                          "Wait Time",
+                          "$avgWaitTime min",
+                          "-2 min improved",
+                          Colors.orange,
+                          Icons.timer,
+                        ),
+                        _buildStatCard(
+                          context,
+                          "Satisfaction",
+                          "98%",
+                          "+0.2% growth",
+                          Colors.purple,
+                          Icons.star,
+                        ),
+                      ],
+                    );
+                  }
+                );
+              }
             ),
 
             SizedBox(height: 24.h),

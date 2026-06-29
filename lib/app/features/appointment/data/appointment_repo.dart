@@ -1,5 +1,5 @@
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
-import 'package:avo_app/app/features/appointment/models/appointment.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
 
 abstract class AppointmentRepo {
   /// get all appointment : called once then filtered
@@ -9,19 +9,6 @@ abstract class AppointmentRepo {
 
   /// patient methods
   /// upcomming , canceled , completed , favourite will be handled in cubit
-  Future<void> setFavourite(String appointmentId);
-
-  /// rate only after completing appointment
-  Future<void> rate(String appointmentId, double rate);
-
-  Future<void> bookAppointment(String appointmentId);
-
-  /// Doctor methods
-  /// create update delete complete appointment
-  Future<String> createAppointment(
-    // returns new app id
-    AppointmentModel appointment,
-  );
 
   Future<void> completeAppointment(
     String appointmentId,
@@ -37,9 +24,6 @@ abstract class AppointmentRepo {
     String appointmentId,
   );
 
-  Future<void> rejectAppointment(
-    String appointmentId,
-  );
 
   Future<void> deleteAppointment(
     String appointmentId,

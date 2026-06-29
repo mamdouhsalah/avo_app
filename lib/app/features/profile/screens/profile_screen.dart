@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/shared/CustomAvatar.dart';
+import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
+import 'package:avo_app/app/core/shared/custom_avatar.dart';
+import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
@@ -43,158 +45,177 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // 💡 معرفة اللغة الحالية عشان نعلم عليها في الـ BottomSheet
     final bool isArabic = context.locale.languageCode == 'ar';
+    final bool isDarkTheme =
+        context.watch<ThemeCubit>().state == ThemeMode.dark;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-
-      // AppBar
-      appBar: widget.showAppBar
-          ? AppBar(
+    return AppExitPopScope(
+      child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        leading: widget.showDrawer
-            ? Builder(
-          builder: (context) => IconButton(
-            icon: Icon(Icons.menu,
-                color: theme.textTheme.titleLarge?.color,
-                size: 24.sp),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        )
+      
+        // AppBar
+        appBar: widget.showAppBar
+            ? AppBar(
+                backgroundColor: theme.scaffoldBackgroundColor,
+                leading: widget.showDrawer
+                    ? Builder(
+                        builder: (context) => IconButton(
+                          icon: Icon(Icons.menu,
+                              color: theme.textTheme.titleLarge?.color,
+                              size: 24.sp),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                        ),
+                      )
+                    : null,
+              )
             : null,
-      )
-          : null,
-
-      // Drawer
-      drawer: widget.showDrawer ? const CustomDrawer() : null,
-
-      body: BlocConsumer<ProfileCubit, ProfileState>(
-        listener: (context, state) {
-          if (state is ProfileFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: theme.colorScheme.error,
-              ),
-            );
-          } else if (state is ProfileLogout) {
-            context.go(AppRouter.login);
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<ProfileCubit>();
-          final profileName = cubit.userProfile?.fullName ?? 'No Name';
-          final avatarUrl = cubit.imageUrl;
-
-          return Stack(
-            children: [
-              Column(
-                children: [
-                  const SizedBox(height: 30),
-                  Center(
-                    child: GestureDetector(
-                      onTap: _pickImage,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CustomAvatar(
-                            size: 150.r,
-                            borderColor: theme.colorScheme.primary,
-                            imageUrl: avatarUrl.isNotEmpty
-                                ? avatarUrl
-                                : "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c29maWFuJTIwYW5kcm98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.6),
-                                shape: BoxShape.circle,
-                              ),
-                              padding: const EdgeInsets.all(8),
-                              child: Icon(Icons.camera_alt_outlined,
-                                  color: Colors.white, size: 30.sp),
+      
+        // Drawer
+        drawer: widget.showDrawer ? const CustomDrawer() : null,
+      
+        body: BlocConsumer<ProfileCubit, ProfileState>(
+          listener: (context, state) {
+            if (state is ProfileFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: theme.colorScheme.error,
+                ),
+              );
+            } else if (state is ProfileLogout) {
+              context.go(AppRouter.login);
+            }
+          },
+          builder: (context, state) {
+            final cubit = context.read<ProfileCubit>();
+            final profileName = cubit.userProfile?.fullName ?? 'No Name';
+            final avatarUrl = cubit.imageUrl;
+      
+            return Stack(
+              children: [
+                Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    Center(
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CustomAvatar(
+                              size: 150.r,
+                              borderColor: theme.colorScheme.primary,
+                              imageUrl: avatarUrl.isNotEmpty
+                                  ? avatarUrl
+                                  : "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c29maWFuJTIwYW5kcm98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
                             ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.6),
+                                  shape: BoxShape.circle,
+                                ),
+                                padding: const EdgeInsets.all(8),
+                                child: Icon(Icons.camera_alt_outlined,
+                                    color: Colors.white, size: 30.sp),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      profileName,
+                      style: theme.textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 30),
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        children: [
+                          _buildListTile(
+                              context,
+                              Icons.lock_outline,
+                              LocaleKeys.profile_account_info.tr(), // 🔥 ترجمة
+                              () => context.push(AppRouter.accountInfo)),
+                          if (!widget.showDrawer)
+                            _buildListTile(
+                                context,
+                                Icons.person_outline,
+                                LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
+                                () => context.push(AppRouter.personalInfo)),
+                          if (cubit.userProfile?.role == 'doctor')
+                            _buildListTile(
+                                context,
+                                Icons.stars_outlined,
+                                LocaleKeys.profile_doctor_info.tr(),
+                                () => context.push(AppRouter.doctorInfo)),
+                          // _buildListTile(
+                          //     context,
+                          //     Icons.credit_card_outlined,
+                          //     LocaleKeys.profile_cards_details.tr(),
+                          //     () => context.push(AppRouter.checkout)), // 🔥 ترجمة
+                          ListTile(
+                            leading: Icon(Icons.translate,
+                                color: theme.colorScheme.onSurface),
+                            title: Text(LocaleKeys.profile_app_language.tr(),
+                                style: theme.textTheme.bodyLarge), // 🔥 ترجمة
+                            trailing: IconButton(
+                              onPressed: () => _showLanguageBottomSheet(isArabic),
+                              icon: Icon(Icons.language,
+                                  color: theme.colorScheme.onSurface),
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.wb_sunny_outlined,
+                                color: theme.colorScheme.onSurface),
+                            title: Text(
+                              LocaleKeys.profile_app_theme.tr(), // 🔥 ترجمة
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                            trailing: Switch(
+                              value: isDarkTheme,
+                              onChanged: (v) =>
+                                  context.read<ProfileCubit>().changeTheme(
+                                        v ? ThemeMode.dark : ThemeMode.light,
+                                        context,
+                                      ),
+                              activeTrackColor: theme.colorScheme.primary,
+                              inactiveThumbColor: theme.colorScheme.onSurface,
+                              trackOutlineColor: WidgetStateProperty.all(
+                                  theme.colorScheme.outlineVariant),
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.logout, color: Colors.red),
+                            title:
+                                Text(LocaleKeys.profile_sign_out.tr(), // 🔥 ترجمة
+                                    style: const TextStyle(color: Colors.red)),
+                            onTap: () {
+                              cubit.logout();
+                            },
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    profileName,
-                    style: theme.textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 30),
-                  Expanded(
-                    child: ListView(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      children: [
-                        _buildListTile(
-                            context,
-                            Icons.lock_outline,
-                            LocaleKeys.profile_account_info.tr(), // 🔥 ترجمة
-                                () => context.push(AppRouter.accountInfo)),
-                        _buildListTile(
-                            context,
-                            Icons.person_outline,
-                            LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
-                                () => context.push(AppRouter.personalInfo)),
-                        _buildListTile(context, Icons.credit_card_outlined,
-                            LocaleKeys.profile_cards_details.tr(), () => context.push(AppRouter.checkout)), // 🔥 ترجمة
-                        ListTile(
-                          leading:
-                          Icon(Icons.translate, color: theme.colorScheme.onSurface),
-                          title: Text(LocaleKeys.profile_app_language.tr(), style: theme.textTheme.bodyLarge), // 🔥 ترجمة
-                          trailing: IconButton(
-                            onPressed: () => _showLanguageBottomSheet(isArabic),
-                            icon: Icon(Icons.language,
-                                color: theme.colorScheme.onSurface),
-                          ),
-                        ),
-                        const Divider(
-                          height: 1,
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.wb_sunny_outlined,
-                              color: theme.colorScheme.onSurface),
-                          title: Text(
-                            LocaleKeys.profile_app_theme.tr(), // 🔥 ترجمة
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                          trailing: Switch(
-                            value: isDarkTheme,
-                            onChanged: (v) => setState(() => isDarkTheme = v),
-                            activeTrackColor: theme.colorScheme.primary,
-                            inactiveThumbColor: theme.colorScheme.onSurface,
-                            trackOutlineColor: MaterialStateProperty.all(
-                                theme.colorScheme.outlineVariant),
-                          ),
-                        ),
-                        const Divider(
-                          height: 1,
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.logout, color: Colors.red),
-                          title: Text(LocaleKeys.profile_sign_out.tr(), // 🔥 ترجمة
-                              style: const TextStyle(color: Colors.red)),
-                          onTap: () {
-                            cubit.logout();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              if (state is ProfileLoading)
-                const Center(child: CircularProgressIndicator()),
-            ],
-          );
-        },
+                  ],
+                ),
+                if (state is ProfileLoading)
+                  const Center(child: CircularProgressIndicator()),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -234,11 +255,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // 💡 التعديل هنا: دالة تغيير اللغة باستخدام easy_localization
   void _changeLanguage(String langCode) {
-    Navigator.pop(context); // قفل الشيت الأول
+    Navigator.pop(context);
     if (context.locale.languageCode != langCode) {
-      context.setLocale(Locale(langCode)); // قلب لغة الأبلكيشن!
+      context.read<ProfileCubit>().changeLanguage(langCode, context);
     }
   }
 

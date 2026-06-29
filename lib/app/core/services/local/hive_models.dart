@@ -22,6 +22,12 @@ class Medication extends HiveObject {
   @HiveField(5)
   String instructions;
 
+  @HiveField(6)
+  DateTime? fromDate;
+
+  @HiveField(7)
+  DateTime? toDate;
+
   Medication({
     required this.name,
     required this.dose,
@@ -29,6 +35,8 @@ class Medication extends HiveObject {
     required this.times,
     required this.days,
     required this.instructions,
+    this.fromDate,
+    this.toDate,
   });
 }
 
@@ -101,7 +109,8 @@ class Weight extends HiveObject {
 @HiveType(typeId: 8)
 class HealthMetric extends HiveObject {
   @HiveField(0)
-  String type; // 'sugar', 'pressure_systolic', 'pressure_diastolic', 'weight', 'sleep'
+  String
+      type; // 'sugar', 'pressure_systolic', 'pressure_diastolic', 'weight', 'sleep'
 
   @HiveField(1)
   double value;
@@ -142,6 +151,7 @@ class HealthMetric extends HiveObject {
 
 @HiveType(typeId: 5)
 class MedicationLog extends HiveObject {
+  // --- Old fields for compatibility ---
   @HiveField(0)
   int medicationKey; // Reference to Medication's key
 
@@ -154,10 +164,39 @@ class MedicationLog extends HiveObject {
   @HiveField(3)
   int notificationId;
 
+  // --- New fields for robust sync ---
+  @HiveField(4)
+  String logId;
+
+  @HiveField(5)
+  String medicationId;
+
+  @HiveField(6)
+  String medicationName;
+
+  @HiveField(7)
+  DateTime actionDate;
+
+  @HiveField(8)
+  String scheduledTime;
+
+  @HiveField(9)
+  String status;
+
+  @HiveField(10)
+  bool isSynced;
+
   MedicationLog({
     required this.medicationKey,
     required this.timestamp,
     required this.action,
     required this.notificationId,
+    required this.logId,
+    required this.medicationId,
+    required this.medicationName,
+    required this.actionDate,
+    required this.scheduledTime,
+    required this.status,
+    this.isSynced = false,
   });
 }

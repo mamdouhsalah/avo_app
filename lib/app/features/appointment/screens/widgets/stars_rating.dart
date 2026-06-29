@@ -1,10 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class RatingStars extends StatelessWidget {
-  final double rating;
+class RatingStars extends StatefulWidget {
+  final int initialRating;
+  final ValueChanged<int>? onRatingChanged;
+  final bool enabled;
 
-  const RatingStars({super.key, required this.rating});
+  const RatingStars({
+    super.key,
+    this.initialRating = 0,
+    this.onRatingChanged,
+    this.enabled = true,
+  });
+
+  @override
+  State<RatingStars> createState() => _RatingStarsState();
+}
+
+class _RatingStarsState extends State<RatingStars> {
+  late int _rating;
+
+  @override
+  void initState() {
+    super.initState();
+    _rating = widget.initialRating;
+  }
+
+  @override
+  void didUpdateWidget(covariant RatingStars oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.initialRating != widget.initialRating) {
+      _rating = widget.initialRating;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,26 +42,29 @@ class RatingStars extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (index) {
-        IconData icon;
-        Color color;
+        final starIndex = index + 1;
 
-        if (index < rating.floor()) {
-          icon = Icons.star;
-          color = colorScheme.primary;
-        } else if (index < rating) {
-          icon = Icons.star_half;
-          color = colorScheme.primary;
-        } else {
-          icon = Icons.star_border;
-          color = Colors.grey;
-        }
+        return GestureDetector(
+          onTap: widget.enabled
+              ? () {
+                  setState(() {
+                    _rating = starIndex;
+                  });
 
-        return Padding(
-          padding: EdgeInsetsDirectional.only(end: 4.w),
-          child: Icon(
-            icon,
-            color: color,
-            size: 45.sp,
+                  widget.onRatingChanged?.call(_rating);
+                }
+              : null,
+          child: Padding(
+            padding: EdgeInsetsDirectional.only(end: 4.w),
+            child: Icon(
+              starIndex <= _rating
+                  ? Icons.star
+                  : Icons.star_border,
+              color: starIndex <= _rating
+                  ? colorScheme.primary
+                  : Colors.grey,
+              size: 45.sp,
+            ),
           ),
         );
       }),

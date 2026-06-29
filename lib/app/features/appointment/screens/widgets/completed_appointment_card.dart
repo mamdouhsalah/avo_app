@@ -1,7 +1,10 @@
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
+import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/core/utils/is_today.dart';
-import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
+
 import 'package:avo_app/app/features/appointment/screens/widgets/stars_rating.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,15 +13,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/Language/locale_keys.g.dart';
 
-class CompletedAppointmentCard extends StatelessWidget {
-  final Appointment appointment;
+class CompletedAppointmentCard extends StatefulWidget {
+  final AppointmentCardModel appointmentDoctor;
 
   const CompletedAppointmentCard({
     super.key,
-    required this.appointment,
+    required this.appointmentDoctor,
   });
 
   @override
+  State<CompletedAppointmentCard> createState() => _CompletedAppointmentCardState();
+}
+
+class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
+  @override
+
+  int selectedRating = 0;
+
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -30,9 +41,11 @@ class CompletedAppointmentCard extends StatelessWidget {
         children: [
           // date on day for the appointment
           Text(
-            isToday(date: appointment.date)
-                ? LocaleKeys.general_today.tr()
-                : "${appointment.date.day} ${getMonthNameFromDate(date: appointment.date)}",
+            "${translateDay(widget.appointmentDoctor.appointment.date)}",
+            ///TODO: after modify date , uncomment this and make it a real date not just a day
+            // isToday(date: appointmentDoctor.appointment.date)
+            //     ? LocaleKeys.general_today.tr()
+            //     : "${appointmentDoctor.appointment.date.day} ${getMonthNameFromDate(date: appointmentDoctor.appointment.date)}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -63,24 +76,40 @@ class CompletedAppointmentCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// Image
                       Container(
-                        width: 55.r,
-                        height: 55.r,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            appointment.doctorPictureUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                    width: 55.r,
+                    height: 55.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.primary,
+                        width: 2,
                       ),
+                    ),
+                    child: ClipOval(
+                      child: widget.appointmentDoctor.doctor.imageUrl.isNotEmpty
+                          ? Image.network(
+                              widget.appointmentDoctor.doctor.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/imgs/doctor/doctor1.png',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              'assets/imgs/doctor/doctor1.png',
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
 
                       SizedBox(width: 16.w),
 
@@ -90,7 +119,7 @@ class CompletedAppointmentCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              appointment.doctorName,
+                              widget.appointmentDoctor.doctor.name,
                               style: TextStyle(
                                 color: colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
@@ -101,7 +130,7 @@ class CompletedAppointmentCard extends StatelessWidget {
                             ),
 
                             Text(
-                              "(${appointment.specialty} | ${appointment.clinic})",
+                              "(${widget.appointmentDoctor.doctor.specialty}  ${widget.appointmentDoctor.doctor.clinic})",
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.w400,
@@ -118,7 +147,7 @@ class CompletedAppointmentCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            "${appointment.rating}",
+                            "${widget.appointmentDoctor.doctor.rating}",
                             style: TextStyle(
                                 color: colorScheme.onSurface,
                                 fontSize: 16.sp,
@@ -140,7 +169,16 @@ class CompletedAppointmentCard extends StatelessWidget {
                   // stars based on rating
                   SizedBox(height: 16.h),
 
-                  RatingStars(rating: appointment.rating),
+                  RatingStars(
+                    initialRating: selectedRating,
+                    onRatingChanged: (rating) {
+                      setState(() {
+                        selectedRating = rating;
+                      });
+
+                      // 1..5
+                    },
+                  ),
 
                   SizedBox(height: 8.h),
 
@@ -157,9 +195,9 @@ class CompletedAppointmentCard extends StatelessWidget {
 
                   SizedBox(height: 16.h),
 
-                  /// button
+                  /// button // i think the main purpose is rating
                   MainButton(
-                      text: appointment.status == AppointmentStatus.upcoming
+                      text: widget.appointmentDoctor.appointment.status == AppointmentStatus.confirmed
                           ? LocaleKeys.appointment_cancel_appointment.tr()
                           : LocaleKeys.appointment_reschedule.tr(),
                       onPressed: () {})

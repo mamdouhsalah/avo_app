@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloudinary_api/uploader/cloudinary_uploader.dart';
+// ignore: implementation_imports
+import 'package:cloudinary_api/src/request/model/uploader_params.dart';
 import 'package:cloudinary_url_gen/cloudinary.dart';
 
 class CloudinaryService {
@@ -32,6 +34,21 @@ class CloudinaryService {
       log("Cloudinary upload exception: $e");
       log(stack.toString());
       rethrow;
+    }
+  }
+  Future<String> uploadFile(File file, {String? resourceType}) async {
+    try {
+      var response = await _cloudinary.uploader().upload(
+        file,
+        params: UploadParams()..resourceType = resourceType ?? 'auto',
+      );
+      if (response != null && response.data != null) {
+        return response.data!.secureUrl ?? '';
+      }
+      return '';
+    } catch (e) {
+      log("Cloudinary upload file exception: $e");
+      return '';
     }
   }
 }

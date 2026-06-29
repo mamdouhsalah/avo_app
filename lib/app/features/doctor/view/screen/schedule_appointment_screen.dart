@@ -1,4 +1,4 @@
-import 'package:avo_app/app/features/doctor/view/widget/custom_dayViewWidget.dart';
+import 'package:avo_app/app/features/doctor/view/widget/custom_day_view_widget.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/view/widget/month_view_widget.dart';
 import 'package:avo_app/app/features/doctor/view/widget/week_view_widget.dart';
@@ -7,6 +7,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:avo_app/app/features/doctor/services/schedule_controller.dart';
 import 'package:avo_app/app/features/doctor/services/schedule_utils.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ScheduleAppointmentScreen extends StatefulWidget {
   const ScheduleAppointmentScreen({super.key});
@@ -26,19 +30,21 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   set selectedDate(DateTime value) => _selectedDate = value;
 
   DateTime get weekStart {
-    if (_weekStart == null) {
-      _weekStart = ScheduleController.getWeekStart(selectedDate);
-    }
+    _weekStart ??= ScheduleController.getWeekStart(selectedDate);
     return _weekStart!;
   }
 
   set weekStart(DateTime value) => _weekStart = value;
+
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void initState() {
     super.initState();
     _selectedDate = DateTime.now();
     _weekStart = ScheduleController.getWeekStart(_selectedDate!);
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
   }
 
   void _showMonthWeekSelector() {
@@ -93,23 +99,36 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            children: [
-              SizedBox(height: 16.h),
+          child: StreamBuilder<List<AppointmentModel>>(
+            stream: _doctorRepo.streamDoctorAppointments(_doctorId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+              final appointments = snapshot.data ?? [];
 
-              // ========== HEADER WITH MONTH/WEEK SELECTOR ==========
-              _buildHeaderSection(theme, weekEnd),
-              SizedBox(height: 20.h),
+              return Column(
+                children: [
+                  SizedBox(height: 16.h),
 
-              // ========== VIEW MODE TABS ==========
-              _buildViewModeTabs(theme),
-              SizedBox(height: 20.h),
+                  // ========== HEADER WITH MONTH/WEEK SELECTOR ==========
+                  _buildHeaderSection(theme, weekEnd, appointments),
+                  SizedBox(height: 20.h),
 
-              // ========== MAIN CONTENT ==========
-              Expanded(
-                child: _buildMainContent(theme),
-              ),
-            ],
+                  // ========== VIEW MODE TABS ==========
+                  _buildViewModeTabs(theme),
+                  SizedBox(height: 20.h),
+
+                  // ========== MAIN CONTENT ==========
+                  Expanded(
+                    child: _buildMainContent(theme, appointments),
+                  ),
+                ],
+              );
+            }
           ),
         ),
       ),
@@ -117,7 +136,7 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   }
 
   // ========== HEADER WITH MONTH/WEEK SELECTOR ==========
-  Widget _buildHeaderSection(ThemeData theme, DateTime weekEnd) {
+  Widget _buildHeaderSection(ThemeData theme, DateTime weekEnd, List<AppointmentModel> appointments) {
     final monthName = ScheduleUtils.formatMonth(selectedDate);
     final yearName = DateFormat('yyyy').format(selectedDate);
 
@@ -237,7 +256,7 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  _getAppointmentCount(),
+                  _getAppointmentCount(appointments),
                   style: TextStyle(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
@@ -252,14 +271,14 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
     );
   }
 
-  String _getAppointmentCount() {
+  String _getAppointmentCount(List<AppointmentModel> appointments) {
     int count = 0;
     if (viewMode == 0) {
-      count = ScheduleController.getAppointmentsForDate(selectedDate).length;
+      count = ScheduleController.getAppointmentsForDate(selectedDate, appointments).length;
     } else if (viewMode == 1) {
-      count = ScheduleController.getAppointmentsForWeek(weekStart).length;
+      count = ScheduleController.getAppointmentsForWeek(weekStart, appointments).length;
     } else {
-      count = ScheduleController.getAppointmentsForMonth(selectedDate).length;
+      count = ScheduleController.getAppointmentsForMonth(selectedDate, appointments).length;
     }
     return '$count Appointment${count != 1 ? 's' : ''}';
   }
@@ -352,11 +371,12 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   }
 
   // ========== MAIN CONTENT ==========
-  Widget _buildMainContent(ThemeData theme) {
+  Widget _buildMainContent(ThemeData theme, List<AppointmentModel> appointments) {
     switch (viewMode) {
       case 0: // Day View
         return DayViewWidget(
           selectedDate: selectedDate,
+          appointments: appointments,
           onDateChanged: (date) {
             setState(() {
               selectedDate = date;
@@ -367,6 +387,7 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
       case 1: // Week View
         return WeekViewWidget(
           weekStart: weekStart,
+          appointments: appointments,
           onDateSelected: (date) {
             setState(() {
               selectedDate = date;

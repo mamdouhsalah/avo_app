@@ -1,10 +1,10 @@
 import 'package:avo_app/app/core/models/lab_result_model.dart';
-import 'package:avo_app/app/features/doctor/data/data.dart';
 import 'package:share_plus/share_plus.dart';
 // ignore: unused_import
 import 'package:share_plus/share_plus.dart' as sp;
 
 class LabResultService {
+  static List<LabResultModel> labResults = [];
   /// Search lab results
   static List<LabResultModel> searchLabResults(
     List<LabResultModel> allResults,
@@ -15,7 +15,7 @@ class LabResultService {
     return allResults
         .where((result) =>
             result.title.toLowerCase().contains(lowerQuery) ||
-            result.patientName.toLowerCase().contains(lowerQuery) ||
+            (result.patientName?.toLowerCase().contains(lowerQuery) ?? false) ||
             (result.resultSummary?.toLowerCase().contains(lowerQuery) ?? false))
         .toList();
   }
@@ -51,9 +51,9 @@ class LabResultService {
 
   static bool deleteLabResult(LabResultModel result) {
     try {
-      final before = DataRepository.labResults.length;
-      DataRepository.labResults.removeWhere((item) => item.id == result.id);
-      return DataRepository.labResults.length < before;
+      final before = labResults.length;
+      labResults.removeWhere((item) => item.id == result.id);
+      return labResults.length < before;
     } catch (e) {
       rethrow;
     }

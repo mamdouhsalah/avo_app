@@ -1,16 +1,17 @@
-import 'package:avo_app/app/features/appointment/data/mock_data.dart';
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/appointment_card.dart';
 import 'package:flutter/material.dart';
 
 class UpcomingAppointmentsScreen extends StatelessWidget {
-  const UpcomingAppointmentsScreen({super.key});
+  List<AppointmentCardModel> appointmentCards;
+  UpcomingAppointmentsScreen({super.key, required this.appointmentCards});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: upcomingAppointments.length,
+      itemCount: appointmentCards.length,
       itemBuilder: (context, index) {
-        return AppointmentCard(appointment: upcomingAppointments[index]);
+        return AppointmentCard(appointmentDoctor: appointmentCards[index]);
       },
     );
   }

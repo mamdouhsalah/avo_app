@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
-import 'package:avo_app/app/features/doctor/data/data.dart';
+import 'package:avo_app/app/features/doctor/services/labresult_service.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -79,16 +79,20 @@ class LabResultServiceAdvanced {
     try {
       // إذا كان لديك ملف فعلي:
       if (result.fileUrl != null && result.fileUrl!.isNotEmpty) {
-        await Share.shareXFiles(
-          [XFile(result.fileUrl!)],
-          text: subject ?? 'Lab Result: ${result.title}',
-          subject: subject ?? result.title,
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(result.fileUrl!)],
+            text: subject ?? 'Lab Result: ${result.title}',
+            subject: subject ?? result.title,
+          ),
         );
       } else {
         // مشاركة نصية فقط إذا لم يكن هناك ملف
-        await Share.share(
-          _buildShareText(result),
-          subject: subject ?? 'Lab Result - ${result.title}',
+        await SharePlus.instance.share(
+          ShareParams(
+            text: _buildShareText(result),
+            subject: subject ?? 'Lab Result - ${result.title}',
+          ),
         );
       }
 
@@ -102,11 +106,11 @@ class LabResultServiceAdvanced {
   /// Delete lab result
   static bool deleteLabResult(LabResultModel result) {
     try {
-      final initialLength = DataRepository.labResults.length;
+      final initialLength = LabResultService.labResults.length;
 
-      DataRepository.labResults.removeWhere((item) => item.id == result.id);
+      LabResultService.labResults.removeWhere((item) => item.id == result.id);
 
-      final wasDeleted = DataRepository.labResults.length < initialLength;
+      final wasDeleted = LabResultService.labResults.length < initialLength;
 
       if (wasDeleted) {
         log('✓ Deleted: ${result.id}');
@@ -130,7 +134,7 @@ class LabResultServiceAdvanced {
 
     return allResults.where((result) {
       return result.title.toLowerCase().contains(lowerQuery) ||
-          result.patientName.toLowerCase().contains(lowerQuery) ||
+          (result.patientName?.toLowerCase().contains(lowerQuery) ?? false) ||
           (result.resultSummary?.toLowerCase().contains(lowerQuery) ?? false) ||
           result.typeAdd.toLowerCase().contains(lowerQuery);
     }).toList();
@@ -152,7 +156,7 @@ class LabResultServiceAdvanced {
       results = results
           .where((r) =>
               r.title.toLowerCase().contains(lower) ||
-              r.patientName.toLowerCase().contains(lower) ||
+              (r.patientName?.toLowerCase().contains(lower) ?? false) ||
               (r.resultSummary?.toLowerCase().contains(lower) ?? false))
           .toList();
     }

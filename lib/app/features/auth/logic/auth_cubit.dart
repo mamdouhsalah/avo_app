@@ -3,12 +3,14 @@ import 'package:avo_app/app/core/models/login_request_model.dart';
 import 'package:avo_app/app/core/models/register_request_model.dart';
 import 'package:avo_app/app/core/services/admin_log_service.dart';
 import 'package:avo_app/app/features/auth/data/auth_repository.dart';
+import 'package:avo_app/app/core/services/remote/sync_repository.dart';
 import 'package:avo_app/app/features/auth/logic/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository repository;
+  final SyncRepository syncRepository;
 
   // Controllers
   final fullNameController = TextEditingController();
@@ -18,17 +20,20 @@ class AuthCubit extends Cubit<AuthState> {
   final weightController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final locationController = TextEditingController();
+  final priceController = TextEditingController();
 
   // Selection states
   String selectedRole = 'patient';
   String? selectedGender;
   DateTime? selectedDob;
   String? profileImagePath;
+  String? selectedSpecialty;
 
   // Step state
   int currentStep = 0;
 
-  AuthCubit({required this.repository}) : super(AuthInitial());
+  AuthCubit({required this.repository, required this.syncRepository}) : super(AuthInitial());
 
   void setStep(int step) {
     currentStep = step;
@@ -77,11 +82,11 @@ class AuthCubit extends Cubit<AuthState> {
         return LocaleKeys.auth_error_select_gender;
       }
       final height = double.tryParse(heightController.text.trim());
-      if (height == null || height <= 0) {
+      if ((height == null || height < 30 || height > 210) && selectedRole != 'doctor') {
         return LocaleKeys.auth_error_invalid_height;
       }
       final weight = double.tryParse(weightController.text.trim());
-      if (weight == null || weight <= 0) {
+      if ((weight == null || weight < 8 || weight > 220) && selectedRole != 'doctor') {
         return LocaleKeys.auth_error_invalid_weight;
       }
       if (selectedDob == null) {
@@ -120,9 +125,12 @@ class AuthCubit extends Cubit<AuthState> {
         phoneNumber: phoneController.text.trim(),
         gender: selectedGender ?? 'male',
         dateOfBirth: dobStr,
-        height: double.tryParse(heightController.text.trim()) ?? 0,
-        weight: double.tryParse(weightController.text.trim()) ?? 0,
+        height: double.tryParse(heightController.text.trim()),
+        weight: double.tryParse(weightController.text.trim()),
         image: profileImagePath,
+        location: locationController.text.trim().isEmpty ? null : locationController.text.trim(),
+        specialty: selectedSpecialty,
+        price: double.tryParse(priceController.text.trim()),
       );
 
       final response = await repository.register(request);
@@ -181,6 +189,10 @@ class AuthCubit extends Cubit<AuthState> {
           email: response.email,
           role: response.role,
         );
+
+        // Initial Data Sync: fetch meds from Firebase to local Hive
+        await syncRepository.syncMedicationsFromRemote();
+
         emit(AuthSuccess(response));
       } else {
         emit(AuthNeedVerification());
@@ -220,6 +232,8 @@ class AuthCubit extends Cubit<AuthState> {
     weightController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    locationController.dispose();
+    priceController.dispose();
     return super.close();
   }
 }
