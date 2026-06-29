@@ -5,9 +5,13 @@ import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/core/utils/is_today.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
+import 'package:avo_app/app/features/appointment/screens/widgets/cancel_appointment_card.dart';
+import 'package:avo_app/app/features/appointment/screens/widgets/canceleld_succesfully_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:avo_app/app/core/constants/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/Language/locale_keys.g.dart';
@@ -191,11 +195,38 @@ class AppointmentCard extends StatelessWidget {
 
                       /// button
                       MainButton(
-                          text: appointmentDoctor.appointment.status ==
-                                  AppointmentStatus.confirmed
-                              ? LocaleKeys.appointment_cancel_appointment.tr()
-                              : LocaleKeys.appointment_reschedule.tr(),
-                          onPressed: () {})
+                        text: appointmentDoctor.appointment.status==AppointmentStatus.confirmed?
+                         LocaleKeys.appointment_cancel_appointment.tr():
+                         LocaleKeys.reminder_schedule.tr(),
+                    onPressed: appointmentDoctor.appointment.status==AppointmentStatus.confirmed?  () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            barrierColor: Colors.black54,
+                            builder: (_) {
+                              return CancelAppointmentCard(
+                                doctorName: appointmentDoctor.doctor.name,
+                                onYes: () {
+                                  context.read<AppointmentCubit>().cancelAppointment(
+                                        appointmentDoctor.appointment.id,
+                                      );
+                                      Navigator.pop(context);
+                                      showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      barrierColor: Colors.black54,
+                                      builder: (_) {
+                                        return CancelSuccessfullyAppointmentCard(
+                                          doctorName: appointmentDoctor.doctor.name,
+                                        );
+                                      },
+                                    );
+                                },
+                              );
+                            },
+                          );
+                        }:(){}
+                      )
                     ],
                   ),
                 ),
