@@ -262,7 +262,11 @@
     "selected_time": "وقت الحجز",
     "no_canceled_to_display" :"لا يوجد حجوزات ملغية",
     "no_upcoming_to_display" :"لا يوجد حجوزات قادمة",
-    "no_completed_to_display" :"لا يوجد حجوزات مكتملة"
+    "no_completed_to_display" :"لا يوجد حجوزات مكتملة",
+    "rated": "تم التقييم",
+    "submit_rating": "إرسال التقييم",
+    "select_rating_first": "يرجى اختيار تقييم أولاً.",
+    "rated_successfully": "تم التقييم بنجاح"
   },
   "auth": {
     "create_account": "إنشاء حساب",

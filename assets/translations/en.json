@@ -262,7 +262,11 @@
     "selected_time": "Selected Time",
     "no_canceled_to_display" :"No Canceled Appointments to display",
     "no_upcoming_to_display" :"No Canceled Appointments to display",
-    "no_completed_to_display" :"No Canceled Appointments to display"
+    "no_completed_to_display" :"No Canceled Appointments to display",
+    "rated": "Rated",
+    "submit_rating": "Submit Rating",
+    "select_rating_first": "Please select a rating first.",
+    "rated_successfully": "Rated successfully"
   },
   "auth": {
     "create_account": "Create Account",

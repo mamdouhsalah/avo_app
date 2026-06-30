@@ -11,7 +11,9 @@ class DoctorModel extends UserProfileModel {
   final String bio;
   final int patientsTreated;
   final List<ScheduleModel>? schedules;
-  final bool isFavorite;
+  final bool isFavorite; // suggest to delete 'bussiness'
+
+  final int? ratingCount; // important for rating from appointment
 
   String get imageUrl => image;
   String get name => fullName;
@@ -38,6 +40,7 @@ class DoctorModel extends UserProfileModel {
     this.patientsTreated = 0,
     this.schedules,
     this.isFavorite = false,
+    this.ratingCount = 0
   });
 
   factory DoctorModel.fromJson(Map<String, dynamic>? json) {
@@ -61,28 +64,38 @@ class DoctorModel extends UserProfileModel {
         bio: '',
         patientsTreated: 0,
         clinic: '',
+        ratingCount: 0
       );
     }
     return DoctorModel(
       id: json['id']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      fullName: json['fullName']?.toString() ?? json['full_name']?.toString() ?? '',
+      fullName:
+          json['fullName']?.toString() ?? json['full_name']?.toString() ?? '',
       role: json['role']?.toString() ?? 'doctor',
       gender: json['gender']?.toString() ?? '',
-      dateOfBirth: json['date_of_birth']?.toString() ?? json['dateOfBirth']?.toString() ?? '',
-      phoneNumber: json['phone_number']?.toString() ?? json['phoneNumber']?.toString() ?? '',
+      dateOfBirth: json['date_of_birth']?.toString() ??
+          json['dateOfBirth']?.toString() ??
+          '',
+      phoneNumber: json['phone_number']?.toString() ??
+          json['phoneNumber']?.toString() ??
+          '',
       height: json['height'] != null ? (json['height'] as num).toInt() : null,
       weight: json['weight'] != null ? (json['weight'] as num).toInt() : null,
       image: json['imageUrl']?.toString() ?? json['image']?.toString() ?? '',
-      isVerified: json['is_verified'] as bool? ?? json['isVerified'] as bool? ?? false,
+      isVerified:
+          json['is_verified'] as bool? ?? json['isVerified'] as bool? ?? false,
       specialty: json['specialty']?.toString() ?? '',
       location: json['location']?.toString(),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      numberOfReviews: (json['numberOfReviews'] as num?)?.toInt() ?? json['reviews'] as int? ?? 0,
+      numberOfReviews: (json['numberOfReviews'] as num?)?.toInt() ??
+          json['reviews'] as int? ??
+          0,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       bio: json['bio']?.toString() ?? '',
       patientsTreated: (json['patientsTreated'] as num?)?.toInt() ?? 0,
       isFavorite: json['isFavorite'] as bool? ?? false,
+      ratingCount: json["ratingCount"] as int? ?? 0
     );
   }
 
@@ -105,7 +118,8 @@ class DoctorModel extends UserProfileModel {
       } else if (rawSchedules is List) {
         schedulesList = rawSchedules
             .where((e) => e != null)
-            .map((e) => ScheduleModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .map((e) =>
+                ScheduleModel.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
       }
     }
@@ -156,6 +170,7 @@ class DoctorModel extends UserProfileModel {
       'bio': bio,
       'patientsTreated': patientsTreated,
       'isFavorite': isFavorite,
+      'ratingCount':ratingCount??0
     };
   }
 }

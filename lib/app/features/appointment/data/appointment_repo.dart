@@ -28,4 +28,11 @@ abstract class AppointmentRepo {
   Future<void> deleteAppointment(
     String appointmentId,
   );
+
+  Future<void> setRated(String appointmentId);
+
+  Future<void> setPatientRating(
+  String appointmentId,
+  double rating,
+);
 }

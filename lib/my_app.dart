@@ -9,6 +9,7 @@ import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/core/services/remote/sync_repository.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/features/doctor/services/doctor_rating_cubit/doctor_rating_cubit.dart';
 import 'package:avo_app/app/features/favorite/data/favorit_repo.dart';
 import 'package:avo_app/app/features/favorite/data/favorite_repo_imp.dart';
 import 'package:avo_app/app/features/favorite/logic/favorite_cubit.dart';
@@ -173,6 +174,13 @@ class MyApp extends StatelessWidget {
                   repository: context.read<FavoriteRepository>(),
                 )
               ),
+              // connects raring appointment experience to doctor total rate
+              BlocProvider<DoctorRatingCubit>(
+              create: (context) => DoctorRatingCubit(
+                repository: context.read<DoctorRepository>(),
+              ),
+            ),
+
             ],
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {

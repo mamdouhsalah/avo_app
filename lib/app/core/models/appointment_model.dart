@@ -1,5 +1,4 @@
-
-class AppointmentStatus{
+class AppointmentStatus {
   static const String pending = "pending";
   static const String confirmed = "confirmed";
   static const String completed = "completed";
@@ -17,19 +16,23 @@ class AppointmentModel {
   final String? patientName;
   final String? doctorName;
   final String? notes;
+  final bool? isRated;
+  final double? patientRating;
 
-  const AppointmentModel({
-    required this.id,
-    required this.doctorId,
-    required this.patientId,
-    this.status = AppointmentStatus.pending,
-    required this.date,
-    this.startTime = '09:00',
-    this.endTime = '10:00',
-    this.patientName,
-    this.doctorName,
-    this.notes,
-  });
+  const AppointmentModel(
+      {required this.id,
+      required this.doctorId,
+      required this.patientId,
+      this.status = AppointmentStatus.pending,
+      required this.date,
+      this.startTime = '09:00',
+      this.endTime = '10:00',
+      this.patientName,
+      this.doctorName,
+      this.notes,
+      this.isRated,
+      this.patientRating
+      });
 
   factory AppointmentModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
@@ -51,6 +54,8 @@ class AppointmentModel {
       patientName: json['patientName']?.toString(),
       doctorName: json['doctorName']?.toString(),
       notes: json['notes']?.toString(),
+      isRated: json['isRated'] as bool? ?? false,
+      patientRating: (json['patientRating'] as num?)?.toDouble(),
     );
   }
 
@@ -63,8 +68,8 @@ class AppointmentModel {
       'date': date,
       'startTime': startTime,
       'endTime': endTime,
-      // if (patientName != null) 'patientName': patientName,
-      // if (doctorName != null) 'doctorName': doctorName,
+      'isRated': isRated ?? false,
+      if (patientRating != null) 'patientRating': patientRating,
       if (notes != null) 'notes': notes,
     };
   }
@@ -104,28 +109,31 @@ class AppointmentModel {
   }
 
   AppointmentModel copyWith({
-  String? id,
-  String? doctorId,
-  String? patientId,
-  String? status,
-  String? date,
-  String? startTime,
-  String? endTime,
-  String? patientName,
-  String? doctorName,
-  String? notes,
-}) {
-  return AppointmentModel(
-    id: id ?? this.id,
-    doctorId: doctorId ?? this.doctorId,
-    patientId: patientId ?? this.patientId,
-    status: status ?? this.status,
-    date: date ?? this.date,
-    startTime: startTime ?? this.startTime,
-    endTime: endTime ?? this.endTime,
-    // patientName: patientName ?? this.patientName,
-    // doctorName: doctorName ?? this.doctorName,
-    notes: notes ?? this.notes,
-  );
-}
+    String? id,
+    String? doctorId,
+    String? patientId,
+    String? status,
+    String? date,
+    String? startTime,
+    String? endTime,
+    String? patientName,
+    String? doctorName,
+    String? notes,
+    bool? isRated,
+    double? patientRating,
+  }) {
+    return AppointmentModel(
+        id: id ?? this.id,
+        doctorId: doctorId ?? this.doctorId,
+        patientId: patientId ?? this.patientId,
+        status: status ?? this.status,
+        date: date ?? this.date,
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        patientName: patientName ?? this.patientName,
+        doctorName: doctorName ?? this.doctorName,
+        notes: notes ?? this.notes,
+        isRated: isRated ?? this.isRated,
+        patientRating: patientRating ?? this.patientRating);
+  }
 }

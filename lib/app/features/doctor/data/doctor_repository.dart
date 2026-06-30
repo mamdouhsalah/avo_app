@@ -12,7 +12,10 @@ abstract class DoctorRepository {
     Future<DoctorModel> getDoctorById(
       String doctorId);
 
-
+    Future<double> rateDoctor(
+      String doctorId,
+      double patientRating,
+    );
   // Doctor Schedules
   Future<String> addDoctorSchedule(ScheduleModel schedule);
   Future<void> updateDoctorSchedule(ScheduleModel schedule);

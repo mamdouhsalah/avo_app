@@ -9,6 +9,8 @@ import 'package:avo_app/app/core/utils/is_today.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/cancel_appointment_card.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/canceleld_succesfully_card.dart';
+import 'package:avo_app/app/features/doctor/services/doctor_rating_cubit/doctor_rating_cubit.dart';
+import 'package:avo_app/app/features/doctor/services/doctor_rating_cubit/doctor_rating_state.dart';
 import 'package:avo_app/app/features/favorite/logic/favorite_cubit.dart';
 import 'package:avo_app/app/features/favorite/logic/favorite_sate.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -148,17 +150,28 @@ class AppointmentCard extends StatelessWidget {
                                 ),
 
                                 SizedBox(height: 16.h),
-
+                                
+                                // get it from doctor rating, else get the updated rating
                                 Row(
                                   children: [
-                                    /// rating
-                                    Text(
-                                      "${appointmentDoctor.doctor.rating}",
-                                      style: TextStyle(
+                                    BlocBuilder<DoctorRatingCubit, DoctorRatingState>(
+                                    builder: (context, state) {
+                                      double rating = appointmentDoctor.doctor.rating;
+
+                                      if (state is DoctorRatingSuccess) {
+                                        rating = state.newDoctorRate;
+                                      }
+
+                                      return Text(
+                                        rating.toStringAsFixed(1),
+                                        style: TextStyle(
                                           color: colorScheme.onSurface,
                                           fontSize: 16.sp,
-                                          fontWeight: FontWeight.w400),
-                                    ),
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      );
+                                    },
+                                  ),
 
                                     SizedBox(width: 10.w),
 

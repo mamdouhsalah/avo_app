@@ -18,12 +18,6 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     emit(const FavoriteLoading());
     try {
       _favorites = await _repository.getFavorites(patientId);
-        if (_favorites == null) {
-          _favorites = FavoriteModel(
-            patientId: patientId,
-            doctorIds: {},
-          );
-        };
       if (isClosed) return;
       emit(FavoriteLoaded(_favorites!));
     } catch (e) {

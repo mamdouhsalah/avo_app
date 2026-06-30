@@ -41,8 +41,8 @@ class AppointmentRepoImp implements AppointmentRepo {
       final doctor =
           await _doctorRepository.getDoctorById(appointment.doctorId);
 
-      PatientModel patient = await _patientRepository
-            .getUserIfPatientById(appointment.patientId);
+      PatientModel patient =
+          await _patientRepository.getUserIfPatientById(appointment.patientId);
 
       cards.add(
         AppointmentCardModel(
@@ -166,36 +166,67 @@ class AppointmentRepoImp implements AppointmentRepo {
     }
   }
 
+  // set as rated : prevent double rating
+  @override
+  Future<void> setRated(String appointmentId) async {
+    try {
+      await _consumer.update(
+        'appointments/$appointmentId',
+        data: {
+          'isRated': true,
+        },
+      );
+    } catch (e) {
+      throw DatabaseException(e.toString(), "failed to set rate");
+    }
+  }
+
+  @override
+  Future<void> setPatientRating(
+    String appointmentId,
+    double rating,
+  ) async {
+    try {
+      await _consumer.update(
+        'appointments/$appointmentId',
+        data: {
+          'patientRating': rating,
+        },
+      );
+    } catch (e) {
+      throw DatabaseException(e.toString(), "failed to set patient rating");
+    }
+  }
+
   /// patient methods
   /// TODO : upcomming , canceled , completed , favourite will be handled in cubit
 
-
   /// Doctor methods
   @override
-Future<void> updateAppointmentDetails(
+  Future<void> updateAppointmentDetails(
     AppointmentModel updatedAppointment,
-) async {
-  try {
-    final user = await _getCurrentUser();
+  ) async {
+    try {
+      final user = await _getCurrentUser();
 
-    if (user.role != UserRole.doctor) {
+      if (user.role != UserRole.doctor) {
+        throw DatabaseException(
+          'Only doctors can update appointments',
+          'permission-denied',
+        );
+      }
+
+      await _consumer.update(
+        '${DatabasePaths.appointments}/${updatedAppointment.id}',
+        data: updatedAppointment.toJson(),
+      );
+    } catch (e) {
       throw DatabaseException(
-        'Only doctors can update appointments',
-        'permission-denied',
+        e.toString(),
+        'failed-to-update-appointment',
       );
     }
-
-    await _consumer.update(
-      '${DatabasePaths.appointments}/${updatedAppointment.id}',
-      data: updatedAppointment.toJson(),
-    );
-  } catch (e) {
-    throw DatabaseException(
-      e.toString(),
-      'failed-to-update-appointment',
-    );
   }
-}
 
   @override
   Future<void> completeAppointment(
@@ -319,10 +350,10 @@ Future<void> updateAppointmentDetails(
     try {
       final CurrentUser currentUser = await _getCurrentUser();
       // firebase will handle it even it was not exist
-      if(currentUser.role == UserRole.doctor){
-      await _consumer.delete(
-        '${DatabasePaths.appointments}/$appointmentId',
-      );
+      if (currentUser.role == UserRole.doctor) {
+        await _consumer.delete(
+          '${DatabasePaths.appointments}/$appointmentId',
+        );
       }
     } catch (e) {
       throw DatabaseException(

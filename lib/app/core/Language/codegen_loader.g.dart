@@ -278,7 +278,11 @@ class CodegenLoader extends AssetLoader{
     "selected_time": "وقت الحجز",
     "no_canceled_to_display": "لا يوجد حجوزات ملغية",
     "no_upcoming_to_display": "لا يوجد حجوزات قادمة",
-    "no_completed_to_display": "لا يوجد حجوزات مكتملة"
+    "no_completed_to_display": "لا يوجد حجوزات مكتملة",
+    "rated": "تم التقييم",
+    "submit_rating": "إرسال التقييم",
+    "select_rating_first": "يرجى اختيار تقييم أولاً.",
+    "rated_successfully": "تم التقييم بنجاح"
   },
   "auth": {
     "create_account": "إنشاء حساب",
@@ -656,7 +660,14 @@ static const Map<String,dynamic> _en = {
     "write_message_hint": "Write a message for the doctor ....",
     "hourly_rate": "Hourly Rate: {price}",
     "selected_date": "Selected Date",
-    "selected_time": "Selected Time"
+    "selected_time": "Selected Time",
+    "no_canceled_to_display": "No Canceled Appointments to display",
+    "no_upcoming_to_display": "No Canceled Appointments to display",
+    "no_completed_to_display": "No Canceled Appointments to display",
+    "rated": "Rated",
+    "submit_rating": "Submit Rating",
+    "select_rating_first": "Please select a rating first.",
+    "rated_successfully": "Rated successfully"
   },
   "auth": {
     "create_account": "Create Account",

@@ -128,7 +128,43 @@ Future<void> confirmAppointment(String appointmentId) async {
   }
 }
 
+Future<void> submitRating(
+  String appointmentId,
+  double rating,
+) async {
+  try {
+    await _repository.setPatientRating(appointmentId, rating);
+    await _repository.setRated(appointmentId);
 
+    final index = _appointments.indexWhere(
+      (e) => e.appointment.id == appointmentId,
+    );
+
+    if (index == -1) return;
+
+    final card = _appointments[index];
+
+    _appointments[index] = card.copyWith(
+      appointment: card.appointment.copyWith(
+        patientRating: rating,
+        isRated: true,
+      ),
+    );
+
+    _emitLoaded();
+  } catch (e) {
+    emit(AppointmentError(e.toString()));
+  }
+}
+
+bool? isRated(String appointmentId) {
+  final appointment = _appointments.firstWhere(
+    (e) => e.appointment.id == appointmentId,
+    orElse: () => throw Exception("Appointment not found"),
+  );
+
+  return appointment.appointment.isRated;
+}
 Future<void> completeAppointment(String appointmentId) async {
   try {
     await _repository.completeAppointment(appointmentId);
@@ -201,6 +237,8 @@ Future<void> updateAppointment(
     emit(AppointmentError(e.toString()));
   }
 }
+
+
 
 
 // delete

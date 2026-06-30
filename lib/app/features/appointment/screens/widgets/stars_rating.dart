@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RatingStars extends StatefulWidget {
-  final int initialRating;
-  final ValueChanged<int>? onRatingChanged;
+  final double initialRating;
+  final ValueChanged<double>? onRatingChanged;
   final bool enabled;
 
   const RatingStars({
@@ -18,7 +18,7 @@ class RatingStars extends StatefulWidget {
 }
 
 class _RatingStarsState extends State<RatingStars> {
-  late int _rating;
+  late double _rating;
 
   @override
   void initState() {
@@ -38,17 +38,35 @@ class _RatingStarsState extends State<RatingStars> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final iconSize = 45.sp;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (index) {
         final starIndex = index + 1;
 
+        IconData icon;
+        // half stars
+        if (_rating >= starIndex) {
+          icon = Icons.star;
+        } else if (_rating >= starIndex - 0.5) {
+          icon = Icons.star_half;
+        } else {
+          icon = Icons.star_border;
+        }
+
         return GestureDetector(
-          onTap: widget.enabled
-              ? () {
+          behavior: HitTestBehavior.opaque,
+          // do nothing if not enabled
+          onTapDown: widget.enabled
+              ? (details) {
+                  final isHalf =
+                      details.localPosition.dx < iconSize / 2;
+
                   setState(() {
-                    _rating = starIndex;
+                    _rating = isHalf
+                        ? starIndex - 0.5
+                        : starIndex.toDouble();
                   });
 
                   widget.onRatingChanged?.call(_rating);
@@ -57,13 +75,11 @@ class _RatingStarsState extends State<RatingStars> {
           child: Padding(
             padding: EdgeInsetsDirectional.only(end: 4.w),
             child: Icon(
-              starIndex <= _rating
-                  ? Icons.star
-                  : Icons.star_border,
-              color: starIndex <= _rating
-                  ? colorScheme.primary
-                  : Colors.grey,
-              size: 45.sp,
+              icon,
+              color: icon == Icons.star_border
+                  ? Colors.grey
+                  : colorScheme.primary,
+              size: iconSize,
             ),
           ),
         );
