@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:avo_app/app/core/services/auth_service.dart';
 import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
@@ -8,6 +9,8 @@ import 'package:avo_app/app/core/utils/is_today.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/cancel_appointment_card.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/canceleld_succesfully_card.dart';
+import 'package:avo_app/app/features/favorite/logic/favorite_cubit.dart';
+import 'package:avo_app/app/features/favorite/logic/favorite_sate.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:avo_app/app/core/constants/app_colors.dart';
@@ -26,6 +29,7 @@ class AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final uid = context.read<AuthService>().currentUid;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -234,22 +238,32 @@ class AppointmentCard extends StatelessWidget {
                 /// Favorite icon => will be touchable in the future
                 /// TODO: Speak with team about this
                 /// add the doctor to favorite list or remove it from favorite list
-                PositionedDirectional(
-                  top: 8.h,
-                  end: 41.w, // accounts for the end margin of the container
-                  child: IconButton(
-                    onPressed: () {
-                      // set doctor as favorite or remove it from favorite list
-                    },
-                    icon: Icon(
-                      appointmentDoctor.doctor.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: AppColors.lightOrangeOutLine,
-                      size: 24.sp,
-                    ),
-                  ),
+
+              PositionedDirectional(
+                top: 8.h,
+                end: 41.w,
+                child: BlocBuilder<FavoriteCubit, FavoriteState>(
+                  builder: (context, favoriteState) {
+                    final isFav = context
+                        .read<FavoriteCubit>()
+                        .isFavorite(appointmentDoctor.doctor.id);
+
+                    return IconButton(
+                      onPressed: () {
+                        context.read<FavoriteCubit>().toggleFavorite(
+                              uid!, 
+                              appointmentDoctor.doctor.id,
+                            );
+                      },
+                      icon: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.red,
+                        size: 24.sp,
+                      ),
+                    );
+                  },
                 ),
+              ),
               ],
             ),
           ),

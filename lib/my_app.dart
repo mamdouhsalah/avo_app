@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:avo_app/app/core/services/auth_service.dart';
 import 'package:avo_app/app/core/services/local/preferences_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/shared/appointment_card.dart';
@@ -8,6 +9,9 @@ import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/core/services/remote/sync_repository.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/features/favorite/data/favorit_repo.dart';
+import 'package:avo_app/app/features/favorite/data/favorite_repo_imp.dart';
+import 'package:avo_app/app/features/favorite/logic/favorite_cubit.dart';
 import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
@@ -59,6 +63,11 @@ class MyApp extends StatelessWidget {
             providers: [
               Provider<FirebaseConsumer>.value(value: firebaseConsumer),
               Provider<PreferencesService>.value(value: preferencesService),
+              Provider<AuthService>(
+                create: (_) => AuthService(
+                   FirebaseAuth.instance,
+                ),
+              ),
               Provider<HomeRepository>(
                 create: (providerContext) => HomeRepositoryImpl(
                   consumer: providerContext.read<FirebaseConsumer>(),
@@ -151,6 +160,19 @@ class MyApp extends StatelessWidget {
               BlocProvider<AppointmentCubit>(
                 create: ((context) =>  AppointmentCubit(context.read<AppointmentRepo>())
               )),
+
+              // favorite
+              Provider<FavoriteRepository>(
+                create: (context) => FavoriteRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
+
+              BlocProvider<FavoriteCubit>(
+                create: (context) => FavoriteCubit(
+                  repository: context.read<FavoriteRepository>(),
+                )
+              ),
             ],
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
