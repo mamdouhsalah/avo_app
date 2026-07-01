@@ -28,4 +28,6 @@ abstract class FirebaseConsumer {
   Future<void> update(String path, {required Map<String, dynamic> data});
 
   Future<void> delete(String path);
+
+  String? getRefrence({required String path});
 }

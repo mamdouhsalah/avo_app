@@ -27,18 +27,21 @@ class CancelSuccessfullyAppointmentCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.r),
           ),
-          width: 375.w,
-          height: 333.h,
+          width: 345.w,
+          height: 340.h,
           child: Column(
             children: [
               // the top line
               Center(
-                child: Container(
-                  width: 134.w,
-                  height: 5.h,
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurface,
-                    borderRadius: BorderRadius.circular(10.r),
+                child: Padding(
+                  padding:  EdgeInsets.all(8.0.w),
+                  child: Container(
+                    width: 134.w,
+                    height: 5.h,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
                   ),
                 ),
               ),

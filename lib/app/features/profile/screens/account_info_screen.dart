@@ -47,7 +47,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
         ),
         centerTitle: true,
       ),
-      body: BlocConsumer<ProfileCubit, ProfileState>(
+      body:BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
           if (state is ProfileFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +92,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                       enabled: isEditMode,
                       keyboardType: TextInputType.phone,
                       // 🔥 يفضل نخلي أرقام التليفون تقرأ من الشمال لليمين دايماً
-                      textDirection: ui.TextDirection.ltr,                    ),
+                      textDirection: ui.TextDirection.ltr,
+                    ),
                   ],
                 ),
               ),
@@ -104,6 +105,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
       ),
       bottomNavigationBar: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
+          final colorScheme = Theme.of(context).colorScheme;
+
           return Container(
             padding: const EdgeInsets.all(20),
             color: theme.scaffoldBackgroundColor,

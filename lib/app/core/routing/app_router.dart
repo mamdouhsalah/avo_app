@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
+import 'package:avo_app/app/features/appointment/screens/appointment_patient_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/add_doctor_schedule/add_doctor_schedule_screen.dart';
 import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_cubit.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
@@ -98,6 +99,7 @@ class AppRouter {
   static const String addMedication = '/add-medication';
   static const String detailsPatient = '/details-patient';
   static const String scheduleAppointment = '/schedule-appointment';
+  static const String patientAppointment = '/patient-appointment';
 
   // Admin Routes
   static const String adminDashboard = '/admin-dashboard';
@@ -157,9 +159,10 @@ class AppRouter {
           builder: (context, state) => const DashboardScreen()),
       GoRoute(
           path: patients, builder: (context, state) => const PatientScreen()),
-      GoRoute(
+      GoRoute( // for doctor
           path: appointments,
           builder: (context, state) => const AppointmentScreen()),
+      GoRoute(path:patientAppointment, builder: (context, state) => const AppointmentPatientScreen()),
       GoRoute(
           path: addSchedule,
           builder: (context, state) => BlocProvider(

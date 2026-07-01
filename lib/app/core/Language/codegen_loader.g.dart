@@ -275,7 +275,14 @@ class CodegenLoader extends AssetLoader{
     "write_message_hint": "اكتب رسالة للدكتور....",
     "hourly_rate": "سعر الكشف: {price}",
     "selected_date": "تاريخ الحجز",
-    "selected_time": "وقت الحجز"
+    "selected_time": "وقت الحجز",
+    "no_canceled_to_display": "لا يوجد حجوزات ملغية",
+    "no_upcoming_to_display": "لا يوجد حجوزات قادمة",
+    "no_completed_to_display": "لا يوجد حجوزات مكتملة",
+    "rated": "تم التقييم",
+    "submit_rating": "إرسال التقييم",
+    "select_rating_first": "يرجى اختيار تقييم أولاً.",
+    "rated_successfully": "تم التقييم بنجاح"
   },
   "auth": {
     "create_account": "إنشاء حساب",
@@ -388,7 +395,8 @@ class CodegenLoader extends AssetLoader{
     "no_available_schedules": "لا توجد مواعيد متاحة",
     "booking_success": "تم حجز الموعد بنجاح!",
     "select_slot_error": "برجاء اختيار موعد كشف أولاً",
-    "number_of_reviews": "عدد التقييمات"
+    "number_of_reviews": "عدد التقييمات",
+    "bio": "نبذة عن الطبيب"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -652,7 +660,14 @@ static const Map<String,dynamic> _en = {
     "write_message_hint": "Write a message for the doctor ....",
     "hourly_rate": "Hourly Rate: {price}",
     "selected_date": "Selected Date",
-    "selected_time": "Selected Time"
+    "selected_time": "Selected Time",
+    "no_canceled_to_display": "No Canceled Appointments to display",
+    "no_upcoming_to_display": "No Canceled Appointments to display",
+    "no_completed_to_display": "No Canceled Appointments to display",
+    "rated": "Rated",
+    "submit_rating": "Submit Rating",
+    "select_rating_first": "Please select a rating first.",
+    "rated_successfully": "Rated successfully"
   },
   "auth": {
     "create_account": "Create Account",
@@ -765,7 +780,8 @@ static const Map<String,dynamic> _en = {
     "no_available_schedules": "No available schedules",
     "booking_success": "Appointment booked successfully!",
     "select_slot_error": "Please select a schedule slot first",
-    "number_of_reviews": "No. reviews"
+    "number_of_reviews": "No. reviews",
+    "bio": "Bio"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};

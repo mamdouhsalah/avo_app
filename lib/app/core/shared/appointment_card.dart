@@ -1,14 +1,15 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppointmentCard extends StatelessWidget {
-  final AppointmentModel appointment;
+  final AppointmentCardModel appointmentCard;
 
   const AppointmentCard({
     super.key,
-    required this.appointment,
+    required this.appointmentCard ,
   });
 
   @override
@@ -55,7 +56,7 @@ class AppointmentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      appointment.doctorName ?? 'Doctor',
+                      appointmentCard.doctor.name,
                       style: TextStyle(
                         color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.w500,
@@ -63,7 +64,7 @@ class AppointmentCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      appointment.status,
+                      appointmentCard.appointment.status,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.w400,
@@ -74,7 +75,7 @@ class AppointmentCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          appointment.formattedDate,
+                          appointmentCard.appointment.date,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.w400,
@@ -108,7 +109,7 @@ class AppointmentCard extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onPrimary, size: 24.sp),
               SizedBox(width: 6.w),
               Text(
-                appointment.startTime,
+                appointmentCard. appointment.startTime,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w400,
@@ -125,7 +126,7 @@ class AppointmentCard extends StatelessWidget {
                     SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
-                        appointment.endTime,
+                        appointmentCard.appointment.endTime,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.w400,
