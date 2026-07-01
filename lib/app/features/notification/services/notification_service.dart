@@ -118,109 +118,9 @@ class NotificationService {
     }
 
     // Listen for notification actions
-    AwesomeNotifications().setListeners(onActionReceivedMethod: (action) async {
-      if (action.channelKey == 'med_channel') {
-        final payload = action.payload;
-        final medicationKey = int.parse(payload!['medicationKey']!);
-        final notificationId = int.parse(payload['notificationId']!);
-        final time = payload['time']!;
-        final logBox = HiveService.getMedicationLogBox();
-
-        if (action.buttonKeyPressed == 'TOOK') {
-          await logBox.add(MedicationLog(
-            medicationKey: medicationKey,
-            timestamp: DateTime.now(),
-            action: 'took',
-            notificationId: notificationId,
-            logId: '',
-            medicationId: '',
-            medicationName: '',
-            actionDate: DateTime.now(),
-            scheduledTime: '',
-            status: '',
-          ));
-          await AwesomeNotifications().cancel(notificationId);
-        } else if (action.buttonKeyPressed == 'SKIPPED') {
-          await logBox.add(MedicationLog(
-            medicationKey: medicationKey,
-            timestamp: DateTime.now(),
-            action: 'skipped',
-            notificationId: notificationId,
-            logId: '',
-            medicationId: '',
-            medicationName: '',
-            actionDate: DateTime.now(),
-            scheduledTime: '',
-            status: '',
-          ));
-          await AwesomeNotifications().cancel(notificationId);
-        } else if (action.buttonKeyPressed == 'SNOOZE') {
-          await logBox.add(MedicationLog(
-            medicationKey: medicationKey,
-            timestamp: DateTime.now(),
-            action: 'snoozed',
-            notificationId: notificationId,
-            logId: '',
-            medicationId: '',
-            medicationName: '',
-            actionDate: DateTime.now(),
-            scheduledTime: '',
-            status: '',
-          ));
-          // Reschedule notification for 15 minutes later
-          final med = HiveService.getMedicationBox()
-              .values
-              .firstWhere((m) => m.key == medicationKey);
-          final now = DateTime.now();
-          final snoozeTime = now.add(Duration(minutes: 15));
-          await AwesomeNotifications().createNotification(
-            content: NotificationContent(
-              fullScreenIntent: true,
-              locked: true,
-              id: notificationId,
-              channelKey: 'med_channel',
-              title: 'تذكير بالدواء: ${med.name}',
-              body: 'حان وقت أخذ ${med.dose} ${med.unit} من ${med.name}',
-              payload: {
-                'medicationKey': medicationKey.toString(),
-                'notificationId': notificationId.toString(),
-                'time': time,
-              },
-            ),
-            actionButtons: [
-              NotificationActionButton(
-                key: 'TOOK',
-                label: 'أخذته',
-                color: Colors.green,
-                autoDismissible: true,
-              ),
-              NotificationActionButton(
-                key: 'SKIPPED',
-                label: 'تخطي',
-                color: Colors.red,
-                autoDismissible: true,
-              ),
-              NotificationActionButton(
-                key: 'SNOOZE',
-                label: 'تأجيل',
-                color: Colors.blue,
-                autoDismissible: false,
-              ),
-            ],
-            schedule: NotificationCalendar(
-              year: snoozeTime.year,
-              month: snoozeTime.month,
-              day: snoozeTime.day,
-              hour: snoozeTime.hour,
-              minute: snoozeTime.minute,
-              second: 0,
-              millisecond: 0,
-              allowWhileIdle: true,
-            ),
-          );
-        }
-      }
-    });
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: onActionReceived,
+    );
     await AwesomeNotifications().requestPermissionToSendNotifications(
       channelKey: 'med_channel',
       permissions: [
@@ -239,14 +139,7 @@ class NotificationService {
       await handleNotificationAction(initialAction);
     }
 
-    // Listen for notification actions
-    // AwesomeNotifications().setListeners(
-    //   onActionReceivedMethod: (ReceivedAction action) async {
-    //     if (action.channelKey == 'med_channel') {
-    //       await _handleNotificationAction(action);
-    //     }
-    //   },
-    // );
+
     requestBatteryOptimization();
   }
 
@@ -259,17 +152,10 @@ class NotificationService {
       await handleNotificationAction(action);
     } catch (e) {
       // Log error (e.g., to native logs or file)
-      log('Error in background action handler: $e');
+      print('Error in background action handler: $e');
     }
   }
-// static Future<void> initializeBackgroundHandler() async {
-//     AwesomeNotifications().setListeners(
-//       onActionReceivedMethod: (ReceivedAction action) async {
-//         await HiveService.init(); // Reinitialize Hive in background
-//         await _handleNotificationAction(action);
-//       },
-//     );
-//   }
+
 
   static Future<void> handleNotificationAction(ReceivedAction action) async {
     final payload = action.payload;
@@ -288,7 +174,7 @@ class NotificationService {
     } catch (e) {
       log('Background Firebase init error (might already be initialized): $e');
     }
-    
+
     final logRepository = LogRepository(firebaseConsumer: firebaseConsumer);
 
     Future<void> recordLog(String status) async {
@@ -376,7 +262,8 @@ class NotificationService {
 
     // Lookup Firebase Key
     final settingsBox = Hive.box('settings');
-    final firebaseKey = settingsBox.get('firebase_key_${medication.key}') as String? ?? '';
+    final firebaseKey =
+        settingsBox.get('firebase_key_${medication.key}') as String? ?? '';
 
     for (var day in medication.days) {
       final weekday = englishDayToWeekday(day);
@@ -442,8 +329,10 @@ class NotificationService {
     for (int i = 0; i < med.times.length; i++) {
       for (String day in med.days) {
         final weekday = englishDayToWeekday(day);
+        if (weekday != null) {
           await AwesomeNotifications()
               .cancel(med.key.hashCode + i + weekday * 100);
+        }
       }
     }
   }

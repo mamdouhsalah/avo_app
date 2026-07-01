@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:avo_app/app/core/services/local/hive_models.dart';
+import 'package:avo_app/app/core/services/local/hive_medical_analysis_service.dart';
 import 'package:avo_app/app/core/services/local/hive_service.dart';
 import 'package:avo_app/app/features/notification/services/notification_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
@@ -91,6 +92,58 @@ class SyncRepository {
     } catch (e) {
       // Gracefully handle failures (e.g., no internet, timeout) so the app doesn't crash on login
       log('SyncRepository error: $e');
+    }
+  }
+
+  /// Fetches all medical analyses for the currently logged-in user from Firebase
+  /// and syncs them to the local Hive database.
+  Future<void> syncAnalysesFromRemote() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      log('SyncRepository: Sync aborted, no authenticated user found.');
+      return;
+    }
+
+    try {
+      log('SyncRepository: Starting medical analysis sync for user $uid');
+      
+      final analyses = await firebaseConsumer.getList(
+        'users/$uid/analyses',
+        fromJson: (json) => MedicalAnalysis.fromJson(json),
+      );
+
+      final analysisService = MedicalAnalysisService();
+      await analysisService.init();
+      
+      // We overwrite local data with remote data as the remote is our source of truth across devices
+      await analysisService.clearAllData();
+
+      int syncCount = 0;
+      for (final analysis in analyses) {
+        await analysisService.addOrUpdateAnalysis(analysis);
+        syncCount++;
+      }
+      
+      log('SyncRepository: Successfully synced $syncCount analyses from remote for user $uid.');
+    } catch (e) {
+      log('SyncRepository analyses sync error: $e');
+    }
+  }
+
+  /// Pushes a specific analysis or all analyses to the remote Firebase DB
+  Future<void> pushAnalysisToRemote(MedicalAnalysis analysis) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      final safeKey = analysis.analysisName.replaceAll(RegExp(r'[.#$\[\]]'), '_');
+      await firebaseConsumer.set(
+        'users/$uid/analyses/$safeKey',
+        data: analysis.toJson(),
+      );
+      log('SyncRepository: Successfully pushed analysis ${analysis.analysisName} to remote.');
+    } catch (e) {
+      log('SyncRepository pushAnalysisToRemote error: $e');
     }
   }
 }
