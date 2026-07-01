@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/schedule_model.dart';
+import 'package:avo_app/app/core/utils/date_calculator.dart';
 import 'package:avo_app/app/features/book_patient/domain/book_patient_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'book_patient_state.dart';
@@ -47,13 +48,16 @@ class BookPatientCubit extends Cubit<BookPatientState> {
 
       emit(BookPatientBookingLoading());
       try {
+        final appointmentDate = calculateNextDateForWeekday(schedule.day);
+
         final appointment = AppointmentModel(
           id: '',
           doctorId: currentState.doctor.id,
           patientId: patientId,
           patientName: patientName,
           doctorName: currentState.doctor.name,
-          date: schedule.day,
+          date: appointmentDate,
+          day: schedule.day,
           startTime: schedule.startTime,
           endTime: schedule.endTime,
           status: 'pending',

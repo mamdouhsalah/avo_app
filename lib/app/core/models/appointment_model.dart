@@ -3,7 +3,8 @@ class AppointmentModel {
   final String doctorId;
   final String patientId;
   final String status; // confirmed, pending, cancelled, completed
-  final String date; // ISO date string
+  final DateTime date; // DateTime
+  final String day; // "Sunday", "Monday", etc.
   final String startTime; // "09:00"
   final String endTime; // "10:00"
   final String? patientName;
@@ -16,6 +17,7 @@ class AppointmentModel {
     required this.patientId,
     this.status = 'pending',
     required this.date,
+    required this.day,
     this.startTime = '09:00',
     this.endTime = '10:00',
     this.patientName,
@@ -29,15 +31,25 @@ class AppointmentModel {
         id: '',
         doctorId: '',
         patientId: '',
-        date: DateTime.now().toIso8601String(),
+        date: DateTime.now(),
+        day: '',
       );
     }
+    
+    DateTime parsedDate;
+    if (json['date'] != null) {
+      parsedDate = DateTime.tryParse(json['date'].toString()) ?? DateTime.now();
+    } else {
+      parsedDate = DateTime.now();
+    }
+
     return AppointmentModel(
       id: json['id']?.toString() ?? '',
       doctorId: json['doctorId']?.toString() ?? '',
       patientId: json['patientId']?.toString() ?? '',
       status: json['status']?.toString() ?? 'pending',
-      date: json['date']?.toString() ?? DateTime.now().toIso8601String(),
+      date: parsedDate,
+      day: json['day']?.toString() ?? '',
       startTime: json['startTime']?.toString() ?? '09:00',
       endTime: json['endTime']?.toString() ?? '10:00',
       patientName: json['patientName']?.toString(),
@@ -52,7 +64,8 @@ class AppointmentModel {
       'doctorId': doctorId,
       'patientId': patientId,
       'status': status,
-      'date': date,
+      'date': date.toIso8601String(),
+      'day': day,
       'startTime': startTime,
       'endTime': endTime,
       if (patientName != null) 'patientName': patientName,
@@ -62,7 +75,7 @@ class AppointmentModel {
   }
 
   /// Parse the date string into DateTime
-  DateTime get dateTime => DateTime.tryParse(date) ?? DateTime.now();
+  DateTime get dateTime => date;
 
   /// Format date for display
   String get formattedDate {

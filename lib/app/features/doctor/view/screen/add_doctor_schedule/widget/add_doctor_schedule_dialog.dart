@@ -51,15 +51,29 @@ class _AddDoctorScheduleDialogState extends State<AddDoctorScheduleDialog> {
     return null;
   }
 
+  String _formatTimeOfDayToEnglish(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    final minute = time.minute.toString().padLeft(2, '0');
+    return "$hour:$minute $period";
+  }
+
   Future<void> _selectStartTime(AddDoctorCubit cubit) async {
     final parsed = _parseTimeString(cubit.startTime);
     final picked = await showTimePicker(
       context: context,
       initialTime: parsed ?? const TimeOfDay(hour: 9, minute: 0),
+      builder: (BuildContext context, Widget? child) {
+        return Localizations.override(
+          context: context,
+          locale: const Locale('en', 'US'),
+          child: child,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
-        cubit.setStartTime(picked.format(context));
+        cubit.setStartTime(_formatTimeOfDayToEnglish(picked));
       });
     }
   }
@@ -69,10 +83,17 @@ class _AddDoctorScheduleDialogState extends State<AddDoctorScheduleDialog> {
     final picked = await showTimePicker(
       context: context,
       initialTime: parsed ?? const TimeOfDay(hour: 17, minute: 0),
+      builder: (BuildContext context, Widget? child) {
+        return Localizations.override(
+          context: context,
+          locale: const Locale('en', 'US'),
+          child: child,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
-        cubit.setEndTime(picked.format(context));
+        cubit.setEndTime(_formatTimeOfDayToEnglish(picked));
       });
     }
   }
