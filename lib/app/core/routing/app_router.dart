@@ -1,4 +1,7 @@
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
+import 'package:avo_app/app/features/scanner/view/screens/scanner_screen.dart';
+import 'package:avo_app/app/features/scanner/view/screens/saved_analysis_view_screen.dart';
+import 'package:avo_app/app/features/scanner/view/screens/saved_analyses_list_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/reminder/logic/add_medication_cubit.dart';
 import 'package:avo_app/app/features/schedule/logic/schedule_cubit.dart';
@@ -77,6 +80,10 @@ class AppRouter {
   static const String profileFull = '/profile/full'; // بدون Bottom Nav
   static const String adherenceReport = '/adherence-report';
 
+  static const String scanner = '/scanner';
+  static const String savedAnalysis = '/saved-analysis';
+  static const String savedAnalysisList = '/saved-analysis-list';
+
   static const String chatBot = '/chat-bot';
   static const String favorites = '/favorites';
   static const String checkout = '/checkout';
@@ -120,6 +127,7 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
+          GoRoute(path: scanner, builder: (context, state) => const ScannerScreen()),
           GoRoute(path: home, builder: (context, state) => const HomeScreen()),
           GoRoute(
               path: reminder,
@@ -204,6 +212,18 @@ class AppRouter {
           path: favorites,
           builder: (context, state) => const FavoritesScreen()),
       GoRoute(
+        path: savedAnalysis,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return SavedAnalysisViewScreen(
+            fileName: args['fileName'],
+            file: args['file'],
+            extractedText: args['extractedText'],
+            analysisResult: args['analysisResult'],
+          );
+        },
+      ),
+      GoRoute(
           path: checkout, builder: (context, state) => const CheckoutScreen()),
       GoRoute(
           path: accountInfo, builder: (context, state) => AccountInfoScreen()),
@@ -218,6 +238,11 @@ class AppRouter {
             onCardAdded: onCardAdded ?? (card) {},
           );
         },
+      ),
+
+      GoRoute(
+        path: savedAnalysisList,
+        builder: (context, state) => const SavedAnalysesListScreen(),
       ),
 
       GoRoute(

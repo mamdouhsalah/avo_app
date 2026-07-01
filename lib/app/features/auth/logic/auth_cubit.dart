@@ -186,6 +186,7 @@ class AuthCubit extends Cubit<AuthState> {
 
         // Initial Data Sync: fetch meds from Firebase to local Hive
         await syncRepository.syncMedicationsFromRemote();
+        await syncRepository.syncAnalysesFromRemote();
 
         emit(AuthSuccess(response));
       } else {

@@ -29,6 +29,7 @@ analyzer:
     - build/**
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - "ai_alarm_reminder/**"
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
