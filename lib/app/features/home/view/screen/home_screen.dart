@@ -1,3 +1,5 @@
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
 import 'package:avo_app/app/features/home/logic/home_state.dart';
@@ -91,7 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         } else if (state is HomeLoaded) {
           final user = state.currentUser;
-
           return Scaffold(
             body: Stack(
               children: [
@@ -293,35 +294,59 @@ class _HomeScreenState extends State<HomeScreen> {
                               SectionHeader(
                                 title:
                                     LocaleKeys.home_upcoming_appointments.tr(),
-                                routePath: AppRouter.search,
+                                routePath: AppRouter.patientAppointment,
+                                onTap: () {
+                                  context.push(AppRouter.patientAppointment);
+                                },
                               ),
                               SizedBox(height: 16.h),
                               SizedBox(
-                                height: 158.h,
-                                child: state.appointments.isEmpty
-                                    ? Center(
-                                        child: Text(
-                                          LocaleKeys
-                                              .home_no_upcoming_appointments
-                                              .tr(),
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .outline,
-                                            fontSize: 13.sp,
+                                  height: 158.h,
+                                  child: BlocBuilder<AppointmentCubit, AppointmentState>(
+                                    builder: (context, appointmentState) {
+                                      if (appointmentState is AppointmentLoading) {
+                                        return const Center(child: CircularProgressIndicator());
+                                      }
+
+                                      if (appointmentState is AppointmentError) {
+                                        return Center(
+                                          child: Text(
+                                            appointmentState.message,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.error,
+                                              fontSize: 13.sp,
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                    : ListView.builder(
+                                        );
+                                      }
+
+                                      final cubit = context.read<AppointmentCubit>();
+                                      final upcoming = cubit.upcomingAppointments;
+
+                                      if (upcoming.isEmpty) {
+                                        return Center(
+                                          child: Text(
+                                            LocaleKeys.home_no_upcoming_appointments.tr(),
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.outline,
+                                              fontSize: 13.sp,
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      return ListView.builder(
                                         scrollDirection: Axis.horizontal,
-                                        itemCount: state.appointments.length,
+                                        itemCount: upcoming.length,
                                         itemBuilder: (_, i) {
                                           return AppointmentCard(
-                                            appointment: state.appointments[i],
+                                            appointmentCard: upcoming[i],
                                           );
                                         },
-                                      ),
-                              ),
+                                      );
+                                    },
+                                  ),
+                                ),
                               SizedBox(height: 24.h),
                               SectionHeader(
                                 title: LocaleKeys.home_upcoming_medicine.tr(),
@@ -334,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (context, reminderState) {
                                   List<MedicineModel> upcomingMedicines = [];
                                   List<ReminderModel> upcomingReminders = [];
-
+          
                                   if (reminderState is ReminderLoaded) {
                                     upcomingReminders = reminderState
                                         .todaysSchedule
@@ -343,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             r.status == 'next' ||
                                             r.status == 'overdue')
                                         .toList();
-
+          
                                     upcomingMedicines = upcomingReminders
                                         .map((r) => MedicineModel(
                                               id: r.id,
@@ -354,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ))
                                         .toList();
                                   }
-
+          
                                   return SizedBox(
                                     height: 200.h,
                                     child: (reminderState is ReminderLoading)
@@ -467,7 +492,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           key: ValueKey(doc.id),
                                           doctor: doc,
                                           onFavoriteToggle: () {},
-                                          onBook: () {},
+                                          onBook: () => context.push(
+                                              AppRouter.bookPatient,
+                                              extra: doc.id),
                                         );
                                       }).toList(),
                                     ),

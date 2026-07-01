@@ -122,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               color: theme.colorScheme.outlineVariant),
                         ),
                         Text(
-                          currentDoctor != null ? 'Dr. ${currentDoctor!.name}' : 'Loading...',
+                          currentDoctor != null ? 'Dr. ${currentDoctor!.fullName}' : 'Loading...',
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.bold,

@@ -1,16 +1,23 @@
 import 'package:avo_app/app/core/constants/database_paths.dart';
+import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/core/models/schedule_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DoctorRepositoryImpl implements DoctorRepository {
   final FirebaseConsumer _consumer;
+  final FirebaseAuth _firebaseAuth;
 
-  DoctorRepositoryImpl({required FirebaseConsumer consumer})
-      : _consumer = consumer;
+  DoctorRepositoryImpl(
+      {required FirebaseConsumer consumer, FirebaseAuth? firebaseAuth})
+      : _consumer = consumer,
+        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   @override
   Stream<List<AppointmentModel>> streamDoctorAppointments(String doctorId) {
@@ -22,6 +29,35 @@ class DoctorRepositoryImpl implements DoctorRepository {
         equalTo: doctorId,
       ),
     );
+  }
+
+  // rate doctor, for appointment use
+  @override
+  Future<double> rateDoctor(
+    String doctorId,
+    double patientRating,
+  ) async {
+    try {
+      final doctor = await getDoctorById(doctorId);
+      final currentRating = doctor.rating;
+      final currentCount = doctor.ratingCount ?? 0;
+
+      final newCount = currentCount + 1;
+
+      final newRating =
+          ((currentRating * currentCount) + patientRating) / newCount;
+
+      await _consumer.update(
+        'doctors/$doctorId',
+        data: {
+          'rating': newRating,
+          'ratingCount': newCount,
+        },
+      );
+      return newRating;
+    } catch (e) {
+      throw DatabaseException(e.toString(), "failed to rate docto");
+    }
   }
 
   @override
@@ -86,5 +122,109 @@ class DoctorRepositoryImpl implements DoctorRepository {
   @override
   Future<void> addLabResult(LabResultModel result) async {
     await _consumer.push(DatabasePaths.reports, data: result.toJson());
+  }
+
+  @override
+  Future<String> addDoctorSchedule(ScheduleModel schedule) async {
+    final String doctorId = _firebaseAuth.currentUser?.uid ?? '';
+
+    String doctorName = '';
+    String doctorImage = '';
+    try {
+      final docData = await _consumer.get(
+        '${DatabasePaths.users}/$doctorId',
+        fromJson: (json) => json,
+      );
+      doctorName = docData['name']?.toString() ??
+          docData['fullName']?.toString() ??
+          docData['full_name']?.toString() ??
+          '';
+      doctorImage =
+          docData['imageUrl']?.toString() ?? docData['image']?.toString() ?? '';
+    } catch (_) {}
+
+    final data = schedule.toJson();
+    data['doctorName'] = doctorName;
+    data['doctorImage'] = doctorImage;
+
+    final String scheduleId = await _consumer.push(
+      'users/$doctorId/schedules',
+      data: data,
+    );
+
+    data['id'] = scheduleId;
+    await _consumer.update('users/$doctorId/schedules/$scheduleId', data: data);
+    await _consumer.update('doctors/$doctorId/schedules/$scheduleId',
+        data: data);
+
+    return scheduleId;
+  }
+
+  @override
+  Future<void> updateDoctorSchedule(ScheduleModel schedule) async {
+    final String doctorId = _firebaseAuth.currentUser?.uid ?? '';
+
+    String doctorName = '';
+    String doctorImage = '';
+    try {
+      final docData = await _consumer.get(
+        '${DatabasePaths.users}/$doctorId',
+        fromJson: (json) => json,
+      );
+      doctorName = docData['name']?.toString() ??
+          docData['fullName']?.toString() ??
+          docData['full_name']?.toString() ??
+          '';
+      doctorImage =
+          docData['imageUrl']?.toString() ?? docData['image']?.toString() ?? '';
+    } catch (_) {}
+
+    final data = schedule.toJson();
+    data['doctorName'] = doctorName;
+    data['doctorImage'] = doctorImage;
+
+    await _consumer.update(
+      'users/$doctorId/schedules/${schedule.id}',
+      data: data,
+    );
+    await _consumer.update(
+      'doctors/$doctorId/schedules/${schedule.id}',
+      data: data,
+    );
+  }
+
+  @override
+  Future<void> deleteDoctorSchedule(String scheduleId) async {
+    final String doctorId = _firebaseAuth.currentUser?.uid ?? '';
+    await _consumer.delete('users/$doctorId/schedules/$scheduleId');
+    await _consumer.delete('doctors/$doctorId/schedules/$scheduleId');
+  }
+
+  @override
+  Future<List<ScheduleModel>> getDoctorSchedules() async {
+    final String doctorId = _firebaseAuth.currentUser?.uid ?? '';
+    try {
+      return await _consumer.getList(
+        'users/$doctorId/schedules',
+        fromJson: (json) => ScheduleModel.fromJson(json),
+      );
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  // doctor id will get it from appointment
+  Future<DoctorModel> getDoctorById(
+    String doctorId,
+  ) async {
+    try {
+      return await _consumer.get<DoctorModel>(
+        'doctors/$doctorId',
+        fromJson: (json) => DoctorModel.fromJson(json),
+      );
+    } catch (e) {
+      throw DatabaseException(e.toString(), 'doctor not exist');
+    }
   }
 }

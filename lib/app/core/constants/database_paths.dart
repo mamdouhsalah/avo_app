@@ -12,6 +12,10 @@ class DatabasePaths {
   static const String reports = 'reports';
   static const String messages = 'messages';
   static const String chatrooms = 'chatrooms';
+  static const String schedules = 'schedules';
+
+  // doctor Schedule
+  static String doctorSchedule(String doctorId) => 'schedules/$doctorId';
 
   // Admin
   static const String logs = 'logs';

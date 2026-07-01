@@ -6,6 +6,8 @@ import 'package:avo_app/app/core/models/auth_response_model.dart';
 import 'package:avo_app/app/core/models/login_request_model.dart';
 import 'package:avo_app/app/core/models/register_request_model.dart';
 
+import 'package:avo_app/app/core/constants/database_paths.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
 import 'package:avo_app/app/core/services/remote/cloudinary_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
@@ -54,6 +56,28 @@ class AuthRepositoryImpl implements AuthRepository {
       userData['image'] = imageUrl;
 
       await _consumer.set('users/$uid', data: userData);
+
+      if (registerRequestModel.role == 'doctor') {
+        final doctorModel = DoctorModel(
+          id: uid,
+          email: registerRequestModel.email,
+          fullName: registerRequestModel.fullName,
+          role: registerRequestModel.role,
+          gender: registerRequestModel.gender,
+          dateOfBirth: registerRequestModel.dateOfBirth,
+          phoneNumber: registerRequestModel.phoneNumber,
+          image: imageUrl,
+          isVerified: false,
+          specialty: registerRequestModel.specialty ?? '',
+          location: registerRequestModel.location,
+          rating: 0.0,
+          numberOfReviews: 0,
+          price: (registerRequestModel.price ?? 0.0).toDouble(),
+          bio: '',
+        );
+        await _consumer.set('${DatabasePaths.doctors}/$uid', data: doctorModel.toJson());
+      }
+
       final user = credential.user;
       if (user == null) {
         throw DatabaseException('User not found after registration', 'user-not-found');
@@ -72,8 +96,8 @@ class AuthRepositoryImpl implements AuthRepository {
         gender: registerRequestModel.gender,
         dateOfBirth: registerRequestModel.dateOfBirth,
         phoneNumber: registerRequestModel.phoneNumber,
-        height: (registerRequestModel.height ?? 0).toInt(),
-        weight: (registerRequestModel.weight ?? 0).toInt(),
+        height: registerRequestModel.height?.toInt(),
+        weight: registerRequestModel.weight?.toInt(),
         image: imageUrl,
         isVerified: false, // Admin needs to approve
       );

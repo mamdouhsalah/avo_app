@@ -1,6 +1,6 @@
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
-import 'package:avo_app/app/features/appointment/data/mock_data.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/info_card.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/message.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/priced_apoointment_card.dart';
@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DetailedAppointmenet extends StatelessWidget {
-  const DetailedAppointmenet({super.key});
+  AppointmentCardModel appointmentDoctor;
+   DetailedAppointmenet({super.key , required this.appointmentDoctor});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class DetailedAppointmenet extends StatelessWidget {
                 children: [
                   // priced appointment card
                   PricedAppointmentCard(
-                    appointment: upcomingAppointments[0],
+                    appointmentDoctor: appointmentDoctor,
                   ),
 
                   SizedBox(height: 32.h),
@@ -42,12 +43,13 @@ class DetailedAppointmenet extends StatelessWidget {
                     children: [
                       InfoCard(
                           title: LocaleKeys.general_date.tr(),
-                          value: ('${upcomingAppointments[0].date.day} , ${getMonthNameFromDate(date: upcomingAppointments[0].date)}')),
+                          ///TODO: after modify date , uncomment this and make it a real date not just a day
+                          value: ('${appointmentDoctor.appointment.date}')),
 
                       SizedBox(width: 16.w),
                       InfoCard(
                           title: LocaleKeys.general_time.tr(),
-                          value: '${upcomingAppointments[0].timeStart} - ${upcomingAppointments[0].timeEnd}'),
+                          value: '${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.startTime}'),
                     ],
                   ),
                   SizedBox(height:  24.5.h),
@@ -59,7 +61,9 @@ class DetailedAppointmenet extends StatelessWidget {
 
                   MainButton(
                     text: LocaleKeys.general_continue_btn.tr(),
-                    onPressed: () {},
+                    onPressed: () {
+                      // do nothing for now
+                    },
                     width: 343,
                     height: 48,
                   )

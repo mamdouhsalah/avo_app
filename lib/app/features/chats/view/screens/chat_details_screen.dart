@@ -206,7 +206,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         final fcmToken = snapshot.value.toString();
         final iAmDoctor = _iAmDoctor;
         final senderName =
-            iAmDoctor ? widget.chat.doctor.name : widget.chat.patientName;
+            iAmDoctor ? widget.chat.doctor.fullName : widget.chat.patientName;
 
         await NotificationSenderService.sendNotification(
           fcmToken: fcmToken,

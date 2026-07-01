@@ -1,14 +1,25 @@
 import 'package:avo_app/app/core/constants/app_strings.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
+import 'package:avo_app/app/core/services/auth_service.dart';
 import 'package:avo_app/app/core/services/local/preferences_service.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
+import 'package:avo_app/app/core/shared/appointment_card.dart';
 import 'package:avo_app/app/core/theme/theme_app.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/core/services/remote/sync_repository.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/features/doctor/services/doctor_rating_cubit/doctor_rating_cubit.dart';
+import 'package:avo_app/app/features/favorite/data/favorit_repo.dart';
+import 'package:avo_app/app/features/favorite/data/favorite_repo_imp.dart';
+import 'package:avo_app/app/features/favorite/logic/favorite_cubit.dart';
 import 'package:avo_app/app/features/reminder/data/medication_log_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository.dart';
 import 'package:avo_app/app/features/admin/data/admin_repository_impl.dart';
 import 'package:avo_app/app/features/admin/logic/admin_cubit.dart';
+import 'package:avo_app/app/features/appointment/data/appointment_repo.dart';
+import 'package:avo_app/app/features/appointment/data/appointment_repo_imp.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
 import 'package:avo_app/app/features/home/data/home_repository.dart';
 import 'package:avo_app/app/features/home/data/home_repository_impl.dart';
 import 'package:avo_app/app/features/home/logic/home_cubit.dart';
@@ -25,6 +36,7 @@ import 'package:avo_app/app/features/notification/data/repository/notification_r
 import 'package:avo_app/app/features/notification/data/repository/notification_repository_impl.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -52,6 +64,11 @@ class MyApp extends StatelessWidget {
             providers: [
               Provider<FirebaseConsumer>.value(value: firebaseConsumer),
               Provider<PreferencesService>.value(value: preferencesService),
+              Provider<AuthService>(
+                create: (_) => AuthService(
+                   FirebaseAuth.instance,
+                ),
+              ),
               Provider<HomeRepository>(
                 create: (providerContext) => HomeRepositoryImpl(
                   consumer: providerContext.read<FirebaseConsumer>(),
@@ -125,6 +142,45 @@ class MyApp extends StatelessWidget {
                   repository: context.read<NotificationRepository>(),
                 ),
               ),
+
+             //doctor 
+             Provider<DoctorRepository>(
+              create: (context) => DoctorRepositoryImpl(
+                consumer: context.read<FirebaseConsumer>(), 
+              ),
+            ),
+              // appointment 
+              Provider<AppointmentRepo>(
+              create: (context) => AppointmentRepoImp(
+                consumer: context.read<FirebaseConsumer>(),
+                doctorRepository: context.read<DoctorRepository>(),
+                patientRepository: context.read<ProfileRepository>(),
+              ),
+            ),
+
+              BlocProvider<AppointmentCubit>(
+                create: ((context) =>  AppointmentCubit(context.read<AppointmentRepo>())
+              )),
+
+              // favorite
+              Provider<FavoriteRepository>(
+                create: (context) => FavoriteRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
+                ),
+              ),
+
+              BlocProvider<FavoriteCubit>(
+                create: (context) => FavoriteCubit(
+                  repository: context.read<FavoriteRepository>(),
+                )
+              ),
+              // connects raring appointment experience to doctor total rate
+              BlocProvider<DoctorRatingCubit>(
+              create: (context) => DoctorRatingCubit(
+                repository: context.read<DoctorRepository>(),
+              ),
+            ),
+
             ],
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
@@ -143,16 +199,12 @@ class MyApp extends StatelessWidget {
                       ? context.supportedLocales
                       : const [Locale('en')],
                   locale: isLocalizationInitialized ? context.locale : locale,
-
                   debugShowCheckedModeBanner: false,
                   title: AppStrings.appName,
                   theme: AppTheme.lightTheme,
                   darkTheme: AppTheme.darkTheme,
                   themeMode: themeMode,
-
-                  // --- شاشة البداية ---
                   routerConfig: AppRouter.router,
-
                   builder: DevicePreview.appBuilder,
                 );
               },
