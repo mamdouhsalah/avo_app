@@ -213,13 +213,37 @@ class AnalysisState extends HiveObject {
   @HiveField(4)
   String description;
 
+  @HiveField(5)
+  String? imageUrl;
+
   AnalysisState({
     required this.name,
     required this.value,
     required this.date,
     required this.normalLimits,
     required this.description,
+    this.imageUrl,
   });
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'value': value,
+        'date': date.toIso8601String(),
+        'normalLimits': normalLimits,
+        'description': description,
+        'imageUrl': imageUrl,
+      };
+
+  factory AnalysisState.fromJson(Map<String, dynamic> json) => AnalysisState(
+        name: json['name'] as String? ?? 'غير محدد',
+        value: (json['value'] as num?)?.toDouble() ?? 0.0,
+        date: json['date'] != null
+            ? DateTime.tryParse(json['date'].toString()) ?? DateTime.now()
+            : DateTime.now(),
+        normalLimits: json['normalLimits'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        imageUrl: json['imageUrl'] as String?,
+      );
 }
 
 // Hive model for medical analysis
@@ -235,11 +259,34 @@ class MedicalAnalysis extends HiveObject {
     required this.analysisName,
     required this.states,
   });
+
+  Map<String, dynamic> toJson() => {
+        'analysisName': analysisName,
+        'states': states.map((s) => s.toJson()).toList(),
+      };
+
+  factory MedicalAnalysis.fromJson(Map<String, dynamic> json) {
+    return MedicalAnalysis(
+      analysisName: json['analysisName'] as String? ?? 'تحليل طبي',
+      states: (json['states'] as List<dynamic>?)
+              ?.map((e) => AnalysisState.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
 }
 
 // Medical Analysis Service
 class MedicalAnalysisService {
   static const String boxName = 'medicalAnalysisBox';
+  static final MedicalAnalysisService _instance = MedicalAnalysisService._internal();
+
+  factory MedicalAnalysisService() {
+    return _instance;
+  }
+
+  MedicalAnalysisService._internal();
+
   Box<MedicalAnalysis>? _box;
 
   // Initialize by accessing or opening the box
@@ -263,6 +310,7 @@ class MedicalAnalysisService {
     required double value,
     required String normalLimits,
     required String description,
+    String? imageUrl,
     DateTime? date,
   }) async {
     if (_box == null) {
@@ -276,6 +324,7 @@ class MedicalAnalysisService {
       date: analysisDate,
       normalLimits: normalLimits,
       description: description,
+      imageUrl: imageUrl,
     );
 
     MedicalAnalysis? existingAnalysis;
@@ -297,6 +346,35 @@ class MedicalAnalysisService {
       );
       await _box!.add(newAnalysis);
       log('MedicalAnalysisService: Created new analysis: $analysisName');
+    }
+  }
+
+  // Get all full analyses
+  List<MedicalAnalysis> getAllAnalyses() {
+    if (_box == null) throw Exception('Hive box not initialized');
+    return _box!.values.toList();
+  }
+
+  // Add or update full analysis
+  Future<void> addOrUpdateAnalysis(MedicalAnalysis analysis) async {
+    if (_box == null) throw Exception('Hive box not initialized');
+
+    MedicalAnalysis? existingAnalysis;
+    dynamic existingKey;
+    
+    for (var k in _box!.keys) {
+      final a = _box!.get(k);
+      if (a != null && a.analysisName.toLowerCase() == analysis.analysisName.toLowerCase()) {
+        existingAnalysis = a;
+        existingKey = k;
+        break;
+      }
+    }
+
+    if (existingAnalysis != null && existingKey != null) {
+      await _box!.put(existingKey, analysis);
+    } else {
+      await _box!.add(analysis);
     }
   }
 

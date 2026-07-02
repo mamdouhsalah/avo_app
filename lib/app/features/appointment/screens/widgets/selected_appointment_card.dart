@@ -1,6 +1,6 @@
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
 import 'package:avo_app/app/core/utils/date_utils.dart';
-import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
 import 'package:avo_app/app/features/appointment/screens/widgets/call_message_chat_row.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +10,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/Language/locale_keys.g.dart';
 
 class SelectedAppointmentCard extends StatelessWidget {
-  final Appointment appointment;
+  final AppointmentCardModel appointmentDoctor;
 
   const SelectedAppointmentCard({
     super.key,
-    required this.appointment,
+    required this.appointmentDoctor,
   });
 
   @override
@@ -65,23 +65,40 @@ class SelectedAppointmentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         /// Image
-                        Container(
-                          width: 55.r,
-                          height: 55.r,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              appointment.doctorPictureUrl,
+                       Container(
+                    width: 55.r,
+                    height: 55.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: appointmentDoctor.doctor.imageUrl.isNotEmpty
+                          ? Image.network(
+                              appointmentDoctor.doctor.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/imgs/doctor/doctor1.png',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              'assets/imgs/doctor/doctor1.png',
                               fit: BoxFit.cover,
                             ),
-                          ),
-                        ),
+                    ),
+                  ),
 
                         SizedBox(width: 16.w),
 
@@ -91,7 +108,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                appointment.doctorName,
+                                appointmentDoctor.doctor.name,
                                 style: TextStyle(
                                   color: colorScheme.onSurface,
                                   fontWeight: FontWeight.w500,
@@ -102,7 +119,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                               ),
 
                               Text(
-                                "(${appointment.specialty} | ${appointment.clinic})",
+                                "(${appointmentDoctor.doctor.specialty} | ${appointmentDoctor.doctor.clinic})",
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400,
@@ -124,7 +141,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    "${appointment.timeStart} - ${appointment.timeEnd}",
+                                    "${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.endTime}",
                                     style: TextStyle(
                                         color: colorScheme.onSurface,
                                         fontSize: 12.sp,
@@ -159,7 +176,8 @@ class SelectedAppointmentCard extends StatelessWidget {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          "${appointment.date.day} ${getMonthNameFromDate(date: appointment.date)} ",
+                          ///TODO Modify this after change the date
+                          "${appointmentDoctor.appointment.date} ",
                           style: TextStyle(
                               color: Colors.grey,
                               fontSize: 12.sp,
@@ -182,7 +200,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          "${appointment.timeStart} - ${appointment.timeEnd}",
+                          "${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.endTime}",
                           style: TextStyle(
                               color: Colors.grey,
                               fontSize: 12.sp,
@@ -195,7 +213,9 @@ class SelectedAppointmentCard extends StatelessWidget {
                     /// button
                     MainButton(
                         text: LocaleKeys.appointment_cancel_appointment.tr(),
-                        onPressed: () {},
+                        onPressed: () {
+                          /// cancel appointment cubit function
+                        },
                         width: 343,
                         height: 48)
                   ],
@@ -207,7 +227,7 @@ class SelectedAppointmentCard extends StatelessWidget {
                     children: [
                       /// rating
                       Text(
-                        "${appointment.rating}",
+                        "${appointmentDoctor.doctor.rating}",
                         style: TextStyle(
                             color: colorScheme.onSurface,
                             fontSize: 16.sp,

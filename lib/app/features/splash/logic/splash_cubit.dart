@@ -18,6 +18,7 @@ class SplashCubit extends Cubit<SplashState> {
         if (user.isVerified == true || user.role == 'admin') {
           // Initial Data Sync: fetch meds from Firebase if local is cleared (e.g. fresh install)
           await syncRepository.syncMedicationsFromRemote();
+          await syncRepository.syncAnalysesFromRemote();
           emit(SplashSuccess(user.role));
         } else {
           emit(SplashUnverified(user.role));

@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
+import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/user_profile_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/services/local/preferences_service.dart';
@@ -56,12 +58,14 @@ class ProfileRepositoryImpl extends ProfileRepository {
   Future<void> updateProfile(String uid, Map<String, dynamic> data) async {
     try {
       await _consumer.update('users/$uid', data: data);
-      
+
       final snap = await _consumer.get('users/$uid', fromJson: (json) => json);
       if (snap['role'] == 'doctor') {
         final Map<String, dynamic> doctorUpdates = {};
-        if (data.containsKey('specialty')) doctorUpdates['specialty'] = data['specialty'];
-        if (data.containsKey('location')) doctorUpdates['location'] = data['location'];
+        if (data.containsKey('specialty'))
+          doctorUpdates['specialty'] = data['specialty'];
+        if (data.containsKey('location'))
+          doctorUpdates['location'] = data['location'];
         if (data.containsKey('price')) doctorUpdates['price'] = data['price'];
         if (data.containsKey('bio')) doctorUpdates['bio'] = data['bio'];
         if (data.containsKey('full_name')) {
@@ -88,6 +92,18 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
+  Future<PatientModel> getUserIfPatientById(String patientId) {
+    try {
+      final user = _consumer.get<PatientModel>(
+          '${DatabasePaths.users}/$patientId',
+          fromJson: (json) => PatientModel.fromJson(json));
+      return user;
+    } catch (e) {
+      throw DatabaseException(
+          e.toString(), 'user is not found or is not a patient');
+    }
+  }
+@override
   String? getSavedLanguage() => _preferencesService.getLanguage();
 
   @override

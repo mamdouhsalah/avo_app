@@ -1,12 +1,12 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
-import 'package:avo_app/app/features/appointment/data/models/appointment.dart';
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PricedAppointmentCard extends StatelessWidget {
-  final Appointment appointment;
-  const PricedAppointmentCard({super.key , required this.appointment});
+  final AppointmentCardModel appointmentDoctor;
+  const PricedAppointmentCard({super.key , required this.appointmentDoctor});
 
   @override
   Widget build(BuildContext context) {
@@ -36,23 +36,40 @@ class PricedAppointmentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         /// Image
-                        Container(
-                          width: 55.r,
-                          height: 55.r,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              appointment.doctorPictureUrl,
+                       Container(
+                    width: 55.r,
+                    height: 55.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: appointmentDoctor.doctor.imageUrl.isNotEmpty
+                          ? Image.network(
+                              appointmentDoctor.doctor.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/imgs/doctor/doctor1.png',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              'assets/imgs/doctor/doctor1.png',
                               fit: BoxFit.cover,
                             ),
-                          ),
-                        ),
+                    ),
+                  ),
 
                         SizedBox(width: 16.w),
 
@@ -62,7 +79,7 @@ class PricedAppointmentCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                appointment.doctorName,
+                                appointmentDoctor.doctor.name,
                                 style: TextStyle(
                                   color: colorScheme.onSurface,
                                   fontWeight: FontWeight.w500,
@@ -73,7 +90,7 @@ class PricedAppointmentCard extends StatelessWidget {
                               ),
 
                               Text(
-                                "(${appointment.specialty} | ${appointment.clinic})",
+                                "(${appointmentDoctor.doctor.specialty}  ${appointmentDoctor.doctor.clinic})",
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400,
@@ -85,9 +102,8 @@ class PricedAppointmentCard extends StatelessWidget {
 
                               // hourly rate
                               Text(
-                                'appointment.hourly_rate'.tr(namedArgs: {
-                                  'price': '\$120'
-                                }),
+                                "\$${appointmentDoctor.doctor.price.toStringAsFixed(2)}",
+                                
                                 style: TextStyle(
                                     color: colorScheme.onSurface,
                                     fontSize: 12.sp,
@@ -110,7 +126,7 @@ class PricedAppointmentCard extends StatelessWidget {
                     children: [
                       /// rating
                       Text(
-                        "${appointment.rating}",
+                        "${appointmentDoctor.doctor.rating}",
                         style: TextStyle(
                             color: colorScheme.onSurface,
                             fontSize: 16.sp,

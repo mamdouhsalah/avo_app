@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/models/appointment_model.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/schedule_model.dart';
@@ -8,7 +9,13 @@ abstract class DoctorRepository {
   Future<List<PatientModel>> getDoctorPatients(String doctorId);
   Future<List<LabResultModel>> getLabResults(String patientId);
   Future<void> addLabResult(LabResultModel result);
+    Future<DoctorModel> getDoctorById(
+      String doctorId);
 
+    Future<double> rateDoctor(
+      String doctorId,
+      double patientRating,
+    );
   // Doctor Schedules
   Future<String> addDoctorSchedule(ScheduleModel schedule);
   Future<void> updateDoctorSchedule(ScheduleModel schedule);

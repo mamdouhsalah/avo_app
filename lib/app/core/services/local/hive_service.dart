@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/services/local/hive_models.dart';
+import 'package:avo_app/app/core/services/local/hive_medical_analysis_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveService {
@@ -10,6 +11,8 @@ class HiveService {
     Hive.registerAdapter(WeightAdapter());
     Hive.registerAdapter(HealthMetricAdapter());
     Hive.registerAdapter(MedicationLogAdapter());
+    Hive.registerAdapter(MedicalAnalysisAdapter());
+    Hive.registerAdapter(AnalysisStateAdapter());
     await Hive.openBox('settings');
     await Hive.openBox<Medication>('medications');
     await Hive.openBox<Analysis>('analyses');

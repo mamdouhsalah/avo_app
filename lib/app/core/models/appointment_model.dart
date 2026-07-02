@@ -1,3 +1,10 @@
+class AppointmentStatus {
+  static const String pending = "pending";
+  static const String confirmed = "confirmed";
+  static const String completed = "completed";
+  static const String canceled = "canceled";
+}
+
 class AppointmentModel {
   final String id;
   final String doctorId;
@@ -10,20 +17,25 @@ class AppointmentModel {
   final String? patientName;
   final String? doctorName;
   final String? notes;
+  final bool? isRated;
+  final double? patientRating;
 
-  const AppointmentModel({
-    required this.id,
-    required this.doctorId,
-    required this.patientId,
-    this.status = 'pending',
-    required this.date,
-    required this.day,
-    this.startTime = '09:00',
-    this.endTime = '10:00',
-    this.patientName,
-    this.doctorName,
-    this.notes,
-  });
+
+  const AppointmentModel(
+      {required this.id,
+      required this.doctorId,
+      required this.patientId,
+      this.status = AppointmentStatus.pending,
+      required this.date,
+      required this.day,
+      this.startTime = '09:00',
+      this.endTime = '10:00',
+      this.patientName,
+      this.doctorName,
+      this.notes,
+      this.isRated,
+      this.patientRating
+      });
 
   factory AppointmentModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
@@ -38,7 +50,20 @@ class AppointmentModel {
     
     DateTime parsedDate;
     if (json['date'] != null) {
-      parsedDate = DateTime.tryParse(json['date'].toString()) ?? DateTime.now();
+      final dateStr = json['date'].toString();
+      final parts = dateStr.split('/');
+      if (parts.length == 3) {
+        final d = int.tryParse(parts[0]);
+        final m = int.tryParse(parts[1]);
+        final y = int.tryParse(parts[2]);
+        if (d != null && m != null && y != null) {
+          parsedDate = DateTime(y, m, d);
+        } else {
+          parsedDate = DateTime.tryParse(dateStr) ?? DateTime.now();
+        }
+      } else {
+        parsedDate = DateTime.tryParse(dateStr) ?? DateTime.now();
+      }
     } else {
       parsedDate = DateTime.now();
     }
@@ -47,7 +72,7 @@ class AppointmentModel {
       id: json['id']?.toString() ?? '',
       doctorId: json['doctorId']?.toString() ?? '',
       patientId: json['patientId']?.toString() ?? '',
-      status: json['status']?.toString() ?? 'pending',
+      status: json['status']?.toString() ?? AppointmentStatus.pending,
       date: parsedDate,
       day: json['day']?.toString() ?? '',
       startTime: json['startTime']?.toString() ?? '09:00',
@@ -55,21 +80,27 @@ class AppointmentModel {
       patientName: json['patientName']?.toString(),
       doctorName: json['doctorName']?.toString(),
       notes: json['notes']?.toString(),
+      isRated: json['isRated'] as bool? ?? false,
+      patientRating: (json['patientRating'] as num?)?.toDouble(),
     );
   }
 
   Map<String, dynamic> toJson() {
+    final dayStr = date.day.toString().padLeft(2, '0');
+    final monthStr = date.month.toString().padLeft(2, '0');
+    final yearStr = date.year.toString();
+    final formattedDate = '$dayStr/$monthStr/$yearStr';
     return {
       'id': id,
       'doctorId': doctorId,
       'patientId': patientId,
       'status': status,
-      'date': date.toIso8601String(),
+      'date': formattedDate,
       'day': day,
       'startTime': startTime,
       'endTime': endTime,
-      if (patientName != null) 'patientName': patientName,
-      if (doctorName != null) 'doctorName': doctorName,
+      'isRated': isRated ?? false,
+      if (patientRating != null) 'patientRating': patientRating,
       if (notes != null) 'notes': notes,
     };
   }
@@ -106,5 +137,36 @@ class AppointmentModel {
   int get startMinute {
     final parts = startTime.split(':');
     return int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+  }
+
+  AppointmentModel copyWith({
+    String? id,
+    String? doctorId,
+    String? patientId,
+    String? status,
+    DateTime? date,
+    String? day,
+    String? startTime,
+    String? endTime,
+    String? patientName,
+    String? doctorName,
+    String? notes,
+    bool? isRated,
+    double? patientRating,
+  }) {
+    return AppointmentModel(
+        id: id ?? this.id,
+        doctorId: doctorId ?? this.doctorId,
+        patientId: patientId ?? this.patientId,
+        status: status ?? this.status,
+        date: date ?? this.date,
+        day: day ?? this.day,
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        patientName: patientName ?? this.patientName,
+        doctorName: doctorName ?? this.doctorName,
+        notes: notes ?? this.notes,
+        isRated: isRated ?? this.isRated,
+        patientRating: patientRating ?? this.patientRating);
   }
 }

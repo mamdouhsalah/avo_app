@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '42457544572',
     projectId: 'avo-project-f2f8f',
     storageBucket: 'avo-project-f2f8f.firebasestorage.app',
-    iosBundleId: 'com.example.avo',
+    iosBundleId: 'com.tylda.avo',
   );
 }

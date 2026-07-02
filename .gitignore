@@ -1,5 +1,7 @@
 # Environment Variables (API Keys - Never commit!)
 .env
+key.properties
+**/*.jks
 
 # Miscellaneous
 *.class

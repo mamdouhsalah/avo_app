@@ -46,6 +46,12 @@ class FakeFirebaseConsumer implements FirebaseConsumer {
       {required Map<String, dynamic> data}) async {}
   @override
   Future<void> delete(String path) async {}
+  
+  @override
+  String? getRefrence({required String path}) {
+    // TODO: implement getRefrence
+    throw UnimplementedError();
+  }
 }
 
 class FakePreferencesService implements PreferencesService {
