@@ -75,7 +75,7 @@ class AppointmentCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          appointmentCard.appointment.date,
+                          appointmentCard.appointment.formattedDate,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.w400,

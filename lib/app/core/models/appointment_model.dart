@@ -10,7 +10,8 @@ class AppointmentModel {
   final String doctorId;
   final String patientId;
   final String status; // confirmed, pending, cancelled, completed
-  final String date; // ISO date string
+  final DateTime date; // DateTime
+  final String day; // "Sunday", "Monday", etc.
   final String startTime; // "09:00"
   final String endTime; // "10:00"
   final String? patientName;
@@ -40,15 +41,38 @@ class AppointmentModel {
         id: '',
         doctorId: '',
         patientId: '',
-        date: DateTime.now().toIso8601String(),
+        date: DateTime.now(),
+        day: '',
       );
     }
+    
+    DateTime parsedDate;
+    if (json['date'] != null) {
+      final dateStr = json['date'].toString();
+      final parts = dateStr.split('/');
+      if (parts.length == 3) {
+        final d = int.tryParse(parts[0]);
+        final m = int.tryParse(parts[1]);
+        final y = int.tryParse(parts[2]);
+        if (d != null && m != null && y != null) {
+          parsedDate = DateTime(y, m, d);
+        } else {
+          parsedDate = DateTime.tryParse(dateStr) ?? DateTime.now();
+        }
+      } else {
+        parsedDate = DateTime.tryParse(dateStr) ?? DateTime.now();
+      }
+    } else {
+      parsedDate = DateTime.now();
+    }
+
     return AppointmentModel(
       id: json['id']?.toString() ?? '',
       doctorId: json['doctorId']?.toString() ?? '',
       patientId: json['patientId']?.toString() ?? '',
       status: json['status']?.toString() ?? AppointmentStatus.pending,
-      date: json['date']?.toString() ?? DateTime.now().toIso8601String(),
+      date: parsedDate,
+      day: json['day']?.toString() ?? '',
       startTime: json['startTime']?.toString() ?? '09:00',
       endTime: json['endTime']?.toString() ?? '10:00',
       patientName: json['patientName']?.toString(),
@@ -60,12 +84,17 @@ class AppointmentModel {
   }
 
   Map<String, dynamic> toJson() {
+    final dayStr = date.day.toString().padLeft(2, '0');
+    final monthStr = date.month.toString().padLeft(2, '0');
+    final yearStr = date.year.toString();
+    final formattedDate = '$dayStr/$monthStr/$yearStr';
     return {
       'id': id,
       'doctorId': doctorId,
       'patientId': patientId,
       'status': status,
-      'date': date,
+      'date': formattedDate,
+      'day': day,
       'startTime': startTime,
       'endTime': endTime,
       'isRated': isRated ?? false,
@@ -75,7 +104,7 @@ class AppointmentModel {
   }
 
   /// Parse the date string into DateTime
-  DateTime get dateTime => DateTime.tryParse(date) ?? DateTime.now();
+  DateTime get dateTime => date;
 
   /// Format date for display
   String get formattedDate {
@@ -113,7 +142,8 @@ class AppointmentModel {
     String? doctorId,
     String? patientId,
     String? status,
-    String? date,
+    DateTime? date,
+    String? day,
     String? startTime,
     String? endTime,
     String? patientName,
@@ -128,6 +158,7 @@ class AppointmentModel {
         patientId: patientId ?? this.patientId,
         status: status ?? this.status,
         date: date ?? this.date,
+        day: day ?? this.day,
         startTime: startTime ?? this.startTime,
         endTime: endTime ?? this.endTime,
         patientName: patientName ?? this.patientName,

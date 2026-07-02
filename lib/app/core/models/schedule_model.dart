@@ -1,6 +1,7 @@
 class ScheduleModel {
   final String id;
   final String day;
+  final String date;
   final String startTime;
   final String endTime;
   final int maxVisits;
@@ -9,6 +10,7 @@ class ScheduleModel {
   ScheduleModel({
     required this.id,
     required this.day,
+    required this.date,
     required this.startTime,
     required this.endTime,
     required this.maxVisits,
@@ -21,6 +23,7 @@ class ScheduleModel {
     return ScheduleModel(
       id: json['id'] ?? '',
       day: json['day'] ?? '',
+      date: json['date'] ??'',
       startTime: json['startTime'] ?? '',
       endTime: json['endTime'] ?? '',
       maxVisits: json['maxVisits'] ?? 0,
@@ -31,6 +34,7 @@ class ScheduleModel {
   Map<String, dynamic> toJson() {
     return {
       'day': day,
+      'date': date,
       'startTime': startTime,
       'endTime': endTime,
       'maxVisits': maxVisits,

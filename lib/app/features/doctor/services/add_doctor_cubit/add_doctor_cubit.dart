@@ -1,4 +1,5 @@
 import 'package:avo_app/app/core/models/schedule_model.dart';
+import 'package:avo_app/app/core/utils/date_calculator.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
 import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_state.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,7 @@ class AddDoctorCubit extends Cubit<AddDoctorState> {
         final schedule = ScheduleModel(
           id: oldSchedule.id,
           day: selectedDay,
+          date: formatCalculationDate(calculateNextDateForWeekday(selectedDay)),
           startTime: startTime,
           endTime: endTime,
           maxVisits: visits,
@@ -68,6 +70,7 @@ class AddDoctorCubit extends Cubit<AddDoctorState> {
         final schedule = ScheduleModel(
           id: '',
           day: selectedDay,
+          date: formatCalculationDate(calculateNextDateForWeekday(selectedDay)),
           startTime: startTime,
           endTime: endTime,
           maxVisits: visits,
@@ -77,6 +80,7 @@ class AddDoctorCubit extends Cubit<AddDoctorState> {
         final savedSchedule = ScheduleModel(
           id: newId,
           day: schedule.day,
+          date: schedule.date,
           startTime: schedule.startTime,
           endTime: schedule.endTime,
           maxVisits: schedule.maxVisits,
@@ -125,4 +129,3 @@ class AddDoctorCubit extends Cubit<AddDoctorState> {
     return super.close();
   }
 }
-

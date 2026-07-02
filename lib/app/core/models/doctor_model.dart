@@ -71,7 +71,7 @@ class DoctorModel extends UserProfileModel {
       id: json['id']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       fullName:
-          json['fullName']?.toString() ?? json['full_name']?.toString() ?? '',
+          json['fullName']?.toString() ?? json['name']?.toString() ?? json['full_name']?.toString() ?? '',
       role: json['role']?.toString() ?? 'doctor',
       gender: json['gender']?.toString() ?? '',
       dateOfBirth: json['date_of_birth']?.toString() ??

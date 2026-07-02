@@ -22,13 +22,14 @@ class AnalysisStateAdapter extends TypeAdapter<AnalysisState> {
       date: fields[2] as DateTime,
       normalLimits: fields[3] as String,
       description: fields[4] as String,
+      imageUrl: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AnalysisState obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class AnalysisStateAdapter extends TypeAdapter<AnalysisState> {
       ..writeByte(3)
       ..write(obj.normalLimits)
       ..writeByte(4)
-      ..write(obj.description);
+      ..write(obj.description)
+      ..writeByte(5)
+      ..write(obj.imageUrl);
   }
 
   @override

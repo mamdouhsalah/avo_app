@@ -82,12 +82,11 @@ class AppointmentRepoImp implements AppointmentRepo {
       }
 
       final uid = currentUser.uid;
-      log("Current user ID: $uid"); // Debugging line
+
       final UserProfileModel user = await _consumer.get<UserProfileModel>(
         '${DatabasePaths.users}/$uid',
         fromJson: (json) => UserProfileModel.fromJson(json),
       );
-      log("Fetched user role: ${user.role}"); // Debugging line
 
       return CurrentUser(uid: uid, role: user.role);
     } catch (e) {
@@ -135,9 +134,6 @@ class AppointmentRepoImp implements AppointmentRepo {
           equalTo: uid,
         ),
       );
-      log("ziad");
-      log("Fetched doctor appointments: ${appointments.length}");
-
       return appointments;
     } catch (e) {
       throw DatabaseException(

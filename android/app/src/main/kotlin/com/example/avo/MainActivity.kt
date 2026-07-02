@@ -1,4 +1,4 @@
-package com.example.avo
+package com.tylda.avo
 
 import io.flutter.embedding.android.FlutterActivity
 
