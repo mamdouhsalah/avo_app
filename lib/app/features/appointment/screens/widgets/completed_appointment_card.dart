@@ -46,26 +46,25 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
             .read<AppointmentCubit>()
             .isRated(widget.appointmentDoctor.appointment.id) ??
         false;
-
+    final DateTime date = widget.appointmentDoctor.appointment.date;
+    bool isAppointmentToday = isToday(date: date);
+    final formatted = DateFormat('d MMM').format(date);
+  
     return Padding(
       padding: EdgeInsetsDirectional.only(start: 24.w, top: 16.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // date on day for the appointment
-          Text(
-            "${widget.appointmentDoctor.appointment.date}",
 
-            ///TODO: after modify date , uncomment this and make it a real date not just a day
-            // isToday(date: appointmentDoctor.appointment.date)
-            //     ? LocaleKeys.general_today.tr()
-            //     : "${appointmentDoctor.appointment.date.day} ${getMonthNameFromDate(date: appointmentDoctor.appointment.date)}",
+          Text(
+            isAppointmentToday
+                ? LocaleKeys.general_today.tr():
+                "${translateDay(widget.appointmentDoctor.appointment.day)}  ${formatted} ",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.bold),
           ),
-
           SizedBox(height: 16.h),
 
           SizedBox(
