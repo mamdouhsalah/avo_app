@@ -248,7 +248,8 @@ class CodegenLoader extends AssetLoader{
     "best_doctors": "أفضل الدكاترة",
     "no_doctors": "مفيش دكاترة متاحين دلوقتي",
     "best_pharmacies": "أفضل الصيدليات",
-    "no_pharmacies": "مفيش صيدليات متاحة دلوقتي"
+    "no_pharmacies": "مفيش صيدليات متاحة دلوقتي",
+    "all_doctors": "كل الدكاترة"
   },
   "category": {
     "title": "التصنيفات",
@@ -306,7 +307,8 @@ class CodegenLoader extends AssetLoader{
     "phone": "الهاتف",
     "email": "البريد الإلكتروني",
     "done_successfully": "تم بنجاح",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "room": "الغرفة"
   },
   "auth": {
     "create_account": "إنشاء حساب",
@@ -691,7 +693,8 @@ static const Map<String,dynamic> _en = {
     "best_doctors": "Best Doctors",
     "no_doctors": "No doctors available",
     "best_pharmacies": "Best Pharmacies",
-    "no_pharmacies": "No pharmacies available"
+    "no_pharmacies": "No pharmacies available",
+    "all_doctors": "All Doctors"
   },
   "category": {
     "title": "Categories",

@@ -233,7 +233,8 @@
     "best_doctors": "أفضل الدكاترة",
     "no_doctors": "مفيش دكاترة متاحين دلوقتي",
     "best_pharmacies": "أفضل الصيدليات",
-    "no_pharmacies": "مفيش صيدليات متاحة دلوقتي"
+    "no_pharmacies": "مفيش صيدليات متاحة دلوقتي",
+    "all_doctors": "كل الدكاترة"
   },
   "category": {
     "title": "التصنيفات",

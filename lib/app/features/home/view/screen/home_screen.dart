@@ -474,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(height: 24.h),
                               SectionHeader(
                                 title: LocaleKeys.home_best_doctors.tr(),
-                                routePath: AppRouter.search,
+                                routePath: AppRouter.allDoctors,
                               ),
                               SizedBox(height: 16.h),
                               state.bestDoctors.isEmpty

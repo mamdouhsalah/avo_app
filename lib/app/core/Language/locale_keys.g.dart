@@ -223,6 +223,7 @@ abstract class  LocaleKeys {
   static const home_no_doctors = 'home.no_doctors';
   static const home_best_pharmacies = 'home.best_pharmacies';
   static const home_no_pharmacies = 'home.no_pharmacies';
+  static const home_all_doctors = 'home.all_doctors';
   static const home = 'home';
   static const category_title = 'category.title';
   static const category_no_categories = 'category.no_categories';
@@ -277,6 +278,7 @@ abstract class  LocaleKeys {
   static const appointment_email = 'appointment.email';
   static const appointment_done_successfully = 'appointment.done_successfully';
   static const appointment_cancel = 'appointment.cancel';
+  static const appointment_room = 'appointment.room';
   static const appointment = 'appointment';
   static const auth_create_account = 'auth.create_account';
   static const auth_choose_role = 'auth.choose_role';
