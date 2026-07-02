@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
@@ -80,11 +82,12 @@ class AppointmentRepoImp implements AppointmentRepo {
       }
 
       final uid = currentUser.uid;
-
+      log("Current user ID: $uid"); // Debugging line
       final UserProfileModel user = await _consumer.get<UserProfileModel>(
         '${DatabasePaths.users}/$uid',
         fromJson: (json) => UserProfileModel.fromJson(json),
       );
+      log("Fetched user role: ${user.role}"); // Debugging line
 
       return CurrentUser(uid: uid, role: user.role);
     } catch (e) {
@@ -132,6 +135,9 @@ class AppointmentRepoImp implements AppointmentRepo {
           equalTo: uid,
         ),
       );
+      log("ziad");
+      log("Fetched doctor appointments: ${appointments.length}");
+
       return appointments;
     } catch (e) {
       throw DatabaseException(
@@ -152,9 +158,13 @@ class AppointmentRepoImp implements AppointmentRepo {
           break;
 
         case UserRole.doctor:
-        default:
           appointments = await _getDoctorAppointments();
           break;
+        default:
+          throw DatabaseException(
+            'Unsupported user role: ${user.role}',
+            'unsupported-user-role',
+          );
       }
 
       return await _buildAppointmentCards(appointments);

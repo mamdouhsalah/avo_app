@@ -1,9 +1,11 @@
+import 'package:avo_app/app/core/models/appointment_action_arg.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/features/appointment/screens/appointment_patient_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/add_doctor_schedule/add_doctor_schedule_screen.dart';
 import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_cubit.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/features/doctor/view/screen/appointment_action.dart';
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avo_app/app/features/book_patient/presentation/screens/book_patient_screen.dart';
@@ -100,6 +102,7 @@ class AppRouter {
   static const String detailsPatient = '/details-patient';
   static const String scheduleAppointment = '/schedule-appointment';
   static const String patientAppointment = '/patient-appointment';
+  static const String appointmentAction = '/appointment-action';
 
   // Admin Routes
   static const String adminDashboard = '/admin-dashboard';
@@ -152,7 +155,18 @@ class AppRouter {
           ),
         ],
       ),
+      GoRoute(
+        path: appointmentAction,
+        builder: (context, state) {
+          final args = state.extra as AppointmentActionArgs;
 
+          return AppointmentActionScreen(
+            patient: args.patient,
+            appointmentId: args.appointmentId,
+            appointmentStatus: args.appointmentStatus,
+          );
+        },
+      ),
       // ==================== Full Screen Routes (بدون Bottom Navigation) ====================
       GoRoute(
           path: dashboard,

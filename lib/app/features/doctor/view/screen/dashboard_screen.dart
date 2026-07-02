@@ -1,6 +1,10 @@
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
+
 
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
@@ -27,13 +31,14 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final ScrollController _scrollController = ScrollController();
   bool isVisible = true;
-  late final DoctorRepositoryImpl _doctorRepo;
+
   final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
   DoctorModel? currentDoctor;
 
   @override
   void initState() {
-    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    // getting doctor appointments
+    context.read<AppointmentCubit>().getAppointments();
     _fetchDoctorData();
     super.initState();
     _scrollController.addListener(_scrollListener);
@@ -165,7 +170,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisSpacing: 1.w,
                   childAspectRatio: 1.25.sp,
                   padding: EdgeInsets.zero,
-                  children: const [
+                  children:  [
+
+                    /// still static
                     StatCard(
                       title: 'Patients',
                       value: '1,248',
@@ -173,13 +180,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       icon: Icons.people,
                       color: Color(0xFF4ECDC4),
                     ),
-                    StatCard(
-                      title: 'Appointment',
-                      value: '500',
-                      subtitle: '3 pending',
-                      icon: Icons.calendar_today,
-                      color: Color(0xFFFFB74D),
+
+                    /// appointment part
+                    BlocBuilder<AppointmentCubit, AppointmentState>(
+                      builder: (context, state) {
+                        final cubit = context.read<AppointmentCubit>();
+
+                        if (state is AppointmentLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (state is AppointmentError) {
+                          return Center(
+                            child: Text(state.message),
+                          );
+                        }
+
+                        return StatCard(
+                          title: 'Appointments',
+                          value: cubit.totalCount.toString(),
+                          subtitle: '${cubit.upcomingCount} pending',
+                          icon: Icons.calendar_month,
+                          color: Color(0xFF1E90FF),
+                        );
+                      },
                     ),
+
+                    // still static
                     StatCard(
                       title: 'Lab results',
                       value: '389',
@@ -206,37 +235,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                StreamBuilder<List<AppointmentModel>>(
-                  stream: _doctorRepo.streamDoctorAppointments(_doctorId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    }
-                    final appointments = snapshot.data ?? [];
-                    
-                    if (appointments.isEmpty) {
-                      return const Center(child: Text('No upcoming appointments'));
-                    }
-
-                    return ListView.separated(
-                      itemCount: appointments.length > 5 ? 5 : appointments.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                      itemBuilder: (context, index) {
-                        return CustomAppointmentCard(
-                          appointment: appointments[index],
-                        );
-                      },
+              BlocBuilder<AppointmentCubit, AppointmentState>(
+                builder: (context, state) {
+                  if (state is AppointmentLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
                   }
-                ),
 
+                  if (state is AppointmentError) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  }
+
+                  if (state is! AppointmentLoaded) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final cubit = context.read<AppointmentCubit>();
+                  final appointments = cubit.pendingAppointments;
+
+                  if (appointments.isEmpty) {
+                    return Center(
+                      child: Text(
+                        LocaleKeys.appointment_no_upcoming_to_display,
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: appointments.length > 5 ? 5 : appointments.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    itemBuilder: (_, index) {
+                      return CustomAppointmentCard(
+                        appointmentCard: appointments[index],
+                      );
+                    },
+                  );
+                },
+              ),
                 SizedBox(height: 160.h), // مساحة إضافية
               ],
+
             ),
           ),
 

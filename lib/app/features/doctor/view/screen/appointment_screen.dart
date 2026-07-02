@@ -1,10 +1,9 @@
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
-import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
-import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
-import 'package:avo_app/app/core/models/appointment_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppointmentScreen extends StatefulWidget {
@@ -17,23 +16,23 @@ class AppointmentScreen extends StatefulWidget {
 class _AppointmentScreenState extends State<AppointmentScreen> {
   bool isUpcoming = true;
   bool isGridView = false; // false = List View, true = Grid View
-  late final DoctorRepositoryImpl _doctorRepo;
-  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void initState() {
     super.initState();
-    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    // getting doctor appointments
+    context.read<AppointmentCubit>().getAppointments();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final now = DateTime.now();
+
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        // the header
         title: Text(
           'Appointments',
           style: TextStyle(
@@ -76,16 +75,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             SizedBox(height: 16.h),
 
             // Stats Grid
-            StreamBuilder<List<AppointmentModel>>(
-              stream: _doctorRepo.streamDoctorAppointments(_doctorId),
-              builder: (context, snapshot) {
-                final allAppointments = snapshot.data ?? [];
-                
-                final todayAppointments = allAppointments.where((appointment) {
-                    final isToday = appointment.isToday;
-                    return isToday;
-                }).toList();
-
+            BlocBuilder<AppointmentCubit, AppointmentState>(
+                builder: (context, state) {
+              final cubit = context.read<AppointmentCubit>();
+              if (state is AppointmentLoaded) {
                 return GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
@@ -94,33 +87,38 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   crossAxisSpacing: 12.w,
                   childAspectRatio: 1.5,
                   children: [
-                    _buildStatCard("Total",
-                        allAppointments.length.toString(), Colors.blue),
+                    _buildStatCard(
+                        "Total", cubit.totalCount.toString(), Colors.blue),
                     _buildStatCard(
                       "Confirmed",
-                      allAppointments
-                          .where((e) => e.status == 'confirmed')
-                          .length
-                          .toString(),
+                      cubit.confirmedCount.toString(),
                       const Color(0xFF00B8A9),
                     ),
                     _buildStatCard(
                       "Pending",
-                      allAppointments
-                          .where((e) => e.status == 'pending')
-                          .length
-                          .toString(),
+                      cubit.pendingCount.toString(),
                       Colors.orange,
                     ),
                     _buildStatCard(
-                      "Available",
-                      todayAppointments.length.toString(),
+                      "completed",
+                      cubit.completedCount.toString(),
                       Colors.grey,
+                    ),
+                    _buildStatCard(
+                      "canceled",
+                      cubit.canceledCount.toString(),
+                      Colors.red,
                     ),
                   ],
                 );
+              } else if (state is AppointmentLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is AppointmentError) {
+                return Center(child: Text('Error: ${state.message}'));
+              } else {
+                return const SizedBox.shrink();
               }
-            ),
+            }),
 
             SizedBox(height: 24.h),
 
@@ -174,7 +172,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                "Past Appointment",
+                                "Completed Appointment",
                                 style: TextStyle(
                                   color: !isUpcoming
                                       ? Colors.white
@@ -215,76 +213,71 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
             // Appointments List / Grid
             Expanded(
-              child: StreamBuilder<List<AppointmentModel>>(
-                stream: _doctorRepo.streamDoctorAppointments(_doctorId),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  }
-                  
-                  final allAppointments = snapshot.data ?? [];
-                  
-                  final todayAppointments = allAppointments.where((appointment) {
-                    final appointmentDateTime = DateTime(
-                      appointment.dateTime.year,
-                      appointment.dateTime.month,
-                      appointment.dateTime.day,
-                      appointment.startHour,
-                      appointment.startMinute,
+              child: BlocBuilder<AppointmentCubit, AppointmentState>(
+                builder: (context, state) {
+                  if (state is AppointmentLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
+                  }
 
-                    final isToday = appointment.isToday;
+                  if (state is AppointmentError) {
+                    return Center(
+                      child: Text('Error: ${state.message}'),
+                    );
+                  }
 
-                    if (isUpcoming) {
-                      return isToday && appointmentDateTime.isAfter(now);
-                    } else {
-                      return appointmentDateTime.isBefore(now);
-                    }
-                  }).toList();
+                  final cubit = context.read<AppointmentCubit>();
 
-                  if (todayAppointments.isEmpty) {
+                  final upcomingAppointments = cubit.upcomingAppointments;
+                  final completedAppointments = cubit.completedAppointments;
+                  final appointments = isUpcoming
+                      ? upcomingAppointments
+                      : completedAppointments;
+
+                  if (appointments.isEmpty) {
                     return Center(
                       child: Text(
                         isUpcoming
                             ? "No Upcoming Appointments"
                             : "No Past Appointments",
-                        style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.grey,
+                        ),
                       ),
                     );
                   }
 
-                  return isGridView
-                      ? GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12.w,
-                            mainAxisSpacing: 12.h,
-                            childAspectRatio: 0.8, // اضبط حسب تصميم الكارت
-                          ),
-                          itemCount: todayAppointments.length,
-                          itemBuilder: (context, index) {
-                            return CustomGridAppointmentCard(
-                              appointment: todayAppointments[index],
-                            );
-                          },
-                        )
-                      : ListView.separated(
-                          itemCount: todayAppointments.length,
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 12.h),
-                          itemBuilder: (context, index) {
-                            return CustomAppointmentCard(
-                              appointment: todayAppointments[index],
-                            );
-                          },
+                  if (isGridView) {
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12.w,
+                        mainAxisSpacing: 12.h,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemCount: appointments.length,
+                      itemBuilder: (context, index) {
+                        return CustomGridAppointmentCard(
+                          appointmentCard: appointments[index],
                         );
-                }
+                      },
+                    );
+                  }
+
+                  return ListView.separated(
+                    itemCount: appointments.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      return CustomAppointmentCard(
+                        appointmentCard: appointments[index],
+                      );
+                    },
+                  );
+                },
               ),
-            ),
+            )
           ],
         ),
       ),
