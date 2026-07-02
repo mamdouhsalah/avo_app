@@ -4,10 +4,12 @@ import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -37,7 +39,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       appBar: AppBar(
         // the header
         title: Text(
-          'Appointments',
+          LocaleKeys.appointment_todays_overview.tr(),
           style: TextStyle(
             color: theme.textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
@@ -68,7 +70,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             SizedBox(height: 20.h),
 
             Text(
-              "Today’s Overview",
+              LocaleKeys.appointment_todays_overview.tr(),
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w500,
@@ -91,27 +93,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   childAspectRatio: 1.5,
                   children: [
                     _buildStatCard(
-                        "Total", cubit.totalCount, Colors.blue, cubit.allAppointments),
+                        LocaleKeys.appointment_total.tr(), cubit.totalCount, Colors.blue, cubit.allAppointments),
                     _buildStatCard(
-                      "Confirmed",
+                      LocaleKeys.appointment_confirmed.tr(),
                       cubit.confirmedCount,
                       const Color(0xFF00B8A9),
                       cubit.upcomingAppointments,
                     ),
                     _buildStatCard(
-                      "Pending",
+                      LocaleKeys.appointment_pending.tr(),
                       cubit.pendingCount,
                       Colors.orange,
                       cubit.pendingAppointments,
                     ),
                     _buildStatCard(
-                      "completed",
+                      LocaleKeys.appointment_completed.tr(),
                       cubit.completedCount,
                       Colors.grey,
                       cubit.completedAppointments,  
                     ),
                     _buildStatCard(
-                      "canceled",
+                      LocaleKeys.appointment_canceled.tr(),
                       cubit.canceledCount,
                       Colors.red,
                       cubit.canceledAppointments,
@@ -151,7 +153,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                "Upcoming Appointment",
+                                LocaleKeys.upcoming_appointments.tr(),
                                 style: TextStyle(
                                   color: isUpcoming
                                       ? Colors.white
@@ -179,7 +181,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                "Completed Appointment",
+                                LocaleKeys.appointment_completed.tr(),
                                 style: TextStyle(
                                   color: !isUpcoming
                                       ? Colors.white
@@ -246,8 +248,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     return Center(
                       child: Text(
                         isUpcoming
-                            ? "No Upcoming Appointments"
-                            : "No Completed Appointments",
+                            ? LocaleKeys.appointment_no_upcoming.tr()
+                            : LocaleKeys.appointment_no_completed.tr(),
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: Colors.grey,

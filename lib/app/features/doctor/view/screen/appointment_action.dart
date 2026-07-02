@@ -32,8 +32,8 @@ class AppointmentActionScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final nextStatus = AppointmentStatusHelper.getNextStatus(appointmentStatus);
     final String actionText = nextStatus == AppointmentStatus.confirmed
-    ? 'Confirm'
-    : 'Complete';
+    ? LocaleKeys.appointment_confirm.tr()
+    : LocaleKeys.appointment_complete.tr();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -112,7 +112,7 @@ class AppointmentActionScreen extends StatelessWidget {
 
             // ========== Details Section ==========
             Text(
-              "Personal Information",
+              LocaleKeys.appointment_personal_information.tr(),
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
@@ -137,16 +137,16 @@ class AppointmentActionScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _buildInfoRow(context, Icons.calendar_today_rounded,
-                      "Date of Birth", patient.dateOfBirth),
+                      LocaleKeys.appointment_date_of_birth.tr(), patient.dateOfBirth),
                   Divider(height: 1, color: theme.colorScheme.outlineVariant),
-                  _buildInfoRow(context, Icons.person_outline_rounded, "Gender",
+                  _buildInfoRow(context, Icons.person_outline_rounded, LocaleKeys.appointment_gender.tr(),
                       patient.gender),
                   Divider(height: 1, color: theme.colorScheme.outlineVariant),
-                  _buildInfoRow(context, Icons.phone_rounded, "Phone",
+                  _buildInfoRow(context, Icons.phone_rounded, LocaleKeys.appointment_phone.tr(),
                       patient.phoneNumber),
                   Divider(height: 1, color: theme.colorScheme.outlineVariant),
                   _buildInfoRow(
-                      context, Icons.email_rounded, "Email", patient.email),
+                      context, Icons.email_rounded, LocaleKeys.appointment_email.tr(), patient.email),
                   Divider(height: 1, color: theme.colorScheme.outlineVariant),
                   SizedBox(height: 50.h),
                   if (nextStatus != null) ...[
@@ -173,7 +173,7 @@ class AppointmentActionScreen extends StatelessWidget {
                             backgroundColor: Colors.green,
                             behavior: SnackBarBehavior.floating,
                             content: Text(
-                              'done successfully',
+                              LocaleKeys.appointment_done_successfully.tr(),
                             ),
                             duration: const Duration(seconds: 2),
                           ),
@@ -194,7 +194,7 @@ class AppointmentActionScreen extends StatelessWidget {
                         appointmentStatus == AppointmentStatus.pending) ...[
                       SizedBox(height: 12.h),
                       MainButton(
-                        text: "Cancel",
+                        text: LocaleKeys.appointment_cancel.tr(),
                         onPressed: () async {
                           context
                               .read<AppointmentCubit>()
@@ -206,7 +206,7 @@ class AppointmentActionScreen extends StatelessWidget {
                               backgroundColor: Colors.green,
                               behavior: SnackBarBehavior.floating,
                               content: Text(
-                                'Appointment canceled successfully',
+                                LocaleKeys.appointment_canceled_successfully.tr(),
                               ),
                               duration: const Duration(seconds: 2),
                             ),

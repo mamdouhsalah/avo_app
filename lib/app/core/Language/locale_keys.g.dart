@@ -3,6 +3,13 @@
 // ignore_for_file: constant_identifier_names
 
 abstract class  LocaleKeys {
+  static const dashboard = 'dashboard';
+  static const how_are_you_doing = 'how_are_you_doing';
+  static const patients = 'patients';
+  static const appointments = 'appointments';
+  static const lab_results = 'lab_results';
+  static const prescriptions = 'prescriptions';
+  static const upcoming_appointments = 'upcoming_appointments';
   static const bottom_nav_Scanner = 'bottom_nav.Scanner';
   static const bottom_nav_Chat = 'bottom_nav.Chat';
   static const bottom_nav_home = 'bottom_nav.home';
@@ -253,6 +260,23 @@ abstract class  LocaleKeys {
   static const appointment_submit_rating = 'appointment.submit_rating';
   static const appointment_select_rating_first = 'appointment.select_rating_first';
   static const appointment_rated_successfully = 'appointment.rated_successfully';
+  static const appointment_confirm = 'appointment.confirm';
+  static const appointment_complete = 'appointment.complete';
+  static const appointment_status = 'appointment.status';
+  static const appointment_no_upcoming = 'appointment.no_upcoming';
+  static const appointment_no_completed = 'appointment.no_completed';
+  static const appointment_canceled_successfully = 'appointment.canceled_successfully';
+  static const appointment_todays_overview = 'appointment.todays_overview';
+  static const appointment_total = 'appointment.total';
+  static const appointment_confirmed = 'appointment.confirmed';
+  static const appointment_pending = 'appointment.pending';
+  static const appointment_personal_information = 'appointment.personal_information';
+  static const appointment_date_of_birth = 'appointment.date_of_birth';
+  static const appointment_gender = 'appointment.gender';
+  static const appointment_phone = 'appointment.phone';
+  static const appointment_email = 'appointment.email';
+  static const appointment_done_successfully = 'appointment.done_successfully';
+  static const appointment_cancel = 'appointment.cancel';
   static const appointment = 'appointment';
   static const auth_create_account = 'auth.create_account';
   static const auth_choose_role = 'auth.choose_role';

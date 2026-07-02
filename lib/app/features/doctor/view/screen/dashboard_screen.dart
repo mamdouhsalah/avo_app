@@ -4,6 +4,8 @@ import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
+
 
 
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
@@ -15,6 +17,7 @@ import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         title: Text(
-          'Dashboard',
+          '${LocaleKeys.dashboard.tr()}',
           style: TextStyle(
             color: theme.textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
@@ -120,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Good Morning',
+                          '${LocaleKeys.how_are_you_doing.tr()}',
                           style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w400,
@@ -174,7 +177,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     /// still static
                     StatCard(
-                      title: 'Patients',
+                      title: LocaleKeys.patients.tr(),
                       value: '1,248',
                       subtitle: '+12% from last month',
                       icon: Icons.people,
@@ -199,9 +202,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         }
 
                         return StatCard(
-                          title: 'Appointments',
+                          title: LocaleKeys.appointments.tr(),
                           value: cubit.totalCount.toString(),
-                          subtitle: '${cubit.pendingCount} pending',
+                          subtitle: '${cubit.pendingCount} ${LocaleKeys.appointment_pending.tr()}',
                           icon: Icons.calendar_month,
                           color: Color(0xFF1E90FF),
                         );
@@ -210,14 +213,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     // still static
                     StatCard(
-                      title: 'Lab results',
+                      title: LocaleKeys.lab_results.tr(),
                       value: '389',
                       subtitle: '2 urgent',
                       icon: Icons.science,
                       color: Color(0xFFFF6B6B),
                     ),
                     StatCard(
-                      title: 'Prescriptions',
+                      title: LocaleKeys.prescriptions.tr(),
                       value: '156',
                       subtitle: '+12% from last month',
                       icon: Icons.medication,
@@ -230,7 +233,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SectionHeader(
-                      title: 'Upcoming Appointments',
+                      title: LocaleKeys.upcoming_appointments.tr(),
                       routePath: '/appointments'),
                 ),
                 const SizedBox(height: 16),

@@ -54,7 +54,7 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
         children: [
           // date on day for the appointment
           Text(
-            "${translateDay(widget.appointmentDoctor.appointment.date)}",
+            "${widget.appointmentDoctor.appointment.date}",
 
             ///TODO: after modify date , uncomment this and make it a real date not just a day
             // isToday(date: appointmentDoctor.appointment.date)

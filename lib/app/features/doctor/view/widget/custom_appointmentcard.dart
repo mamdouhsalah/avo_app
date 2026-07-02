@@ -3,10 +3,12 @@ import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/features/doctor/helpers/status_hlper.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avo_app/app/core/models/appointment_action_arg.dart';
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 
 class CustomAppointmentCard extends StatelessWidget {
   final AppointmentCardModel appointmentCard;
@@ -25,7 +27,6 @@ class CustomAppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final statusColor = AppointmentStatusHelper.getColor(
       appointmentCard.appointment.status,
     );
@@ -85,16 +86,14 @@ class CustomAppointmentCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 4.h),
-
-                       Text(
-                        subtitle ?? "Normal Visit",
-                        style: TextStyle(
-                          color: statusColor,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    Text(
+                      subtitle ?? LocaleKeys.appointment_status.tr(),
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
                       ),
-
+                    ),
                     SizedBox(height: 8.h),
                     Column(
                       children: [
@@ -103,17 +102,17 @@ class CustomAppointmentCard extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14.sp,
-                            color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.9),
+                            color: theme.textTheme.bodyMedium?.color
+                                ?.withValues(alpha: 0.9),
                           ),
-                          ),
-                          SizedBox(height: 4.h),
+                        ),
+                        SizedBox(height: 4.h),
                         Text(
                           room ?? "Room",
                           style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                            color:Colors.grey
-                          ),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.sp,
+                              color: Colors.grey),
                         ),
                       ],
                     ),
@@ -121,10 +120,10 @@ class CustomAppointmentCard extends StatelessWidget {
                 ),
               ),
               Icon(
-                  Icons.flag_rounded,
-                  color: statusColor,
-                  size: 26.sp,
-                ),
+                Icons.flag_rounded,
+                color: statusColor,
+                size: 26.sp,
+              ),
             ],
           ),
         ),
@@ -134,7 +133,7 @@ class CustomAppointmentCard extends StatelessWidget {
 }
 
 class CustomGridAppointmentCard extends StatelessWidget {
-  final AppointmentCardModel  appointmentCard;
+  final AppointmentCardModel appointmentCard;
 
   const CustomGridAppointmentCard({
     super.key,
@@ -147,13 +146,10 @@ class CustomGridAppointmentCard extends StatelessWidget {
     final statusColor = AppointmentStatusHelper.getColor(
       appointmentCard.appointment.status,
     );
-    final displayName = appointmentCard.patient!.fullName ;
+    final displayName = appointmentCard.patient!.fullName;
     final displaySubtitle = appointmentCard.appointment.status;
     final displayTime = appointmentCard.appointment.startTime;
     final displayRoom = "room";
-
-
-
 
     return Material(
       color: Colors.transparent,
@@ -199,9 +195,9 @@ class CustomGridAppointmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-        
+
               SizedBox(height: 14.h),
-        
+
               // Name
               Text(
                 displayName,
@@ -213,21 +209,22 @@ class CustomGridAppointmentCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-        
+
               SizedBox(height: 4.h),
-        
+
               Text(
                 displaySubtitle,
                 style: TextStyle(
                   fontSize: 13.5.sp,
-                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.75),
+                  color: theme.textTheme.bodyMedium?.color
+                      ?.withValues(alpha: 0.75),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-        
+
               const Spacer(),
-        
+
               // Time & Room
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

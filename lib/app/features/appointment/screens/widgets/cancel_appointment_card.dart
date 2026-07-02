@@ -63,7 +63,7 @@ class CancelAppointmentCard extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.w),
                 child: Text(
-                  'appointment.cancel_confirm_msg'.tr(namedArgs: {
+                  LocaleKeys.appointment_cancel_confirm_msg.tr(namedArgs: {
                     'doctorName': doctorName,
                   }),
                   textAlign: TextAlign.center,
