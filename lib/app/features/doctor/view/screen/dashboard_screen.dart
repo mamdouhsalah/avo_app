@@ -258,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   if (appointments.isEmpty) {
                     return Center(
                       child: Text(
-                        LocaleKeys.appointment_no_upcoming_to_display,
+                        LocaleKeys.appointment_no_upcoming.tr(),
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: Colors.grey,

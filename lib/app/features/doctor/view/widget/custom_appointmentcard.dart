@@ -87,7 +87,7 @@ class CustomAppointmentCard extends StatelessWidget {
                     ),
                     SizedBox(height: 4.h),
                     Text(
-                      subtitle ?? LocaleKeys.appointment_status.tr(),
+                      subtitle ?? appointmentCard.appointment.status,
                       style: TextStyle(
                         color: statusColor,
                         fontSize: 12.sp,
