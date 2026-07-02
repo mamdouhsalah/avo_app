@@ -1,6 +1,7 @@
 // the screen that doctor will interact with to do actions with appointments
 import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
@@ -20,14 +21,20 @@ class AppointmentActionScreen extends StatelessWidget {
   final String appointmentId;
   final String appointmentStatus;
 
-  const AppointmentActionScreen({super.key, required this.patient, required this.appointmentId, required this.appointmentStatus});
-
+  const AppointmentActionScreen(
+      {super.key,
+      required this.patient,
+      required this.appointmentId,
+      required this.appointmentStatus});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-                        final nextStatus =
-                      AppointmentStatusHelper.getNextStatus(appointmentStatus);
+    final nextStatus = AppointmentStatusHelper.getNextStatus(appointmentStatus);
+    final String actionText = nextStatus == AppointmentStatus.confirmed
+    ? 'Confirm'
+    : 'Complete';
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
@@ -97,7 +104,6 @@ class AppointmentActionScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
                 ],
               ),
             ),
@@ -130,30 +136,22 @@ class AppointmentActionScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  
-                    _buildInfoRow(context, Icons.calendar_today_rounded,
-                        "Date of Birth", patient.dateOfBirth ),
-                    Divider(height: 1, color: theme.colorScheme.outlineVariant),
-
-                    _buildInfoRow(context, Icons.person_outline_rounded,
-                        "Gender", patient.gender),
-                    Divider(height: 1, color: theme.colorScheme.outlineVariant),
-                  
-                  
-                    _buildInfoRow(
-                        context, Icons.phone_rounded, "Phone", patient.phoneNumber ),
-                    Divider(height: 1, color: theme.colorScheme.outlineVariant),
-
-                  
-                    _buildInfoRow(
-                        context, Icons.email_rounded, "Email",patient.email ),
-                    Divider(height: 1, color: theme.colorScheme.outlineVariant),
-
-                    SizedBox(height: 10.h),
-
+                  _buildInfoRow(context, Icons.calendar_today_rounded,
+                      "Date of Birth", patient.dateOfBirth),
+                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  _buildInfoRow(context, Icons.person_outline_rounded, "Gender",
+                      patient.gender),
+                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  _buildInfoRow(context, Icons.phone_rounded, "Phone",
+                      patient.phoneNumber),
+                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  _buildInfoRow(
+                      context, Icons.email_rounded, "Email", patient.email),
+                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  SizedBox(height: 50.h),
                   if (nextStatus != null) ...[
                     MainButton(
-                      text: nextStatus,
+                      text: actionText,
                       onPressed: () async {
                         switch (nextStatus) {
                           case AppointmentStatus.confirmed:
@@ -175,7 +173,7 @@ class AppointmentActionScreen extends StatelessWidget {
                             backgroundColor: Colors.green,
                             behavior: SnackBarBehavior.floating,
                             content: Text(
-                              '$nextStatus successfully',
+                              'done successfully',
                             ),
                             duration: const Duration(seconds: 2),
                           ),
@@ -185,14 +183,15 @@ class AppointmentActionScreen extends StatelessWidget {
                         await Future.delayed(const Duration(milliseconds: 700));
 
                         if (!context.mounted) return;
-                        context.pop();
+                        context.go(AppRouter.appointments);
                       },
                     ),
-                    
-                  SizedBox(height: 12.h),
+
+                    SizedBox(height: 12.h),
 
                     // Show Cancel only when appointment is already confirmed
-                    if (appointmentStatus == AppointmentStatus.confirmed || appointmentStatus == AppointmentStatus.pending) ...[
+                    if (appointmentStatus == AppointmentStatus.confirmed ||
+                        appointmentStatus == AppointmentStatus.pending) ...[
                       SizedBox(height: 12.h),
                       MainButton(
                         text: "Cancel",
@@ -202,27 +201,27 @@ class AppointmentActionScreen extends StatelessWidget {
                               .cancelAppointment(appointmentId);
                           if (!context.mounted) return;
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.green,
-                          behavior: SnackBarBehavior.floating,
-                          content: Text(
-                            LocaleKeys.appointment_cancel_success_msg.tr(),
-                          ),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'Appointment canceled successfully',
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
 
-                        // Wait a little so the user sees the snackbar
-                        await Future.delayed(const Duration(milliseconds: 700));
+                          // Wait a little so the user sees the snackbar
+                          await Future.delayed(
+                              const Duration(milliseconds: 700));
 
-                        if (!context.mounted) return;
-                        context.pop();    
+                          if (!context.mounted) return;
+                          context.go(AppRouter.appointments);
                         },
                       ),
                     ],
                   ]
-                    
                 ],
               ),
             ),

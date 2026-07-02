@@ -162,7 +162,7 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
                       Row(
                         children: [
                           Text(
-                            "${widget.appointmentDoctor.doctor.rating}",
+                            "${widget.appointmentDoctor.doctor.rating.toStringAsFixed(2)}",
                             style: TextStyle(
                                 color: colorScheme.onSurface,
                                 fontSize: 16.sp,

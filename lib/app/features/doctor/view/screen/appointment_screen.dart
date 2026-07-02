@@ -1,3 +1,5 @@
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
+import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_appointmentcard.dart';
@@ -5,6 +7,7 @@ import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -88,26 +91,30 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   childAspectRatio: 1.5,
                   children: [
                     _buildStatCard(
-                        "Total", cubit.totalCount.toString(), Colors.blue),
+                        "Total", cubit.totalCount, Colors.blue, cubit.allAppointments),
                     _buildStatCard(
                       "Confirmed",
-                      cubit.confirmedCount.toString(),
+                      cubit.confirmedCount,
                       const Color(0xFF00B8A9),
+                      cubit.upcomingAppointments,
                     ),
                     _buildStatCard(
                       "Pending",
-                      cubit.pendingCount.toString(),
+                      cubit.pendingCount,
                       Colors.orange,
+                      cubit.pendingAppointments,
                     ),
                     _buildStatCard(
                       "completed",
-                      cubit.completedCount.toString(),
+                      cubit.completedCount,
                       Colors.grey,
+                      cubit.completedAppointments,  
                     ),
                     _buildStatCard(
                       "canceled",
-                      cubit.canceledCount.toString(),
+                      cubit.canceledCount,
                       Colors.red,
+                      cubit.canceledAppointments,
                     ),
                   ],
                 );
@@ -240,7 +247,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       child: Text(
                         isUpcoming
                             ? "No Upcoming Appointments"
-                            : "No Past Appointments",
+                            : "No Completed Appointments",
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: Colors.grey,
@@ -284,44 +291,56 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, Color color) {
+  Widget _buildStatCard(String title, int value, Color color, List<AppointmentCardModel> appointmentCards) {
     final theme = Theme.of(context);
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      alignment: Alignment.center,
-      padding: EdgeInsets.all(8.w),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Material(
+      child: InkWell(
+        onTap: () {
+          if(value> 0){
+            context.push(
+              AppRouter.specificAppointmentDisplay,
+              extra: appointmentCards,
+            );
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(8.w),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 36.sp,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                value.toString(),
+                style: TextStyle(
+                  fontSize: 36.sp,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 4.h),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: theme.textTheme.bodyMedium?.color,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

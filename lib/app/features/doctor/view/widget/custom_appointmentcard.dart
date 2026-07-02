@@ -25,7 +25,7 @@ class CustomAppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final colorScheme = theme.colorScheme;
     final statusColor = AppointmentStatusHelper.getColor(
       appointmentCard.appointment.status,
     );
@@ -45,13 +45,13 @@ class CustomAppointmentCard extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(12.sp),
           width: double.infinity,
-          height: 124.h,
+          height: 130.h,
           decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: statusColor,
-              width: 1.2.sp,
+              width: .5.sp,
             ),
             boxShadow: [
               BoxShadow(
@@ -62,6 +62,7 @@ class CustomAppointmentCard extends StatelessWidget {
             ],
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CustomAvatar(
                 size: 52.r,
@@ -69,7 +70,7 @@ class CustomAppointmentCard extends StatelessWidget {
                 borderColor: statusColor,
                 imageUrl: appointmentCard.patient!.image,
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: 16.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,19 +81,12 @@ class CustomAppointmentCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
+                        color: theme.textTheme.titleLarge?.color,
                       ),
                     ),
                     SizedBox(height: 4.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8.w,
-                        vertical: 2.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Text(
+
+                       Text(
                         subtitle ?? "Normal Visit",
                         style: TextStyle(
                           color: statusColor,
@@ -100,23 +94,25 @@ class CustomAppointmentCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
+
                     SizedBox(height: 8.h),
-                    Row(
+                    Column(
                       children: [
                         Text(
                           time ?? appointmentCard.appointment.startTime,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14.sp,
+                            color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.9),
                           ),
-                        ),
-                        SizedBox(width: 10.w),
+                          ),
+                          SizedBox(height: 4.h),
                         Text(
                           room ?? "Room",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14.sp,
+                            color:Colors.grey
                           ),
                         ),
                       ],
@@ -124,18 +120,11 @@ class CustomAppointmentCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(9.sp),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Icon(
+              Icon(
                   Icons.flag_rounded,
                   color: statusColor,
-                  size: 22.sp,
+                  size: 26.sp,
                 ),
-              ),
             ],
           ),
         ),
@@ -161,7 +150,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
     final displayName = appointmentCard.patient!.fullName ;
     final displaySubtitle = appointmentCard.appointment.status;
     final displayTime = appointmentCard.appointment.startTime;
-    final displayRoom = "Room";
+    final displayRoom = "room";
 
 
 
@@ -184,7 +173,7 @@ class CustomGridAppointmentCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: statusColor,
-              width: 1.2.sp,
+              width: .5.sp,
             ),
             boxShadow: [
               BoxShadow(

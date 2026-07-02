@@ -45,7 +45,9 @@ class AppointmentCard extends StatelessWidget {
             // isToday(date: appointmentDoctor.appointment.date)
             //     ? LocaleKeys.general_today.tr()
             //     :
-            "${translateDay(appointmentDoctor.appointment.date)}",
+
+            ///TODO : replace this with actual date
+            "${appointmentDoctor.appointment.date}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -163,7 +165,7 @@ class AppointmentCard extends StatelessWidget {
                                       }
 
                                       return Text(
-                                        rating.toStringAsFixed(1),
+                                        rating.toStringAsFixed(2),
                                         style: TextStyle(
                                           color: colorScheme.onSurface,
                                           fontSize: 16.sp,

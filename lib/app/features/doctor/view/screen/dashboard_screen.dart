@@ -201,7 +201,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         return StatCard(
                           title: 'Appointments',
                           value: cubit.totalCount.toString(),
-                          subtitle: '${cubit.upcomingCount} pending',
+                          subtitle: '${cubit.pendingCount} pending',
                           icon: Icons.calendar_month,
                           color: Color(0xFF1E90FF),
                         );
@@ -254,12 +254,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   }
 
                   final cubit = context.read<AppointmentCubit>();
-                  final appointments = cubit.pendingAppointments;
+                  final appointments = cubit.upcomingAppointments;
 
                   if (appointments.isEmpty) {
                     return Center(
                       child: Text(
                         LocaleKeys.appointment_no_upcoming_to_display,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.grey,
+                        )
                       ),
                     );
                   }

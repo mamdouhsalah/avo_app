@@ -32,7 +32,7 @@ class CustomAvatar extends StatelessWidget {
         shape: BoxShape.circle,
         color: bgColor,
         border: borderColor != null
-            ? Border.all(color: borderColor!, width: 3.w)
+            ? Border.all(color: borderColor!, width: 2.w)
             : null,
       ),
       child: ClipOval(
@@ -60,7 +60,7 @@ class CustomAvatar extends StatelessWidget {
               width: 20.w,
               height: 20.w,
               child: CircularProgressIndicator(
-                strokeWidth: 2,
+                strokeWidth: 1,
                 color: theme.colorScheme.primary,
               ),
             ),
