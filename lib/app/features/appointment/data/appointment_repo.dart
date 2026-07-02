@@ -24,7 +24,6 @@ abstract class AppointmentRepo {
     String appointmentId,
   );
 
-
   Future<void> deleteAppointment(
     String appointmentId,
   );
@@ -32,7 +31,7 @@ abstract class AppointmentRepo {
   Future<void> setRated(String appointmentId);
 
   Future<void> setPatientRating(
-  String appointmentId,
-  double rating,
-);
+    String appointmentId,
+    double rating,
+  );
 }

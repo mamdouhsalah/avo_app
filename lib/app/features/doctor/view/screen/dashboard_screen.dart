@@ -164,71 +164,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 SizedBox(height: 12.h),
 
-                // Stats Grid
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 1.h,
-                  crossAxisSpacing: 1.w,
-                  childAspectRatio: 1.25.sp,
-                  padding: EdgeInsets.zero,
-                  children:  [
+                BlocBuilder<AppointmentCubit, AppointmentState>(
+                  builder: (context, state) {
+                    final cubit = context.read<AppointmentCubit>();
 
-                    /// still static
-                    StatCard(
-                      title: LocaleKeys.patients.tr(),
-                      value: '1,248',
-                      subtitle: '+12% from last month',
-                      icon: Icons.people,
-                      color: Color(0xFF4ECDC4),
-                    ),
+                    if (state is AppointmentLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
 
-                    /// appointment part
-                    BlocBuilder<AppointmentCubit, AppointmentState>(
-                      builder: (context, state) {
-                        final cubit = context.read<AppointmentCubit>();
+                    if (state is AppointmentError) {
+                      return Center(
+                        child: Text(state.message),
+                      );
+                    }
 
-                        if (state is AppointmentLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
+                    return GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 1.h,
+                      crossAxisSpacing: 1.w,
+                      childAspectRatio: 1.25.sp,
+                      padding: EdgeInsets.zero,
+                      children: [
+                        StatCard(
+                          title: LocaleKeys.patients.tr(),
+                          value: cubit.treatedPatientsCount.toString(),
+                          subtitle: 'treated patients',
+                          icon: Icons.people,
+                          color: const Color(0xFF4ECDC4),
+                        ),
 
-                        if (state is AppointmentError) {
-                          return Center(
-                            child: Text(state.message),
-                          );
-                        }
-
-                        return StatCard(
+                        StatCard(
                           title: LocaleKeys.appointments.tr(),
                           value: cubit.totalCount.toString(),
-                          subtitle: '${cubit.pendingCount} ${LocaleKeys.appointment_pending.tr()}',
+                          subtitle:
+                              '${cubit.pendingCount} ${LocaleKeys.appointment_pending.tr()}',
                           icon: Icons.calendar_month,
-                          color: Color(0xFF1E90FF),
-                        );
-                      },
-                    ),
+                          color: const Color(0xFF1E90FF),
+                        ),
 
-                    // still static
-                    StatCard(
-                      title: LocaleKeys.lab_results.tr(),
-                      value: '389',
-                      subtitle: '2 urgent',
-                      icon: Icons.science,
-                      color: Color(0xFFFF6B6B),
-                    ),
-                    StatCard(
-                      title: LocaleKeys.prescriptions.tr(),
-                      value: '156',
-                      subtitle: '+12% from last month',
-                      icon: Icons.medication,
-                      color: Color(0xFF9B59B6),
-                    ),
-                  ],
+                        StatCard(
+                          title: LocaleKeys.lab_results.tr(),
+                          value: '389',
+                          subtitle: '2 urgent',
+                          icon: Icons.science,
+                          color: const Color(0xFFFF6B6B),
+                        ),
+
+                        StatCard(
+                          title: LocaleKeys.prescriptions.tr(),
+                          value: '156',
+                          subtitle: '+12% from last month',
+                          icon: Icons.medication,
+                          color: const Color(0xFF9B59B6),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-
                 SizedBox(height: 12.h),
                 Padding(
                   padding: const EdgeInsets.all(8.0),

@@ -11,266 +11,249 @@ class AppointmentCubit extends Cubit<AppointmentState> {
 
   List<AppointmentCardModel> _appointments = [];
 
-/// helper functions
-void _emitLoaded() {
-  emit(
-    AppointmentLoaded(
-      List.from(_appointments),
-    ),
-  );
-}
-
-// get all appointment , not loaded again until refresh or open the screen again
-  Future<void> getAppointments() async {
-  emit(const AppointmentLoading());
-
-  try {
-    _appointments = await _repository.getAllAppointments();
-
+  /// helper functions
+  void _emitLoaded() {
     emit(
       AppointmentLoaded(
         List.from(_appointments),
       ),
     );
-  } catch (e) {
-    emit(
-      AppointmentError(
-        e.toString(),
-      ),
-    );
   }
-}
+
+// get all appointment , not loaded again until refresh or open the screen again
+  Future<void> getAppointments() async {
+    emit(const AppointmentLoading());
+
+    try {
+      _appointments = await _repository.getAllAppointments();
+
+      emit(
+        AppointmentLoaded(
+          List.from(_appointments),
+        ),
+      );
+    } catch (e) {
+      emit(
+        AppointmentError(
+          e.toString(),
+        ),
+      );
+    }
+  }
 
 // getters -> all from the appointments we got first
 // all appointments
-List<AppointmentCardModel> get allAppointments => _appointments;
+  List<AppointmentCardModel> get allAppointments => _appointments;
 // upcoming appointments
-List<AppointmentCardModel> get upcomingAppointments =>
-    _appointments.where(
-      (e) =>
-          e.appointment.status ==
-          AppointmentStatus.confirmed,
-    ).toList();
+  List<AppointmentCardModel> get upcomingAppointments => _appointments
+      .where(
+        (e) => e.appointment.status == AppointmentStatus.confirmed,
+      )
+      .toList();
 
 // completed appointments
-List<AppointmentCardModel> get completedAppointments =>
-    _appointments.where(
-      (e) =>
-          e.appointment.status ==
-          AppointmentStatus.completed,
-    ).toList();   
+  List<AppointmentCardModel> get completedAppointments => _appointments
+      .where(
+        (e) => e.appointment.status == AppointmentStatus.completed,
+      )
+      .toList();
 
 // canceled appointments
-List<AppointmentCardModel> get canceledAppointments =>
-    _appointments.where(
-      (e) =>
-          e.appointment.status ==
-          AppointmentStatus.canceled,
-    ).toList();     
+  List<AppointmentCardModel> get canceledAppointments => _appointments
+      .where(
+        (e) => e.appointment.status == AppointmentStatus.canceled,
+      )
+      .toList();
 
-
-/// doctor getters
+  /// doctor getters
 // pending appointments
-List<AppointmentCardModel> get pendingAppointments =>
-    _appointments.where(
-      (e) =>
-          e.appointment.status ==
-          AppointmentStatus.pending,
-    ).toList();
+  List<AppointmentCardModel> get pendingAppointments => _appointments
+      .where(
+        (e) => e.appointment.status == AppointmentStatus.pending,
+      )
+      .toList();
 
 // confirmed appointments
-List<AppointmentCardModel> get confirmedAppointments =>
-    _appointments.where(
-      (e) =>
-          e.appointment.status ==
-          AppointmentStatus.confirmed,
-    ).toList();    
+  List<AppointmentCardModel> get confirmedAppointments => _appointments
+      .where(
+        (e) => e.appointment.status == AppointmentStatus.confirmed,
+      )
+      .toList();
 
-/// counts
-int get totalCount => _appointments.length;
+  /// counts
+  int get totalCount => _appointments.length;
 
-int get pendingCount =>
-    pendingAppointments.length;
+  int get pendingCount => pendingAppointments.length;
 
-int get confirmedCount =>
-    confirmedAppointments.length;
+  int get confirmedCount => confirmedAppointments.length;
 
-int get upcomingCount =>
-    upcomingAppointments.length;
+  int get upcomingCount => upcomingAppointments.length;
 
-int get completedCount =>
-    completedAppointments.length;
+  int get completedCount => completedAppointments.length;
 
-int get canceledCount =>
-    canceledAppointments.length;
+  int get canceledCount => canceledAppointments.length;
 
+int get treatedPatientsCount => _appointments
+    .where((e) => e.appointment.status == AppointmentStatus.completed)
+    .map((e) => e.appointment.patientId)
+    .toSet()
+    .length;
 
 // confirm
-Future<void> confirmAppointment(String appointmentId) async {
-  try {
-    await _repository.confirmAppointment(appointmentId);
+  Future<void> confirmAppointment(String appointmentId) async {
+    try {
+      await _repository.confirmAppointment(appointmentId);
 
-    final index = _appointments.indexWhere(
-      (e) => e.appointment.id == appointmentId,
-    );
+      final index = _appointments.indexWhere(
+        (e) => e.appointment.id == appointmentId,
+      );
 
-    if (index == -1) return;
+      if (index == -1) return;
 
-    final card = _appointments[index];
+      final card = _appointments[index];
 
-    _appointments[index] = card.copyWith(
-      appointment: card.appointment.copyWith(
-        status: AppointmentStatus.confirmed,
-      ),
-    );
+      _appointments[index] = card.copyWith(
+        appointment: card.appointment.copyWith(
+          status: AppointmentStatus.confirmed,
+        ),
+      );
 
-    _emitLoaded();
-  } catch (e) {
-    emit(AppointmentError(e.toString()));
+      _emitLoaded();
+    } catch (e) {
+      emit(AppointmentError(e.toString()));
+    }
   }
-}
 
-Future<void> submitRating(
-  String appointmentId,
-  double rating,
-) async {
-  try {
-    await _repository.setPatientRating(appointmentId, rating);
-    await _repository.setRated(appointmentId);
+  Future<void> submitRating(
+    String appointmentId,
+    double rating,
+  ) async {
+    try {
+      await _repository.setPatientRating(appointmentId, rating);
+      await _repository.setRated(appointmentId);
 
-    final index = _appointments.indexWhere(
-      (e) => e.appointment.id == appointmentId,
-    );
+      final index = _appointments.indexWhere(
+        (e) => e.appointment.id == appointmentId,
+      );
 
-    if (index == -1) return;
+      if (index == -1) return;
 
-    final card = _appointments[index];
+      final card = _appointments[index];
 
-    _appointments[index] = card.copyWith(
-      appointment: card.appointment.copyWith(
-        patientRating: rating,
-        isRated: true,
-      ),
-    );
+      _appointments[index] = card.copyWith(
+        appointment: card.appointment.copyWith(
+          patientRating: rating,
+          isRated: true,
+        ),
+      );
 
-    _emitLoaded();
-  } catch (e) {
-    emit(AppointmentError(e.toString()));
+      _emitLoaded();
+    } catch (e) {
+      emit(AppointmentError(e.toString()));
+    }
   }
-}
 
-bool? isRated(String appointmentId) {
-  final appointment = _appointments.firstWhere(
-    (e) => e.appointment.id == appointmentId,
-    orElse: () => throw Exception("Appointment not found"),
-  );
-
-  return appointment.appointment.isRated;
-}
-Future<void> completeAppointment(String appointmentId) async {
-  try {
-    await _repository.completeAppointment(appointmentId);
-
-    final index = _appointments.indexWhere(
+  bool? isRated(String appointmentId) {
+    final appointment = _appointments.firstWhere(
       (e) => e.appointment.id == appointmentId,
+      orElse: () => throw Exception("Appointment not found"),
     );
 
-    if (index == -1) return;
-
-    final card = _appointments[index];
-
-    _appointments[index] = card.copyWith(
-      appointment: card.appointment.copyWith(
-        status: AppointmentStatus.completed,
-      ),
-    );
-
-    _emitLoaded();
-  } catch (e) {
-    emit(AppointmentError(e.toString()));
+    return appointment.appointment.isRated;
   }
-}
+
+  Future<void> completeAppointment(String appointmentId) async {
+    try {
+      await _repository.completeAppointment(appointmentId);
+
+      final index = _appointments.indexWhere(
+        (e) => e.appointment.id == appointmentId,
+      );
+
+      if (index == -1) return;
+
+      final card = _appointments[index];
+
+      _appointments[index] = card.copyWith(
+        appointment: card.appointment.copyWith(
+          status: AppointmentStatus.completed,
+        ),
+      );
+
+      _emitLoaded();
+    } catch (e) {
+      emit(AppointmentError(e.toString()));
+    }
+  }
 
 // cancel
-Future<void> cancelAppointment(String appointmentId) async {
-  try {
-    await _repository.cancelAppointment(appointmentId);
+  Future<void> cancelAppointment(String appointmentId) async {
+    try {
+      await _repository.cancelAppointment(appointmentId);
 
-    final index = _appointments.indexWhere(
-      (e) => e.appointment.id == appointmentId,
-    );
+      final index = _appointments.indexWhere(
+        (e) => e.appointment.id == appointmentId,
+      );
 
-    if (index == -1) return;
+      if (index == -1) return;
 
-    final card = _appointments[index];
+      final card = _appointments[index];
 
-    _appointments[index] = card.copyWith(
-      appointment: card.appointment.copyWith(
-        status: AppointmentStatus.canceled,
-      ),
-    );
+      _appointments[index] = card.copyWith(
+        appointment: card.appointment.copyWith(
+          status: AppointmentStatus.canceled,
+        ),
+      );
 
-    _emitLoaded();
-  } catch (e) {
-    emit(AppointmentError(e.toString()));
+      _emitLoaded();
+    } catch (e) {
+      emit(AppointmentError(e.toString()));
+    }
   }
-}
-
 
 //update
-Future<void> updateAppointment(
-  AppointmentModel updated,
-) async {
-  try {
-    await _repository.updateAppointmentDetails(updated);
+  Future<void> updateAppointment(
+    AppointmentModel updated,
+  ) async {
+    try {
+      await _repository.updateAppointmentDetails(updated);
 
-    final index = _appointments.indexWhere(
-      (e) => e.appointment.id == updated.id,
-    );
+      final index = _appointments.indexWhere(
+        (e) => e.appointment.id == updated.id,
+      );
 
-    if (index == -1) return;
+      if (index == -1) return;
 
-    _appointments[index] = _appointments[index].copyWith(
-      appointment: updated,
-    );
+      _appointments[index] = _appointments[index].copyWith(
+        appointment: updated,
+      );
 
-    _emitLoaded();
-  } catch (e) {
-    emit(AppointmentError(e.toString()));
+      _emitLoaded();
+    } catch (e) {
+      emit(AppointmentError(e.toString()));
+    }
   }
-}
-
-
-
 
 // delete
-Future<void> deleteAppointment(
+  Future<void> deleteAppointment(
     String appointmentId,
-) async {
+  ) async {
+    try {
+      await _repository.deleteAppointment(
+        appointmentId,
+      );
 
-  try {
+      _appointments.removeWhere(
+        (e) => e.appointment.id == appointmentId,
+      );
 
-    await _repository.deleteAppointment(
-      appointmentId,
-    );
-
-    _appointments.removeWhere(
-      (e) =>
-          e.appointment.id ==
-          appointmentId,
-    );
-
-    _emitLoaded();
-
-  } catch (e) {
-
-    emit(
-      AppointmentError(
-        e.toString(),
-      ),
-    );
-
+      _emitLoaded();
+    } catch (e) {
+      emit(
+        AppointmentError(
+          e.toString(),
+        ),
+      );
+    }
   }
-
-}
 }
