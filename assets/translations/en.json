@@ -235,7 +235,8 @@
     "best_doctors": "Best Doctors",
     "no_doctors": "No doctors available",
     "best_pharmacies": "Best Pharmacies",
-    "no_pharmacies": "No pharmacies available"
+    "no_pharmacies": "No pharmacies available",
+    "all_doctors": "All Doctors"
   },
   "category": {
     "title": "Categories",

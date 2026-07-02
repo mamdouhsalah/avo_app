@@ -48,6 +48,7 @@ import 'package:avo_app/app/features/chats/view/screens/chat_details_screen.dart
 import 'package:avo_app/app/features/chats/view/screens/audio_call_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
+import 'package:avo_app/app/features/home/view/widget/all_doctors_screen.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
 import 'package:avo_app/app/features/payment/screens/add_card_screen.dart';
 import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
@@ -90,6 +91,7 @@ class AppRouter {
   // Other Features
   static const String home = '/home';
   static const String search = '/search';
+  static const String allDoctors = '/all-doctors';
   static const String reminder = '/reminder';
   static const String profile = '/profile';
   static const String profileFull = '/profile/full'; // بدون Bottom Nav
@@ -256,6 +258,9 @@ class AppRouter {
         },
       ),
       GoRoute(path: search, builder: (context, state) => const SearchScreen()),
+      GoRoute(
+          path: allDoctors,
+          builder: (context, state) => const AllDoctorsScreen()),
       GoRoute(
           path: favorites,
           builder: (context, state) => const FavoritesScreen()),
