@@ -15,6 +15,13 @@ class CodegenLoader extends AssetLoader{
   }
 
   static const Map<String,dynamic> _ar = {
+  "dashboard": "لوحة التحكم",
+  "how_are_you_doing": "كيف حالك؟",
+  "patients": "المرضى",
+  "appointments": "المواعيد",
+  "lab_results": "نتائج المختبر",
+  "prescriptions": "الوصفات الطبية",
+  "upcoming_appointments": "المواعيد القادمة",
   "bottom_nav": {
     "Scanner": "ماسح ضوئي",
     "Chat": "الدردشة",
@@ -282,7 +289,24 @@ class CodegenLoader extends AssetLoader{
     "rated": "تم التقييم",
     "submit_rating": "إرسال التقييم",
     "select_rating_first": "يرجى اختيار تقييم أولاً.",
-    "rated_successfully": "تم التقييم بنجاح"
+    "rated_successfully": "تم التقييم بنجاح",
+    "confirm": "تأكيد",
+    "complete": "إكمال",
+    "status": "الحالة",
+    "no_upcoming": "لا توجد مواعيد قادمة",
+    "no_completed": "لا توجد مواعيد مكتملة",
+    "canceled_successfully": "تم إلغاء الموعد بنجاح",
+    "todays_overview": "نظرة عامة اليوم",
+    "total": "الإجمالي",
+    "confirmed": "مؤكد",
+    "pending": "قيد الانتظار",
+    "personal_information": "المعلومات الشخصية",
+    "date_of_birth": "تاريخ الميلاد",
+    "gender": "النوع",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "done_successfully": "تم بنجاح",
+    "cancel": "إلغاء"
   },
   "auth": {
     "create_account": "إنشاء حساب",
@@ -434,6 +458,13 @@ class CodegenLoader extends AssetLoader{
   }
 };
 static const Map<String,dynamic> _en = {
+  "dashboard": "Dashboard",
+  "how_are_you_doing": "How are you doing?",
+  "patients": "Patients",
+  "appointments": "Appointments",
+  "lab_results": "Lab Results",
+  "prescriptions": "Prescriptions",
+  "upcoming_appointments": "Upcoming Appointments",
   "bottom_nav": {
     "Scanner": "Scanner",
     "Chat": "Chat",
@@ -701,7 +732,25 @@ static const Map<String,dynamic> _en = {
     "rated": "Rated",
     "submit_rating": "Submit Rating",
     "select_rating_first": "Please select a rating first.",
-    "rated_successfully": "Rated successfully"
+    "rated_successfully": "Rated successfully",
+    "confirm": "Confirm",
+    "complete": "Complete",
+    "status": "Status",
+    "room": "Room {room}",
+    "no_upcoming": "No upcoming appointments",
+    "no_completed": "No completed appointments",
+    "canceled_successfully": "Appointment canceled successfully",
+    "todays_overview": "Today's Overview",
+    "total": "Total",
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "personal_information": "Personal Information",
+    "date_of_birth": "Date of Birth",
+    "gender": "Gender",
+    "phone": "Phone",
+    "email": "Email",
+    "done_successfully": "Done successfully",
+    "cancel": "Cancel"
   },
   "auth": {
     "create_account": "Create Account",

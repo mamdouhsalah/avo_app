@@ -1,5 +1,7 @@
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/core/utils/is_today.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
@@ -52,9 +54,12 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
         children: [
           // date on day for the appointment
           Text(
-            isToday(date: widget.appointmentDoctor.appointment.date)
-                ? LocaleKeys.general_today.tr()
-                : "${widget.appointmentDoctor.appointment.date.day} ${translateMonth(widget.appointmentDoctor.appointment.date.month)}",
+            "${widget.appointmentDoctor.appointment.date}",
+
+            ///TODO: after modify date , uncomment this and make it a real date not just a day
+            // isToday(date: appointmentDoctor.appointment.date)
+            //     ? LocaleKeys.general_today.tr()
+            //     : "${appointmentDoctor.appointment.date.day} ${getMonthNameFromDate(date: appointmentDoctor.appointment.date)}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -157,7 +162,7 @@ class _CompletedAppointmentCardState extends State<CompletedAppointmentCard> {
                       Row(
                         children: [
                           Text(
-                            "${widget.appointmentDoctor.doctor.rating}",
+                            "${widget.appointmentDoctor.doctor.rating.toStringAsFixed(2)}",
                             style: TextStyle(
                                 color: colorScheme.onSurface,
                                 fontSize: 16.sp,

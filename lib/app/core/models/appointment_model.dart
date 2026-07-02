@@ -20,14 +20,12 @@ class AppointmentModel {
   final bool? isRated;
   final double? patientRating;
 
-
   const AppointmentModel(
       {required this.id,
       required this.doctorId,
       required this.patientId,
       this.status = AppointmentStatus.pending,
       required this.date,
-      required this.day,
       this.startTime = '09:00',
       this.endTime = '10:00',
       this.patientName,

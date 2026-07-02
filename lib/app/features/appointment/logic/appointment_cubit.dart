@@ -42,6 +42,8 @@ void _emitLoaded() {
 }
 
 // getters -> all from the appointments we got first
+// all appointments
+List<AppointmentCardModel> get allAppointments => _appointments;
 // upcoming appointments
 List<AppointmentCardModel> get upcomingAppointments =>
     _appointments.where(

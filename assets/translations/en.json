@@ -1,4 +1,14 @@
 {
+
+  "dashboard": "Dashboard",
+  "how_are_you_doing": "How are you doing?",
+  "patients": "Patients",
+  "appointments": "Appointments",
+  "lab_results": "Lab Results",
+  "prescriptions": "Prescriptions",
+  "upcoming_appointments": "Upcoming Appointments",
+
+
   "bottom_nav": {
     "Scanner": "Scanner",
     "Chat": "Chat",
@@ -260,13 +270,33 @@
     "hourly_rate": "Hourly Rate: {price}",
     "selected_date": "Selected Date",
     "selected_time": "Selected Time",
-    "no_canceled_to_display": "No Canceled Appointments to display",
-    "no_upcoming_to_display": "No Canceled Appointments to display",
-    "no_completed_to_display": "No Canceled Appointments to display",
+    "no_canceled_to_display" :"No Canceled Appointments to display",
+    "no_upcoming_to_display" :"No Canceled Appointments to display",
+    "no_completed_to_display" :"No Canceled Appointments to display",
     "rated": "Rated",
     "submit_rating": "Submit Rating",
     "select_rating_first": "Please select a rating first.",
-    "rated_successfully": "Rated successfully"
+    "rated_successfully": "Rated successfully",
+     
+     "confirm": "Confirm",
+      "complete": "Complete",
+      "status": "Status",
+      "room": "Room {room}",
+      "no_upcoming": "No upcoming appointments",
+      "no_completed": "No completed appointments",
+      "canceled_successfully": "Appointment canceled successfully",
+      "todays_overview": "Today's Overview",
+      "total": "Total",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "personal_information": "Personal Information",
+      "date_of_birth": "Date of Birth",
+      "gender": "Gender",
+      "phone": "Phone",
+      "email": "Email",
+      "done_successfully": "Done successfully",
+      "cancel": "Cancel"
+
   },
   "auth": {
     "create_account": "Create Account",

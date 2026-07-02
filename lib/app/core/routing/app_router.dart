@@ -1,9 +1,13 @@
+import 'package:avo_app/app/core/models/appointment_action_arg.dart';
+import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/features/appointment/screens/appointment_patient_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/add_doctor_schedule/add_doctor_schedule_screen.dart';
 import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor_cubit.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/features/doctor/view/screen/appointment_action.dart';
+import 'package:avo_app/app/features/doctor/view/screen/specific_appointment_display.dart';
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:avo_app/app/features/scanner/view/screens/scanner_screen.dart';
 import 'package:avo_app/app/features/scanner/view/screens/saved_analysis_view_screen.dart';
@@ -82,7 +86,7 @@ class AppRouter {
   static const String doctorChats = '/doctor-chats';
   static const String newChat = '/new-chat';
   static const String analytics = '/analytics';
-
+  static const String specificAppointmentDisplay = '/specific-appointment-display';
   // Other Features
   static const String home = '/home';
   static const String search = '/search';
@@ -107,6 +111,7 @@ class AppRouter {
   static const String detailsPatient = '/details-patient';
   static const String scheduleAppointment = '/schedule-appointment';
   static const String patientAppointment = '/patient-appointment';
+  static const String appointmentAction = '/appointment-action';
 
   // Admin Routes
   static const String adminDashboard = '/admin-dashboard';
@@ -160,7 +165,25 @@ class AppRouter {
           ),
         ],
       ),
+      GoRoute(
+        path: appointmentAction,
+        builder: (context, state) {
+          final args = state.extra as AppointmentActionArgs;
 
+          return AppointmentActionScreen(
+            patient: args.patient,
+            appointmentId: args.appointmentId,
+            appointmentStatus: args.appointmentStatus,
+          );
+        },
+      ),
+      GoRoute(
+        path: specificAppointmentDisplay,
+        builder: (context, state) {
+          final appointmentCards = state.extra as List<AppointmentCardModel>;
+          return SpecificAppointmentDisplay(appointmentCards: appointmentCards);
+        }
+      ),
       // ==================== Full Screen Routes (بدون Bottom Navigation) ====================
       GoRoute(
           path: dashboard,

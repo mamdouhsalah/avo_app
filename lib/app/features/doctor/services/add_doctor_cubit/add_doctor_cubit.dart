@@ -129,4 +129,3 @@ class AddDoctorCubit extends Cubit<AddDoctorState> {
     return super.close();
   }
 }
-

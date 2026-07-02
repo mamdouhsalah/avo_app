@@ -1,6 +1,12 @@
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
+import 'package:avo_app/app/features/appointment/logic/appointment_state.dart';
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
+
+
 
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
@@ -11,6 +17,7 @@ import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,13 +34,14 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final ScrollController _scrollController = ScrollController();
   bool isVisible = true;
-  late final DoctorRepositoryImpl _doctorRepo;
+
   final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
   DoctorModel? currentDoctor;
 
   @override
   void initState() {
-    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+    // getting doctor appointments
+    context.read<AppointmentCubit>().getAppointments();
     _fetchDoctorData();
     super.initState();
     _scrollController.addListener(_scrollListener);
@@ -84,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         title: Text(
-          'Dashboard',
+          '${LocaleKeys.dashboard.tr()}',
           style: TextStyle(
             color: theme.textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
@@ -115,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Good Morning',
+                          '${LocaleKeys.how_are_you_doing.tr()}',
                           style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w400,
@@ -165,30 +173,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisSpacing: 1.w,
                   childAspectRatio: 1.25.sp,
                   padding: EdgeInsets.zero,
-                  children: const [
+                  children:  [
+
+                    /// still static
                     StatCard(
-                      title: 'Patients',
+                      title: LocaleKeys.patients.tr(),
                       value: '1,248',
                       subtitle: '+12% from last month',
                       icon: Icons.people,
                       color: Color(0xFF4ECDC4),
                     ),
-                    StatCard(
-                      title: 'Appointment',
-                      value: '500',
-                      subtitle: '3 pending',
-                      icon: Icons.calendar_today,
-                      color: Color(0xFFFFB74D),
+
+                    /// appointment part
+                    BlocBuilder<AppointmentCubit, AppointmentState>(
+                      builder: (context, state) {
+                        final cubit = context.read<AppointmentCubit>();
+
+                        if (state is AppointmentLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (state is AppointmentError) {
+                          return Center(
+                            child: Text(state.message),
+                          );
+                        }
+
+                        return StatCard(
+                          title: LocaleKeys.appointments.tr(),
+                          value: cubit.totalCount.toString(),
+                          subtitle: '${cubit.pendingCount} ${LocaleKeys.appointment_pending.tr()}',
+                          icon: Icons.calendar_month,
+                          color: Color(0xFF1E90FF),
+                        );
+                      },
                     ),
+
+                    // still static
                     StatCard(
-                      title: 'Lab results',
+                      title: LocaleKeys.lab_results.tr(),
                       value: '389',
                       subtitle: '2 urgent',
                       icon: Icons.science,
                       color: Color(0xFFFF6B6B),
                     ),
                     StatCard(
-                      title: 'Prescriptions',
+                      title: LocaleKeys.prescriptions.tr(),
                       value: '156',
                       subtitle: '+12% from last month',
                       icon: Icons.medication,
@@ -201,42 +233,60 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SectionHeader(
-                      title: 'Upcoming Appointments',
+                      title: LocaleKeys.upcoming_appointments.tr(),
                       routePath: '/appointments'),
                 ),
                 const SizedBox(height: 16),
 
-                StreamBuilder<List<AppointmentModel>>(
-                  stream: _doctorRepo.streamDoctorAppointments(_doctorId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    }
-                    final appointments = snapshot.data ?? [];
-                    
-                    if (appointments.isEmpty) {
-                      return const Center(child: Text('No upcoming appointments'));
-                    }
-
-                    return ListView.separated(
-                      itemCount: appointments.length > 5 ? 5 : appointments.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                      itemBuilder: (context, index) {
-                        return CustomAppointmentCard(
-                          appointment: appointments[index],
-                        );
-                      },
+              BlocBuilder<AppointmentCubit, AppointmentState>(
+                builder: (context, state) {
+                  if (state is AppointmentLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
                   }
-                ),
 
+                  if (state is AppointmentError) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  }
+
+                  if (state is! AppointmentLoaded) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final cubit = context.read<AppointmentCubit>();
+                  final appointments = cubit.upcomingAppointments;
+
+                  if (appointments.isEmpty) {
+                    return Center(
+                      child: Text(
+                        LocaleKeys.appointment_no_upcoming_to_display,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.grey,
+                        )
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: appointments.length > 5 ? 5 : appointments.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    itemBuilder: (_, index) {
+                      return CustomAppointmentCard(
+                        appointmentCard: appointments[index],
+                      );
+                    },
+                  );
+                },
+              ),
                 SizedBox(height: 160.h), // مساحة إضافية
               ],
+
             ),
           ),
 

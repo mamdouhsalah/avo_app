@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
@@ -12,6 +14,7 @@ import 'package:avo_app/app/features/appointment/data/appointment_repo.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
 import 'package:avo_app/app/features/profile/data/profile_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AppointmentRepoImp implements AppointmentRepo {
   final FirebaseConsumer _consumer;
@@ -151,9 +154,13 @@ class AppointmentRepoImp implements AppointmentRepo {
           break;
 
         case UserRole.doctor:
-        default:
           appointments = await _getDoctorAppointments();
           break;
+        default:
+          throw DatabaseException(
+            'Unsupported user role: ${user.role}',
+            'unsupported-user-role',
+          );
       }
 
       return await _buildAppointmentCards(appointments);

@@ -1,5 +1,6 @@
 import 'package:avo_app/app/core/constants/app_colors.dart';
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
+import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

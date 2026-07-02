@@ -2,6 +2,7 @@
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
+import 'package:avo_app/app/core/models/user_profile_model.dart';
 
 class AppointmentCardModel {
   final AppointmentModel appointment;

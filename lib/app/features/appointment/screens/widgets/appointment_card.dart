@@ -1,7 +1,9 @@
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/services/auth_service.dart';
+import 'package:avo_app/app/core/services/local/hive_models.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
+import 'package:avo_app/app/core/utils/date_utils.dart';
 import 'package:avo_app/app/core/utils/day_localizer.dart';
 import 'package:avo_app/app/core/utils/is_today.dart';
 import 'package:avo_app/app/features/appointment/logic/appointment_cubit.dart';
@@ -40,9 +42,12 @@ class AppointmentCard extends StatelessWidget {
         children: [
           /// TODO: after modify date , uncomment this and make it a real date not just a day
           Text(
-            isToday(date: appointmentDoctor.appointment.date)
-                ? LocaleKeys.general_today.tr()
-                : "${appointmentDoctor.appointment.date.day} ${translateMonth(appointmentDoctor.appointment.date.month)}",
+            // isToday(date: appointmentDoctor.appointment.date)
+            //     ? LocaleKeys.general_today.tr()
+            //     :
+
+            ///TODO : replace this with actual date
+            "${appointmentDoctor.appointment.date}",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -160,7 +165,7 @@ class AppointmentCard extends StatelessWidget {
                                       }
 
                                       return Text(
-                                        rating.toStringAsFixed(1),
+                                        rating.toStringAsFixed(2),
                                         style: TextStyle(
                                           color: colorScheme.onSurface,
                                           fontSize: 16.sp,
