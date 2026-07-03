@@ -1,3 +1,4 @@
+import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/favorite_model.dart';
 
 abstract class FavoriteState {
@@ -14,10 +15,16 @@ class FavoriteLoading extends FavoriteState {
 
 class FavoriteLoaded extends FavoriteState {
   final FavoriteModel favorites;
-  const FavoriteLoaded(this.favorites);
+  final List<DoctorModel> favoriteDoctors;
+
+  const FavoriteLoaded({
+    required this.favorites,
+    this.favoriteDoctors = const [],
+  });
 }
 
 class FavoriteError extends FavoriteState {
   final String message;
+
   const FavoriteError(this.message);
 }

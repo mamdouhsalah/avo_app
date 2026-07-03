@@ -275,22 +275,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   if (appointments.isEmpty) {
                     return Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32.h),
-                        child: Column(
-                          children: [
-                            Icon(Icons.calendar_today_outlined,
-                                size: 48.sp, color: Colors.grey[300]),
-                            SizedBox(height: 12.h),
-                            Text(
-                              LocaleKeys.appointment_no_upcoming_to_display.tr(),
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: Text(
+                        LocaleKeys.appointment_no_upcoming.tr(),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.grey,
+                        )
                       ),
                     );
                   }

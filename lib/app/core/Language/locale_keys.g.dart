@@ -443,5 +443,8 @@ abstract class  LocaleKeys {
   static const emergency_water = 'emergency.water';
   static const emergency_health_ministry = 'emergency.health_ministry';
   static const emergency = 'emergency';
+  static const favorite_myFavoriteDoctors = 'favorite.myFavoriteDoctors';
+  static const favorite_noFavoriteDoctors = 'favorite.noFavoriteDoctors';
+  static const favorite = 'favorite';
 
 }

@@ -1,5 +1,4 @@
 {
-
   "dashboard": "Dashboard",
   "how_are_you_doing": "How are you doing?",
   "patients": "Patients",
@@ -7,7 +6,6 @@
   "lab_results": "Lab Results",
   "prescriptions": "Prescriptions",
   "upcoming_appointments": "Upcoming Appointments",
-
 
   "bottom_nav": {
     "Scanner": "Scanner",
@@ -198,7 +196,7 @@
     "connected": "Connected",
     "balance": "Balance",
     "total_price": "Total Price",
-    "pay_now": "Pay Now \u2192",
+    "pay_now": "Pay Now →",
     "confirm_payment": "Confirm Payment",
     "confirm_msg": "Are you sure you want to pay {amount}?",
     "confirm": "Confirm",
@@ -271,33 +269,31 @@
     "hourly_rate": "Hourly Rate: {price}",
     "selected_date": "Selected Date",
     "selected_time": "Selected Time",
-    "no_canceled_to_display" :"No Canceled Appointments to display",
-    "no_upcoming_to_display" :"No Canceled Appointments to display",
-    "no_completed_to_display" :"No Canceled Appointments to display",
+    "no_canceled_to_display": "No Canceled Appointments to display",
+    "no_upcoming_to_display": "No Upcoming Appointments to display",
+    "no_completed_to_display": "No Completed Appointments to display",
     "rated": "Rated",
     "submit_rating": "Submit Rating",
     "select_rating_first": "Please select a rating first.",
     "rated_successfully": "Rated successfully",
-     
-     "confirm": "Confirm",
-      "complete": "Complete",
-      "status": "Status",
-      "room": "Room {room}",
-      "no_upcoming": "No upcoming appointments",
-      "no_completed": "No completed appointments",
-      "canceled_successfully": "Appointment canceled successfully",
-      "todays_overview": "Today's Overview",
-      "total": "Total",
-      "confirmed": "Confirmed",
-      "pending": "Pending",
-      "personal_information": "Personal Information",
-      "date_of_birth": "Date of Birth",
-      "gender": "Gender",
-      "phone": "Phone",
-      "email": "Email",
-      "done_successfully": "Done successfully",
-      "cancel": "Cancel"
-
+    "confirm": "Confirm",
+    "complete": "Complete",
+    "status": "Status",
+    "room": "Room {room}",
+    "no_upcoming": "No upcoming appointments",
+    "no_completed": "No completed appointments",
+    "canceled_successfully": "Appointment canceled successfully",
+    "todays_overview": "Today's Overview",
+    "total": "Total",
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "personal_information": "Personal Information",
+    "date_of_birth": "Date of Birth",
+    "gender": "Gender",
+    "phone": "Phone",
+    "email": "Email",
+    "done_successfully": "Done successfully",
+    "cancel": "Cancel"
   },
   "auth": {
     "create_account": "Create Account",
@@ -469,5 +465,9 @@
     "gas": "Gas Emergency (129)",
     "water": "Water Emergency (125)",
     "health_ministry": "Ministry of Health (105)"
+  },
+  "favorite": {
+    "myFavoriteDoctors": "My Favorite Doctors",
+    "noFavoriteDoctors": "No favorite doctors yet"
   }
 }

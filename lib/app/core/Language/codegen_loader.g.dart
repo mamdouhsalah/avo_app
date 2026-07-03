@@ -480,6 +480,9 @@ class CodegenLoader extends AssetLoader{
     "gas": "طوارئ الغاز (129)",
     "water": "طوارئ المياه (125)",
     "health_ministry": "وزارة الصحة (105)"
+  "favorite": {
+    "myFavoriteDoctors": "الأطباء المفضلون",
+    "noFavoriteDoctors": "لا يوجد أطباء مفضلون بعد"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -753,8 +756,8 @@ static const Map<String,dynamic> _en = {
     "selected_date": "Selected Date",
     "selected_time": "Selected Time",
     "no_canceled_to_display": "No Canceled Appointments to display",
-    "no_upcoming_to_display": "No Canceled Appointments to display",
-    "no_completed_to_display": "No Canceled Appointments to display",
+    "no_upcoming_to_display": "No Upcoming Appointments to display",
+    "no_completed_to_display": "No Completed Appointments to display",
     "rated": "Rated",
     "submit_rating": "Submit Rating",
     "select_rating_first": "Please select a rating first.",
@@ -948,6 +951,9 @@ static const Map<String,dynamic> _en = {
     "gas": "Gas Emergency (129)",
     "water": "Water Emergency (125)",
     "health_ministry": "Ministry of Health (105)"
+  "favorite": {
+    "myFavoriteDoctors": "My Favorite Doctors",
+    "noFavoriteDoctors": "No favorite doctors yet"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};
