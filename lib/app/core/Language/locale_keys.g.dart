@@ -422,5 +422,8 @@ abstract class  LocaleKeys {
   static const booking_number_of_reviews = 'booking.number_of_reviews';
   static const booking_bio = 'booking.bio';
   static const booking = 'booking';
+  static const favorite_myFavoriteDoctors = 'favorite.myFavoriteDoctors';
+  static const favorite_noFavoriteDoctors = 'favorite.noFavoriteDoctors';
+  static const favorite = 'favorite';
 
 }

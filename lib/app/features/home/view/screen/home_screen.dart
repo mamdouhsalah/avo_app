@@ -231,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const Spacer(),
                                   IconButton(
                                     onPressed: () {
-                                      context.push(AppRouter.favorites);
+                                      context.push(AppRouter.favoriteDoctors);
                                     },
                                     icon: Icon(
                                       Icons.favorite_border_outlined,
