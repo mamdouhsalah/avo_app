@@ -1,7 +1,10 @@
+import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/errors/database_exception.dart';
+import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/favorite_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/features/favorite/data/favorit_repo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FavoriteRepositoryImpl implements FavoriteRepository {
   final FirebaseConsumer _consumer;
@@ -35,4 +38,27 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
       throw DatabaseException(e.toString(), "failed to toggle");
     }
   }
+
+  @override
+Future<List<DoctorModel>> getFavoriteDoctors() async {
+  try {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final favorites = await getFavorites(uid);
+
+    final doctors = await _consumer.getList<DoctorModel>(
+      DatabasePaths.doctors,
+      fromJson: (json) => DoctorModel.fromJson(json),
+    );
+
+    return doctors
+        .where((doctor) => favorites.isFavorite(doctor.id))
+        .toList();
+  } catch (e) {
+    throw DatabaseException(
+      e.toString(),
+      'failed-to-get-favorite-doctors',
+    );
+  }
+}
 }

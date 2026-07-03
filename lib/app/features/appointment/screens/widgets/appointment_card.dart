@@ -35,18 +35,18 @@ class AppointmentCard extends StatelessWidget {
     final uid = context.read<AuthService>().currentUid;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
     final DateTime date = appointmentDoctor.appointment.date;
-    
     bool isAppointmentToday = isToday(date: date);
     final formatted = DateFormat('d MMM').format(date);
-    // Example: "8 Oct"
+  
 
     return Padding(
       padding: EdgeInsetsDirectional.only(start: 24.w, top: 16.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// TODO: after modify date , uncomment this and make it a real date not just a day
+
           Text(
             isAppointmentToday
                 ? LocaleKeys.general_today.tr():
