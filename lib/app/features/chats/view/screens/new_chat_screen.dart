@@ -288,7 +288,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         backgroundImage: patient.image != null
                             ? NetworkImage(patient.image!)
                             : null,
-                        child: patient.image == null
+                        child: patient.image == null && patient.fullName.isNotEmpty
                             ? Text(
                                 patient.fullName[0].toUpperCase(),
                                 style: TextStyle(

@@ -1,14 +1,28 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class NotificationSenderService {
-  static String get _serviceAccountJson => dotenv.env['FCM_SERVICE_ACCOUNT_JSON'] ?? '';
+  static String? _cachedServiceAccountJson;
+
+  static Future<String> _loadServiceAccountJson() async {
+    if (_cachedServiceAccountJson != null) return _cachedServiceAccountJson!;
+    try {
+      _cachedServiceAccountJson =
+          await rootBundle.loadString('assets/service_account.json');
+    } catch (e) {
+      log('FCM: Could not load service_account.json: $e');
+      _cachedServiceAccountJson = '';
+    }
+    return _cachedServiceAccountJson!;
+  }
 
   static Future<String> _getAccessToken() async {
-    final accountCredentials = ServiceAccountCredentials.fromJson(_serviceAccountJson);
+    final json = await _loadServiceAccountJson();
+    final accountCredentials = ServiceAccountCredentials.fromJson(json);
     final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
     final client = await clientViaServiceAccount(accountCredentials, scopes);
     final token = client.credentials.accessToken.data;
@@ -23,16 +37,19 @@ class NotificationSenderService {
     required String chatId,
     required String senderId,
   }) async {
+    log('FCM: Starting sendNotification to $fcmToken');
     try {
-      if (_serviceAccountJson.isEmpty || _serviceAccountJson.contains('YOUR_PROJECT_ID')) {
-        debugPrint('FCM: Please configure your Service Account JSON in .env!');
+      final serviceAccountJson = await _loadServiceAccountJson();
+      if (serviceAccountJson.isEmpty) {
+        log('FCM: service_account.json is missing or empty!');
         return;
       }
 
-      final Map<String, dynamic> credentials = jsonDecode(_serviceAccountJson);
+      final Map<String, dynamic> credentials = jsonDecode(serviceAccountJson);
       final String projectId = credentials['project_id'];
 
       final String accessToken = await _getAccessToken();
+      log('FCM: Access token obtained successfully');
 
       final String url = 'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
 
@@ -42,6 +59,13 @@ class NotificationSenderService {
           'notification': {
             'title': title,
             'body': body,
+          },
+          'android': {
+            'priority': 'HIGH',
+            'notification': {
+              'channel_id': 'chatapp_messages',
+              'sound': 'default',
+            }
           },
           'data': {
             'chatId': chatId,
@@ -60,12 +84,12 @@ class NotificationSenderService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('FCM: Notification sent successfully');
+        log('FCM: Notification sent successfully');
       } else {
-        debugPrint('FCM: Failed to send notification: ${response.body}');
+        log('FCM: Failed to send notification: ${response.body}');
       }
     } catch (e) {
-      debugPrint('FCM: Error sending notification: $e');
+      log('FCM: Error sending notification: $e');
     }
   }
 }

@@ -40,7 +40,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
           final data = _castMap(rawValue);
           data['id'] = snapshot.key;
           final result = fromJson(data);
-          log("GET SUCCESS: Path: $path, Response: $data");
+          // log("GET SUCCESS: Path: $path, Response: $data");
           return result;
         } else {
           throw DatabaseException(
@@ -70,7 +70,7 @@ class FirebaseConsumerImpl implements FirebaseConsumer {
       final ref = _getQuery(path, queryParams);
       final snapshot = await ref.get();
       final result = _parseListSnapshot(snapshot, fromJson);
-      log("GET LIST SUCCESS: Path: $path, Count: ${result.length}, Response: ${snapshot.value}");
+      // log("GET LIST SUCCESS: Path: $path, Count: ${result.length}, Response: ${snapshot.value}");
       return result;
     } catch (e) {
       log("GET LIST FAILED: Path: $path, Error: $e");
