@@ -10,6 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:avo_app/app/features/notification/data/models/notification_model.dart' as app_model;
+import 'package:avo_app/app/features/notification/data/repository/notification_repository_impl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NotificationService {
@@ -120,6 +122,7 @@ class NotificationService {
     // Listen for notification actions
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: onActionReceived,
+      onNotificationDisplayedMethod: onNotificationDisplayed,
     );
     await AwesomeNotifications().requestPermissionToSendNotifications(
       channelKey: 'med_channel',
@@ -139,8 +142,26 @@ class NotificationService {
       await handleNotificationAction(initialAction);
     }
 
-
     requestBatteryOptimization();
+  }
+
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationDisplayed(ReceivedNotification receivedNotification) async {
+    try {
+      final repo = NotificationRepositoryImpl();
+      final model = app_model.NotificationModel(
+        id: receivedNotification.id?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        title: receivedNotification.title ?? 'تذكير',
+        body: receivedNotification.body ?? '',
+        timestamp: DateTime.now(),
+        isRead: false,
+        type: receivedNotification.channelKey,
+        payload: receivedNotification.payload,
+      );
+      await repo.saveNotification(model);
+    } catch (e) {
+      log('Error saving displayed notification: $e');
+    }
   }
 
   // Static method for handling actions in background/terminated state

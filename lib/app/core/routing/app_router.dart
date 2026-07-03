@@ -47,6 +47,7 @@ import 'package:avo_app/app/features/doctor/view/screen/schedule_appointment_scr
 import 'package:avo_app/app/features/chats/view/screens/chat_details_screen.dart';
 import 'package:avo_app/app/features/chats/view/screens/audio_call_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
+import 'package:avo_app/app/features/home/view/screen/catogery_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
 import 'package:avo_app/app/features/home/view/widget/all_doctors_screen.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
@@ -96,10 +97,10 @@ class AppRouter {
   static const String profile = '/profile';
   static const String profileFull = '/profile/full'; // بدون Bottom Nav
   static const String adherenceReport = '/adherence-report';
-
   static const String scanner = '/scanner';
   static const String savedAnalysis = '/saved-analysis';
   static const String savedAnalysisList = '/saved-analysis-list';
+  static const String categories = '/categories';
 
   static const String chatBot = '/chat-bot';
   static const String favorites = '/favorites';
@@ -258,6 +259,9 @@ class AppRouter {
         },
       ),
       GoRoute(path: search, builder: (context, state) => const SearchScreen()),
+      GoRoute(
+          path: categories,
+          builder: (context, state) => const CatogeryScreen()),
       GoRoute(
           path: allDoctors,
           builder: (context, state) => const AllDoctorsScreen()),

@@ -2,13 +2,45 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:avo_app/app/core/constants/database_paths.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 
+import 'package:avo_app/app/features/notification/data/models/notification_model.dart';
+import 'package:avo_app/app/features/notification/data/repository/notification_repository_impl.dart';
+import 'package:avo_app/app/core/services/local/hive_service.dart';
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  try {
+    await HiveService.init();
+  } catch (_) {}
+  
+  await _saveFCMNotification(message);
   debugPrint('📩 Background message: ${message.messageId}');
+}
+
+Future<void> _saveFCMNotification(RemoteMessage message) async {
+  final notification = message.notification;
+  if (notification == null) return;
+  
+  try {
+    final repo = NotificationRepositoryImpl();
+    final model = NotificationModel(
+      id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      title: notification.title ?? 'New Message',
+      body: notification.body ?? '',
+      timestamp: message.sentTime ?? DateTime.now(),
+      isRead: false,
+      type: 'chat',
+      payload: message.data,
+    );
+    await repo.saveNotification(model);
+  } catch (e) {
+    debugPrint('⚠️ Could not save FCM notification to Hive: $e');
+  }
 }
 
 @pragma('vm:entry-point')
@@ -64,9 +96,18 @@ class FCMService {
       onDidReceiveBackgroundNotificationResponse: onBackgroundNotificationResponse,
     );
 
+    // Handle tap from background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _handleNotificationTap();
     });
+
+    // Handle tap from terminated state
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      Future.delayed(const Duration(seconds: 1), () {
+        _handleNotificationTap();
+      });
+    }
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _showLocalNotification(message);
@@ -95,6 +136,8 @@ class FCMService {
   static Future<void> _showLocalNotification(RemoteMessage message) async {
     final notification = message.notification;
     if (notification == null) return;
+
+    await _saveFCMNotification(message);
 
     await _localNotifications.show(
       id: notification.hashCode,

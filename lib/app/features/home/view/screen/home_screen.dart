@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(height: 24.h),
                               SectionHeader(
                                 title: LocaleKeys.home_categories.tr(),
-                                routePath: AppRouter.search,
+                                routePath: AppRouter.categories,
                               ),
                               state.categories.isEmpty
                                   ? Padding(

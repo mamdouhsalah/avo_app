@@ -1,5 +1,6 @@
 # Environment Variables (API Keys - Never commit!)
 .env
+assets/service_account.json
 key.properties
 **/*.jks
 
