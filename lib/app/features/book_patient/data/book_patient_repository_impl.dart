@@ -4,6 +4,7 @@ import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/schedule_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/features/book_patient/domain/book_patient_repository.dart';
+import 'package:avo_app/app/features/notification/services/notification_sender_service.dart';
 
 class BookPatientRepositoryImpl implements BookPatientRepository {
   final FirebaseConsumer _consumer;
@@ -42,5 +43,23 @@ class BookPatientRepositoryImpl implements BookPatientRepository {
       '${DatabasePaths.appointments}/$appointmentId',
       data: data,
     );
+
+    try {
+      final docData = await _consumer.get('users/${appointment.doctorId}', fromJson: (json) => json);
+      if (docData is Map) {
+        final fcmToken = docData['fcmToken']?.toString();
+        if (fcmToken != null && fcmToken.isNotEmpty) {
+          await NotificationSenderService.sendNotification(
+            fcmToken: fcmToken,
+            title: 'New Appointment',
+            body: '${appointment.patientName} has booked an appointment with you!',
+            chatId: '',
+            senderId: appointment.patientId,
+          );
+        }
+      }
+    } catch (e) {
+      // Ignore notification errors
+    }
   }
 }

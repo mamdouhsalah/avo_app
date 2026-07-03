@@ -20,8 +20,9 @@ class ScheduleAppointmentScreen extends StatefulWidget {
       _ScheduleAppointmentScreenState();
 }
 
-class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
-  int viewMode = 1;
+class _ScheduleAppointmentScreenState
+    extends State<ScheduleAppointmentScreen> with TickerProviderStateMixin {
+  int viewMode = 1; // 0=Day, 1=Week, 2=Month
 
   DateTime? _selectedDate;
   DateTime? _weekStart;
@@ -39,12 +40,31 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   late final DoctorRepositoryImpl _doctorRepo;
   final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  // Loading animation controller
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
   @override
   void initState() {
     super.initState();
     _selectedDate = DateTime.now();
     _weekStart = ScheduleController.getWeekStart(_selectedDate!);
     _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
+
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
   }
 
   void _showMonthWeekSelector() {
@@ -54,9 +74,9 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => MonthWeekSelectorSheet(
         initialDate: selectedDate,
-        onSelected: (monthDate, weekStartDate) {
+        onSelected: (pickedDate, weekStartDate) {
           setState(() {
-            selectedDate = monthDate;
+            selectedDate = pickedDate;
             weekStart = weekStartDate;
             viewMode = 1; // Switch to week view
           });
@@ -83,6 +103,7 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
         ),
         centerTitle: true,
         elevation: 0,
+        scrolledUnderElevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
         leading: Builder(
           builder: (context) => IconButton(
@@ -94,6 +115,19 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.today_rounded,
+                size: 24.sp, color: theme.colorScheme.primary),
+            tooltip: 'Go to today',
+            onPressed: () {
+              setState(() {
+                selectedDate = DateTime.now();
+                weekStart = ScheduleController.getWeekStart(DateTime.now());
+              });
+            },
+          ),
+        ],
       ),
       drawer: const CustomDrawer(),
       body: SafeArea(
@@ -103,10 +137,10 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
             stream: _doctorRepo.streamDoctorAppointments(_doctorId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return _buildShimmerLoader(theme);
               }
               if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return _buildErrorState(snapshot.error.toString(), theme);
               }
               final appointments = snapshot.data ?? [];
 
@@ -114,13 +148,13 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
                 children: [
                   SizedBox(height: 16.h),
 
-                  // ========== HEADER WITH MONTH/WEEK SELECTOR ==========
+                  // ========== HEADER ==========
                   _buildHeaderSection(theme, weekEnd, appointments),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 16.h),
 
                   // ========== VIEW MODE TABS ==========
                   _buildViewModeTabs(theme),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 16.h),
 
                   // ========== MAIN CONTENT ==========
                   Expanded(
@@ -128,71 +162,205 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
                   ),
                 ],
               );
-            }
+            },
           ),
         ),
       ),
     );
   }
 
-  // ========== HEADER WITH MONTH/WEEK SELECTOR ==========
-  Widget _buildHeaderSection(ThemeData theme, DateTime weekEnd, List<AppointmentModel> appointments) {
+  // ========== BEAUTIFUL SHIMMER LOADER ==========
+  Widget _buildShimmerLoader(ThemeData theme) {
+    final primary = theme.colorScheme.primary;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Animated calendar icon
+          AnimatedBuilder(
+            animation: _pulseAnimation,
+            builder: (context, child) => Transform.scale(
+              scale: _pulseAnimation.value,
+              child: Container(
+                width: 80.w,
+                height: 80.w,
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.calendar_month_rounded,
+                  size: 40.sp,
+                  color: primary.withValues(alpha: _pulseAnimation.value),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'Loading your schedule...',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Fetching appointments from Firebase',
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Colors.grey[400],
+            ),
+          ),
+          SizedBox(height: 32.h),
+          // Progress dots
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(3, (i) {
+              return AnimatedBuilder(
+                animation: _pulseController,
+                builder: (context, _) {
+                  final delay = i * 0.3;
+                  final value =
+                      ((_pulseController.value + delay) % 1.0).clamp(0.0, 1.0);
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 4.w),
+                    width: 8.w,
+                    height: 8.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: primary.withValues(alpha: 0.3 + value * 0.7),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ========== ERROR STATE ==========
+  Widget _buildErrorState(String error, ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.wifi_off_rounded, size: 56.sp, color: Colors.grey[300]),
+          SizedBox(height: 16.h),
+          Text(
+            'Could not load schedule',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            error,
+            style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 24.h),
+          ElevatedButton.icon(
+            onPressed: () => setState(() {}),
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ========== HEADER ==========
+  Widget _buildHeaderSection(ThemeData theme, DateTime weekEnd,
+      List<AppointmentModel> appointments) {
     final monthName = ScheduleUtils.formatMonth(selectedDate);
     final yearName = DateFormat('yyyy').format(selectedDate);
+    final primary = theme.colorScheme.primary;
 
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Top row with month and quick selector
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  monthName,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  yearName,
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Text(
+              monthName,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[500],
+              ),
             ),
+            SizedBox(height: 2.h),
+            Text(
+              yearName,
+              style: TextStyle(
+                fontSize: 26.sp,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            // Appointment count badge
+            Container(
+              padding:
+                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.event_note_rounded,
+                      size: 14.sp, color: primary),
+                  SizedBox(width: 6.w),
+                  Text(
+                    _getAppointmentCount(appointments),
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 8.w),
+            // Select date button
             GestureDetector(
               onTap: _showMonthWeekSelector,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                  ),
+                  color: primary,
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.calendar_month,
-                      size: 18.sp,
-                      color: theme.colorScheme.primary,
-                    ),
-                    SizedBox(width: 8.w),
+                    Icon(Icons.calendar_month, size: 14.sp, color: Colors.white),
+                    SizedBox(width: 6.w),
                     Text(
-                      'Select',
+                      'Jump to',
                       style: TextStyle(
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -201,72 +369,6 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
             ),
           ],
         ),
-
-        SizedBox(height: 16.h),
-
-        // Date range display
-        Container(
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(10.r),
-            border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.2),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      viewMode == 0
-                          ? 'Today'
-                          : viewMode == 1
-                              ? 'This Week'
-                              : 'This Month',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      viewMode == 0
-                          ? DateFormat('MMM dd, yyyy').format(selectedDate)
-                          : viewMode == 1
-                              ? ScheduleUtils.formatDateRange(
-                                  weekStart, weekEnd)
-                              : ScheduleUtils.formatMonthYear(selectedDate),
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Text(
-                  _getAppointmentCount(appointments),
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -274,58 +376,57 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
   String _getAppointmentCount(List<AppointmentModel> appointments) {
     int count = 0;
     if (viewMode == 0) {
-      count = ScheduleController.getAppointmentsForDate(selectedDate, appointments).length;
+      count = ScheduleController.getAppointmentsForDate(
+              selectedDate, appointments)
+          .length;
     } else if (viewMode == 1) {
-      count = ScheduleController.getAppointmentsForWeek(weekStart, appointments).length;
+      count = ScheduleController.getAppointmentsForWeek(
+              weekStart, appointments)
+          .length;
     } else {
-      count = ScheduleController.getAppointmentsForMonth(selectedDate, appointments).length;
+      count = ScheduleController.getAppointmentsForMonth(
+              selectedDate, appointments)
+          .length;
     }
-    return '$count Appointment${count != 1 ? 's' : ''}';
+    return '$count appt${count != 1 ? 's' : ''}';
   }
 
   // ========== VIEW MODE TABS ==========
   Widget _buildViewModeTabs(ThemeData theme) {
+    final primary = theme.colorScheme.primary;
     return Container(
       padding: EdgeInsets.all(4.h),
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12.r),
+        color: Colors.grey.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14.r),
       ),
       child: Row(
         children: [
-          // Day View
-          Expanded(
-            child: _buildViewTab(
-              icon: Icons.calendar_today,
-              label: 'Day',
-              isSelected: viewMode == 0,
-              onTap: () => setState(() => viewMode = 0),
-              theme: theme,
-            ),
+          _buildViewTab(
+            icon: Icons.calendar_today_rounded,
+            label: 'Day',
+            isSelected: viewMode == 0,
+            onTap: () => setState(() => viewMode = 0),
+            theme: theme,
+            primary: primary,
           ),
-          SizedBox(width: 6.w),
-
-          // Week View
-          Expanded(
-            child: _buildViewTab(
-              icon: Icons.calendar_view_week,
-              label: 'Week',
-              isSelected: viewMode == 1,
-              onTap: () => setState(() => viewMode = 1),
-              theme: theme,
-            ),
+          SizedBox(width: 4.w),
+          _buildViewTab(
+            icon: Icons.calendar_view_week_rounded,
+            label: 'Week',
+            isSelected: viewMode == 1,
+            onTap: () => setState(() => viewMode = 1),
+            theme: theme,
+            primary: primary,
           ),
-          SizedBox(width: 6.w),
-
-          // Month View
-          Expanded(
-            child: _buildViewTab(
-              icon: Icons.calendar_view_month,
-              label: 'Month',
-              isSelected: viewMode == 2,
-              onTap: () => setState(() => viewMode = 2),
-              theme: theme,
-            ),
+          SizedBox(width: 4.w),
+          _buildViewTab(
+            icon: Icons.calendar_view_month_rounded,
+            label: 'Month',
+            isSelected: viewMode == 2,
+            onTap: () => setState(() => viewMode = 2),
+            theme: theme,
+            primary: primary,
           ),
         ],
       ),
@@ -338,40 +439,56 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
     required bool isSelected,
     required VoidCallback onTap,
     required ThemeData theme,
+    required Color primary,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(10.r),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 18.sp,
-              color: isSelected ? Colors.white : Colors.grey,
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : Colors.grey,
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          padding: EdgeInsets.symmetric(vertical: 10.h),
+          decoration: BoxDecoration(
+            color: isSelected ? primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(10.r),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: primary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ]
+                : null,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 18.sp,
+                color: isSelected
+                    ? Colors.white
+                    : Colors.grey[500],
               ),
-            ),
-          ],
+              SizedBox(height: 4.h),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.white : Colors.grey[500],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   // ========== MAIN CONTENT ==========
-  Widget _buildMainContent(ThemeData theme, List<AppointmentModel> appointments) {
+  Widget _buildMainContent(
+      ThemeData theme, List<AppointmentModel> appointments) {
     switch (viewMode) {
       case 0: // Day View
         return DayViewWidget(
@@ -397,13 +514,13 @@ class _ScheduleAppointmentScreenState extends State<ScheduleAppointmentScreen> {
         );
       case 2: // Month View
       default:
-        return MonthWeekSelectorSheet(
+        return MonthViewWidget(
           initialDate: selectedDate,
-          onSelected: (monthDate, weekStartDate) {
+          appointments: appointments,
+          onDaySelected: (date) {
             setState(() {
-              selectedDate = monthDate;
-              weekStart = weekStartDate;
-              viewMode = 1; // Switch to week view
+              selectedDate = date;
+              weekStart = ScheduleController.getWeekStart(date);
             });
           },
         );

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'dart:developer';
 import 'package:avo_app/app/core/models/chat_message_model.dart';
 import 'package:avo_app/app/core/services/remote/cloudinary_service.dart';
 import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
@@ -196,6 +197,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
           .ref('${DatabasePaths.users}/$_otherUserId/mutedChats/$_chatId')
           .get();
       if (muteSnap.exists && muteSnap.value == true) {
+        log('FCM: The other user has muted this chat, skipping notification.');
         return; // The other user has muted this chat
       }
 
@@ -217,7 +219,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         );
       }
     } catch (e) {
-      debugPrint('Error sending push notification: $e');
+      log('FCM: Error in _sendPushNotification: $e');
     }
   }
 

@@ -5,6 +5,8 @@ import 'package:avo_app/app/features/doctor/services/labresult_service.dart';
 import 'package:avo_app/app/features/doctor/view/widget/patient_search_bottom_sheet.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
+import 'package:avo_app/app/core/services/local/gemini_service.dart';
+import 'package:avo_app/app/core/services/remote/cloudinary_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,6 +30,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late bool _isAnalyzing;
+  bool _isUploading = false;
 
   // Form controllers
   final TextEditingController _titleController = TextEditingController();
@@ -49,7 +52,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
     _loadPatients();
 
     if (_isAnalyzing) {
-      _simulateAIAnalysis();
+      _runAIAnalysis();
     } else {
       _prefillManual();
     }
@@ -74,36 +77,77 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
     _notesController.text = "";
   }
 
-  Future<void> _simulateAIAnalysis() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
-    if (mounted) {
-      setState(() {
-        _isAnalyzing = false;
+  Future<void> _runAIAnalysis() async {
+    try {
+      final gemini = GeminiService();
+      final bytes = await File(widget.file.path).readAsBytes();
 
-        String fileName = widget.file.name.toLowerCase();
-        if (fileName.contains('blood') || fileName.contains('cbc')) {
-          _titleController.text = "AI Extracted: Blood CBC Analysis";
-          _descriptionController.text = "Complete Blood Count analysis report";
-          _summaryController.text =
-              "Hemoglobin: 14.2 g/dL (Normal)\nWhite Blood Cells: 6.5 x10^3/uL (Normal)\nPlatelets: 250 x10^3/uL (Normal)\nAll indicators are within standard biological references.";
-        } else if (fileName.contains('xray') ||
-            fileName.contains('x-ray') ||
-            fileName.contains('chest')) {
-          _titleController.text = "AI Extracted: Chest X-Ray";
-          _descriptionController.text =
-              "Chest & lung radiological imaging report";
-          _summaryController.text =
-              "Lung fields are clear bilaterally. No pleural effusion or pneumothorax. Cardiomediastinal contour is normal. Bony thorax is intact without fracture.";
-        } else {
-          _titleController.text = "AI Extracted: Medical Lab Report";
-          _descriptionController.text =
-              "Automated document scanning and analysis";
-          _summaryController.text =
-              "AI extracted summary: The uploaded document has been analyzed successfully. General health biomarkers appear within normal limits. No immediate critical warning signs detected.";
-        }
-        _notesController.text = "AI processed automatically.";
-      });
+      final result = await gemini.sendMessage(
+        "Please act as a medical data extraction bot. I am providing you with a medical document (lab result, x-ray, prescription, etc.). "
+        "Extract the following information and strictly format your response exactly like this (do not use asterisks or markdown):\n"
+        "Title: [A concise title for the document]\n"
+        "Description: [A short description of what the document is]\n"
+        "Summary: [A detailed but concise summary of the results or contents, highlighting any important findings or abnormal values]\n\n"
+        "If it is not a medical document, state so in the summary.",
+        imageBytes: bytes,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+          if (result is GeminiSuccess) {
+            _parseAIResult(result.text);
+          } else if (result is GeminiError) {
+            _titleController.text = "AI Error";
+            _descriptionController.text = "Failed to analyze document";
+            _notesController.text = result.message;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+          _titleController.text = "Analysis Failed";
+          _descriptionController.text = e.toString();
+        });
+      }
     }
+  }
+
+  void _parseAIResult(String text) {
+    // Simple parsing based on the requested format
+    final lines = text.split('\n');
+    String currentSection = '';
+    String title = '';
+    String desc = '';
+    String summary = '';
+
+    for (final line in lines) {
+      if (line.trim().startsWith('Title:')) {
+        title = line.replaceFirst('Title:', '').trim();
+        currentSection = 'title';
+      } else if (line.trim().startsWith('Description:')) {
+        desc = line.replaceFirst('Description:', '').trim();
+        currentSection = 'description';
+      } else if (line.trim().startsWith('Summary:')) {
+        summary = line.replaceFirst('Summary:', '').trim();
+        currentSection = 'summary';
+      } else {
+        if (currentSection == 'title') {
+          title += ' ${line.trim()}';
+        } else if (currentSection == 'description') {
+          desc += '\n${line.trim()}';
+        } else if (currentSection == 'summary') {
+          summary += '\n${line.trim()}';
+        }
+      }
+    }
+
+    _titleController.text = title.isNotEmpty ? title : "AI Extracted Document";
+    _descriptionController.text = desc.isNotEmpty ? desc.trim() : "Document processed by AI";
+    _summaryController.text = summary.isNotEmpty ? summary.trim() : text;
+    _notesController.text = "Data extracted using Gemini AI.";
   }
 
   @override
@@ -145,7 +189,7 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
     );
   }
 
-  void _saveResult() {
+  Future<void> _saveResult() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedPatient == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -155,13 +199,29 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
         );
         return;
       }
+
+      setState(() {
+        _isUploading = true;
+      });
+
+      String fileUrl = widget.file.path;
+      try {
+        final cloudinary = CloudinaryService();
+        final url = await cloudinary.uploadFile(File(widget.file.path));
+        if (url.isNotEmpty) {
+          fileUrl = url;
+        }
+      } catch (e) {
+        // Continue with local path if upload fails, or show warning
+      }
+
       final newResult = LabResultModel(
         id: "lr_${DateTime.now().millisecondsSinceEpoch}",
         title: _titleController.text.trim(),
         patientId: _selectedPatient!.id,
         doctorId: _currentUid,
         patientName: _selectedPatient!.fullName,
-        doctorName: 'Doctor', // Could fetch from prefs or pass it down
+        doctorName: 'Doctor',
         description: _descriptionController.text.trim(),
         dateTime: DateTime.now(),
         fileType: widget.file.name.split('.').last.toLowerCase(),
@@ -172,20 +232,35 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
         notes: _notesController.text.trim().isNotEmpty
             ? _notesController.text.trim()
             : null,
-        fileUrl: widget.file.path,
+        fileUrl: fileUrl,
       );
 
-      // Add to repository
-      LabResultService.labResults.add(newResult);
+      try {
+        // Save to Firebase
+        await _doctorRepo.addLabResult(newResult);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('"${newResult.title}" saved successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      Navigator.pop(context, true);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('"${newResult.title}" saved successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pop(context, true);
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isUploading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error saving: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -509,13 +584,22 @@ class _AddLabResultScreenState extends State<AddLabResultScreen> {
                     ),
                     elevation: 2,
                   ),
-                  child: Text(
-                    "Save & Close",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isUploading
+                      ? SizedBox(
+                          width: 20.w,
+                          height: 20.w,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: theme.colorScheme.onPrimary,
+                          ),
+                        )
+                      : Text(
+                          "Save & Close",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               SizedBox(height: 20.h),

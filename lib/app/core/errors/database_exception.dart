@@ -8,7 +8,7 @@ class DatabaseException {
   const DatabaseException(this.message, [this.code, this.technicalMessage]);
 
   @override
-  String toString() => message;
+  String toString() => technicalMessage != null ? '$message ($technicalMessage)' : message;
 }
 
 class DatabaseExceptionHandler {

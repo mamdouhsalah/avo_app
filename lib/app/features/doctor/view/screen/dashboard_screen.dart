@@ -37,14 +37,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
   DoctorModel? currentDoctor;
+  int _prescriptionsCount = 0;
+  int _labResultsCount = 0;
+  late final DoctorRepositoryImpl _doctorRepo;
 
   @override
   void initState() {
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
     // getting doctor appointments
     context.read<AppointmentCubit>().getAppointments();
     _fetchDoctorData();
+    _fetchStats();
     super.initState();
     _scrollController.addListener(_scrollListener);
+  }
+
+  Future<void> _fetchStats() async {
+    try {
+      final pCount = await _doctorRepo.getDoctorPrescriptionsCount(_doctorId);
+      final lCount = await _doctorRepo.getDoctorLabResultsCount(_doctorId);
+      if (mounted) {
+        setState(() {
+          _prescriptionsCount = pCount;
+          _labResultsCount = lCount;
+        });
+      }
+    } catch (e) {}
   }
 
   Future<void> _fetchDoctorData() async {
@@ -208,16 +226,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                         StatCard(
                           title: LocaleKeys.lab_results.tr(),
-                          value: '389',
-                          subtitle: '2 urgent',
+                          value: '$_labResultsCount',
+                          subtitle: 'Total processed',
                           icon: Icons.science,
                           color: const Color(0xFFFF6B6B),
                         ),
 
                         StatCard(
                           title: LocaleKeys.prescriptions.tr(),
-                          value: '156',
-                          subtitle: '+12% from last month',
+                          value: '$_prescriptionsCount',
+                          subtitle: 'Total prescribed',
                           icon: Icons.medication,
                           color: const Color(0xFF9B59B6),
                         ),

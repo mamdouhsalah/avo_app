@@ -1,6 +1,5 @@
 import 'package:avo_app/app/core/Language/locale_keys.g.dart';
 import 'package:avo_app/app/core/models/schedule_model.dart';
-import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/core/shared/error_feedback_widget.dart';
 import 'package:avo_app/app/core/shared/loading_indicator_widget.dart';
 import 'package:avo_app/app/core/shared/main_button.dart';
@@ -41,8 +40,7 @@ class _AddDoctorScheduleScreenState extends State<AddDoctorScheduleScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AppExitPopScope(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         drawer: const CustomDrawer(),
         appBar: AppBar(
@@ -169,7 +167,6 @@ class _AddDoctorScheduleScreenState extends State<AddDoctorScheduleScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 }

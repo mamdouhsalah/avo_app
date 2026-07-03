@@ -24,6 +24,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   // Doctor-specific Controllers
   final docLocationController = TextEditingController();
   final docPriceController = TextEditingController();
+  final docClinicController = TextEditingController();
   final docBioController = TextEditingController();
   String? selectedSpecialty;
 
@@ -60,6 +61,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       if (profile is DoctorModel) {
         docLocationController.text = profile.location ?? '';
+        docClinicController.text = profile.clinic ?? '';
         docPriceController.text = profile.price.toString();
         docBioController.text = profile.bio;
         selectedSpecialty = profile.specialty.toLowerCase();
@@ -77,6 +79,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       final profile = await repository.getProfile(doctorId);
       if (profile is DoctorModel) {
         docLocationController.text = profile.location ?? '';
+        docClinicController.text = profile.clinic ?? '';
         docPriceController.text = profile.price.toString();
         docBioController.text = profile.bio;
         selectedSpecialty = profile.specialty.toLowerCase();
@@ -92,6 +95,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoading());
       final updates = {
         'location': docLocationController.text.trim(),
+        'clinic': docClinicController.text.trim(),
         'price': double.tryParse(docPriceController.text.trim()) ?? 0.0,
         'bio': docBioController.text.trim(),
         'specialty': selectedSpecialty ?? '',
@@ -196,6 +200,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     weightController.dispose();
     dobController.dispose();
     docLocationController.dispose();
+    docClinicController.dispose();
     docPriceController.dispose();
     docBioController.dispose();
     return super.close();

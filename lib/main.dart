@@ -38,8 +38,6 @@ void main() async {
   await FCMService.initialize();
   PresenceService.initialize();
 
-  PresenceService.initialize();
-
   final preferencesService = PreferencesService();
   final savedLanguage = preferencesService.getLanguage();
 

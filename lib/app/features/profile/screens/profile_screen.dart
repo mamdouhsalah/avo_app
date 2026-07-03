@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
@@ -49,8 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bool isDarkTheme =
         context.watch<ThemeCubit>().state == ThemeMode.dark;
 
-    return AppExitPopScope(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
       
         // AppBar
@@ -148,17 +146,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Icons.person_outline,
                                 LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
                                 () => context.push(AppRouter.personalInfo)),
+                          if (cubit.userProfile?.role == 'patient')
+                            _buildListTile(
+                                context,
+                                Icons.medical_information_outlined,
+                                'Medical Records', // TODO: Add LocaleKeys.profile_medical_records if needed
+                                () => context.push(AppRouter.medicalRecords)),
                           if (cubit.userProfile?.role == 'doctor')
                             _buildListTile(
                                 context,
                                 Icons.stars_outlined,
                                 LocaleKeys.profile_doctor_info.tr(),
                                 () => context.push(AppRouter.doctorInfo)),
-                          // _buildListTile(
-                          //     context,
-                          //     Icons.credit_card_outlined,
-                          //     LocaleKeys.profile_cards_details.tr(),
-                          //     () => context.push(AppRouter.checkout)), // 🔥 ترجمة
+                          _buildListTile(
+                              context,
+                              Icons.credit_card_outlined,
+                              LocaleKeys.profile_cards_details.tr(),
+                              () => context.push(AppRouter.checkout)), // 🔥 ترجمة
                           ListTile(
                             leading: Icon(Icons.translate,
                                 color: theme.colorScheme.onSurface),
@@ -216,8 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 
   void _showLanguageBottomSheet(bool isArabic) {

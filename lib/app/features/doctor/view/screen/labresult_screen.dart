@@ -2,7 +2,11 @@ import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/features/doctor/view/screen/labresult_detail_screen.dart';
 import 'package:avo_app/app/features/doctor/view/screen/add_labresult_screen.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
+import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
 import 'package:avo_app/app/features/doctor/services/labresult_service.dart';
+import 'package:avo_app/app/core/constants/database_paths.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,17 +21,55 @@ class LabresultScreen extends StatefulWidget {
 class _LabresultScreenState extends State<LabresultScreen>
     with SingleTickerProviderStateMixin {
   final ImagePicker _picker = ImagePicker();
+  late List<LabResultModel> _allResults;
   late List<LabResultModel> _filteredResults;
   String _searchQuery = '';
   String _filterType = '';
   late TabController _tabController;
+  bool _isLoading = true;
+
+  late final DoctorRepositoryImpl _doctorRepo;
+  final String _doctorId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void initState() {
     super.initState();
+    _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
     _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
     _tabController.addListener(_onTabChanged);
-    _filteredResults = LabResultService.labResults;
+    _allResults = [];
+    _filteredResults = [];
+    _loadLabResults();
+  }
+
+  Future<void> _loadLabResults() async {
+    setState(() => _isLoading = true);
+    try {
+      // Fetch all lab results where doctorId == current doctor
+      final consumer = FirebaseConsumerImpl();
+      final results = await consumer.getList(
+        DatabasePaths.reports,
+        fromJson: (json) => LabResultModel.fromJson(json),
+      );
+      // Filter by doctorId client-side (Firebase Realtime DB single index limitation)
+      final doctorResults =
+          results.where((r) => r.doctorId == _doctorId).toList();
+      if (mounted) {
+        setState(() {
+          _allResults = doctorResults;
+          _applyFilters();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _allResults = [];
+          _filteredResults = [];
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -55,12 +97,18 @@ class _LabresultScreenState extends State<LabresultScreen>
   }
 
   void _applyFilters() {
-    List<LabResultModel> base = LabResultService.labResults;
+    List<LabResultModel> base = _allResults;
     if (_filterType.isNotEmpty) {
-      base = LabResultService.filterByType(base, _filterType);
+      base = base.where((r) => r.typeAdd == _filterType).toList();
     }
     if (_searchQuery.isNotEmpty) {
-      base = LabResultService.searchLabResults(base, _searchQuery);
+      final q = _searchQuery.toLowerCase();
+      base = base
+          .where((r) =>
+              r.title.toLowerCase().contains(q) ||
+              (r.patientName?.toLowerCase().contains(q) ?? false) ||
+              (r.resultSummary?.toLowerCase().contains(q) ?? false))
+          .toList();
     }
     _filteredResults = base;
   }
@@ -107,14 +155,6 @@ class _LabresultScreenState extends State<LabresultScreen>
             },
           ),
           ListTile(
-            leading: const Icon(Icons.download_rounded, color: Colors.green),
-            title: const Text('Download'),
-            onTap: () async {
-              Navigator.pop(ctx);
-              await _downloadFile(result);
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.share_rounded, color: Colors.purple),
             title: const Text('Share'),
             onTap: () async {
@@ -146,34 +186,14 @@ class _LabresultScreenState extends State<LabresultScreen>
     );
   }
 
-  Future<void> _downloadFile(LabResultModel result) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Downloading ${result.title}...')),
-    );
-    try {
-      await LabResultService.downloadFile(result);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${result.title} downloaded successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error downloading: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _shareFile(LabResultModel result) async {
     try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sharing ${result.title}...'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
       await LabResultService.shareFile(result);
     } catch (e) {
       if (mounted) {
@@ -199,17 +219,33 @@ class _LabresultScreenState extends State<LabresultScreen>
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              final wasDeleted = LabResultService.deleteLabResult(result);
-              if (wasDeleted) {
-                setState(() => _applyFilters());
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Deleted successfully'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+              try {
+                // Delete from Firebase
+                final consumer = FirebaseConsumerImpl();
+                await consumer.delete('${DatabasePaths.reports}/${result.id}');
+                if (mounted) {
+                  setState(() {
+                    _allResults.removeWhere((r) => r.id == result.id);
+                    _applyFilters();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Deleted successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error deleting: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -323,9 +359,8 @@ class _LabresultScreenState extends State<LabresultScreen>
     );
 
     if (didAdd == true && mounted) {
-      setState(() {
-        _applyFilters();
-      });
+      // Refresh from Firebase
+      _loadLabResults();
     }
   }
 
@@ -404,60 +439,64 @@ class _LabresultScreenState extends State<LabresultScreen>
         ),
       ),
       drawer: const CustomDrawer(),
-      body: Padding(
-        padding: EdgeInsets.all(16.sp),
-        child: Column(
-          children: [
-            // Active search banner
-            if (_searchQuery.isNotEmpty)
-              Container(
-                margin: EdgeInsets.only(bottom: 12.h),
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.search,
-                        size: 16, color: theme.colorScheme.primary),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: Text(
-                        'Results for: "$_searchQuery"',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: theme.colorScheme.primary,
-                        ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(16.sp),
+              child: Column(
+                children: [
+                  // Active search banner
+                  if (_searchQuery.isNotEmpty)
+                    Container(
+                      margin: EdgeInsets.only(bottom: 12.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color:
+                            theme.colorScheme.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.search,
+                              size: 16, color: theme.colorScheme.primary),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: Text(
+                              'Results for: "$_searchQuery"',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: _clearSearch,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      onPressed: _clearSearch,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
+
+                  // Stats row
+                  _buildStatsRow(theme),
+                  SizedBox(height: 16.h),
+
+                  // List
+                  Expanded(
+                    child: _filteredResults.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            itemCount: _filteredResults.length,
+                            itemBuilder: (_, index) => _buildLabResultTile(
+                                _filteredResults[index], theme),
+                          ),
+                  ),
+                ],
               ),
-
-            // Stats row
-            _buildStatsRow(theme),
-            SizedBox(height: 16.h),
-
-            // List
-            Expanded(
-              child: _filteredResults.isEmpty
-                  ? _buildEmptyState()
-                  : ListView.builder(
-                      itemCount: _filteredResults.length,
-                      itemBuilder: (_, index) =>
-                          _buildLabResultTile(_filteredResults[index], theme),
-                    ),
             ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddOptions,
         backgroundColor: theme.colorScheme.onPrimary,
@@ -468,10 +507,9 @@ class _LabresultScreenState extends State<LabresultScreen>
   }
 
   Widget _buildStatsRow(ThemeData theme) {
-    final total = LabResultService.labResults.length;
-    final manual =
-        LabResultService.labResults.where((r) => r.typeAdd == 'Manual').length;
-    final ai = LabResultService.labResults.where((r) => r.typeAdd == 'AI').length;
+    final total = _allResults.length;
+    final manual = _allResults.where((r) => r.typeAdd == 'Manual').length;
+    final ai = _allResults.where((r) => r.typeAdd == 'AI').length;
 
     return Row(
       children: [

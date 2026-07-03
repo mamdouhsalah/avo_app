@@ -267,7 +267,8 @@ class GeminiTestService {
       log('GeminiTestService ▶ $raw');
 
       final handled = _handleFunctionCall(raw, functions);
-      if (handled != null) return GeminiSuccess(GeminiService.cleanResponse(handled));
+      if (handled != null)
+        return GeminiSuccess(GeminiService.cleanResponse(handled));
 
       return GeminiSuccess(GeminiService.cleanResponse(raw));
     } catch (e, st) {

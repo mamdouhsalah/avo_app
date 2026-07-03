@@ -5,6 +5,7 @@ import 'package:avo_app/app/core/models/doctor_model.dart';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:avo_app/app/core/models/schedule_model.dart';
+import 'package:avo_app/app/core/models/medicine_model.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 import 'package:avo_app/app/core/services/remote/firebase_query_params.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository.dart';
@@ -21,14 +22,39 @@ class DoctorRepositoryImpl implements DoctorRepository {
 
   @override
   Stream<List<AppointmentModel>> streamDoctorAppointments(String doctorId) {
-    return _consumer.streamList(
-      DatabasePaths.appointments,
-      fromJson: (json) => AppointmentModel.fromJson(json),
-      queryParams: FirebaseQueryParams(
-        orderByChild: 'doctorId',
-        equalTo: doctorId,
-      ),
-    );
+    return _consumer
+        .streamList(
+          DatabasePaths.appointments,
+          fromJson: (json) => AppointmentModel.fromJson(json),
+          queryParams: FirebaseQueryParams(
+            orderByChild: 'doctorId',
+            equalTo: doctorId,
+          ),
+        )
+        .asyncMap((appointments) async {
+          // Enrich each appointment with real patient name if missing
+          final enriched = <AppointmentModel>[];
+          for (final appt in appointments) {
+            if (appt.patientName != null && appt.patientName!.isNotEmpty) {
+              enriched.add(appt);
+            } else {
+              try {
+                final patientData = await _consumer.get(
+                  '${DatabasePaths.users}/${appt.patientId}',
+                  fromJson: (json) => json,
+                );
+                final name = patientData['name']?.toString() ??
+                    patientData['fullName']?.toString() ??
+                    patientData['full_name']?.toString() ??
+                    'Patient';
+                enriched.add(appt.copyWith(patientName: name));
+              } catch (_) {
+                enriched.add(appt);
+              }
+            }
+          }
+          return enriched;
+        });
   }
 
   // rate doctor, for appointment use
@@ -120,8 +146,63 @@ class DoctorRepositoryImpl implements DoctorRepository {
   }
 
   @override
+  Future<void> addPrescription(String patientId, MedicineModel medicine) async {
+    final path = DatabasePaths.patientMedicines(patientId);
+    final firebaseId = await _consumer.push(path, data: medicine.toJson());
+    await _consumer.update('$path/$firebaseId', data: {'id': firebaseId});
+
+    if (medicine.doctorId != null) {
+      try {
+        final count = await getDoctorPrescriptionsCount(medicine.doctorId!);
+        await _consumer.update('doctors/${medicine.doctorId}', data: {'prescriptionsCount': count + 1});
+      } catch (e) {}
+    }
+  }
+
+  @override
+  Future<List<MedicineModel>> getPatientMedicines(String patientId) async {
+    try {
+      return await _consumer.getList(
+        DatabasePaths.patientMedicines(patientId),
+        fromJson: (json) => MedicineModel.fromJson(json),
+      );
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  Future<int> getDoctorPrescriptionsCount(String doctorId) async {
+    try {
+      final docData = await _consumer.get('doctors/$doctorId', fromJson: (json) => json);
+      return (docData['prescriptionsCount'] as num?)?.toInt() ?? 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  @override
+  Future<int> getDoctorLabResultsCount(String doctorId) async {
+    try {
+      final docData = await _consumer.get('doctors/$doctorId', fromJson: (json) => json);
+      return (docData['labResultsCount'] as num?)?.toInt() ?? 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  @override
   Future<void> addLabResult(LabResultModel result) async {
-    await _consumer.push(DatabasePaths.reports, data: result.toJson());
+    final firebaseId = await _consumer.push(DatabasePaths.reports, data: result.toJson());
+    // Write the real Firebase-generated ID back so delete works correctly
+    await _consumer.update('${DatabasePaths.reports}/$firebaseId', data: {'id': firebaseId});
+
+    if (result.doctorId.isNotEmpty) {
+      try {
+        final count = await getDoctorLabResultsCount(result.doctorId);
+        await _consumer.update('doctors/${result.doctorId}', data: {'labResultsCount': count + 1});
+      } catch (e) {}
+    }
   }
 
   @override
