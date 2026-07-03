@@ -8,7 +8,6 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// تحميل ملف المفاتيح
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
@@ -26,7 +25,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // تحديث لغة الكوتلن عشان نخلص من الـ Deprecation Warning
     kotlin {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)

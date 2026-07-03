@@ -11,6 +11,7 @@ class FavoriteModel {
 
   bool isFavoriteDoctor(String doctorId) => doctorIds[doctorId] ?? false;
   bool isFavoritePharmacy(String pharmacyId) => pharmacyIds[pharmacyId] ?? false;
+  bool isFavorite(String doctorId) => isFavoriteDoctor(doctorId);
 
   factory FavoriteModel.fromJson(String patientId, Map<dynamic, dynamic>? json) {
     if (json == null) return FavoriteModel(patientId: patientId, doctorIds: {}, pharmacyIds: {});

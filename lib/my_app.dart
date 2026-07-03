@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (screenUtilContext, child) {
         return DevicePreview(
-          enabled: false,
+          enabled: true,
           builder: (devicePreviewContext) => MultiProvider(
             providers: [
               Provider<FirebaseConsumer>.value(value: firebaseConsumer),

@@ -39,14 +39,14 @@ abstract class  LocaleKeys {
   static const general_today = 'general.today';
   static const general_yes = 'general.yes';
   static const general_no = 'general.no';
-  static const general_done = 'general.done';
   static const general_message = 'general.message';
   static const general_cancel = 'general.cancel';
-  static const general_delete = 'general.delete';
   static const general_download = 'general.download';
+  static const general_delete = 'general.delete';
   static const general_share = 'general.share';
   static const general_search = 'general.search';
   static const general_skip = 'general.skip';
+  static const general_done = 'general.done';
   static const general_save = 'general.save';
   static const general_edit = 'general.edit';
   static const general_exit_title = 'general.exit_title';
@@ -264,6 +264,7 @@ abstract class  LocaleKeys {
   static const appointment_confirm = 'appointment.confirm';
   static const appointment_complete = 'appointment.complete';
   static const appointment_status = 'appointment.status';
+  static const appointment_room = 'appointment.room';
   static const appointment_no_upcoming = 'appointment.no_upcoming';
   static const appointment_no_completed = 'appointment.no_completed';
   static const appointment_canceled_successfully = 'appointment.canceled_successfully';
@@ -278,7 +279,6 @@ abstract class  LocaleKeys {
   static const appointment_email = 'appointment.email';
   static const appointment_done_successfully = 'appointment.done_successfully';
   static const appointment_cancel = 'appointment.cancel';
-  static const appointment_room = 'appointment.room';
   static const appointment = 'appointment';
   static const auth_create_account = 'auth.create_account';
   static const auth_choose_role = 'auth.choose_role';
