@@ -102,6 +102,8 @@ class AppointmentModel {
       'isRated': isRated ?? false,
       if (patientRating != null) 'patientRating': patientRating,
       if (notes != null) 'notes': notes,
+      if (patientName != null) 'patientName': patientName,
+      if (doctorName != null) 'doctorName': doctorName,
     };
   }
 

@@ -6,7 +6,7 @@ import 'package:avo_app/app/core/models/patient_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
+import 'package:avo_app/app/features/doctor/view/screen/patient_details_screen.dart';
 
 class PatientScreen extends StatefulWidget {
   const PatientScreen({super.key});
@@ -152,9 +152,13 @@ class _PatientScreenState extends State<PatientScreen> {
                         child: CustomPatientCard(
                           patient: filteredPatients[index],
                           onTap: () {
-                            context.push(
-                              '/user-details',
-                              extra: filteredPatients[index],
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PatientDetailsScreen(
+                                  patient: filteredPatients[index],
+                                ),
+                              ),
                             );
                           },
                         ),

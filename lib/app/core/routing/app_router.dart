@@ -57,6 +57,7 @@ import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
 import 'package:avo_app/app/features/profile/screens/doctor_info_screen.dart';
+import 'package:avo_app/app/features/profile/screens/medical_records_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
 import 'package:avo_app/app/features/splash/screens/splash_screen.dart';
@@ -101,6 +102,7 @@ class AppRouter {
   static const String savedAnalysis = '/saved-analysis';
   static const String savedAnalysisList = '/saved-analysis-list';
   static const String categories = '/categories';
+  static const String medicalRecords = '/medical-records';
 
   static const String chatBot = '/chat-bot';
   static const String favorites = '/favorites';
@@ -280,6 +282,9 @@ class AppRouter {
           );
         },
       ),
+      GoRoute(
+          path: medicalRecords,
+          builder: (context, state) => const MedicalRecordsScreen()),
       GoRoute(
           path: checkout, builder: (context, state) => const CheckoutScreen()),
       GoRoute(

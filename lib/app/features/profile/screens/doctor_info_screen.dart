@@ -25,7 +25,8 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _resolvedDoctorId = widget.doctorId ?? FirebaseAuth.instance.currentUser?.uid ?? '';
+    _resolvedDoctorId =
+        widget.doctorId ?? FirebaseAuth.instance.currentUser?.uid ?? '';
     context.read<ProfileCubit>().getDoctorProfile(_resolvedDoctorId);
   }
 
@@ -33,12 +34,14 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isMe = _resolvedDoctorId == FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Transform.flip(
             flipX: context.locale.languageCode == 'ar',
@@ -53,6 +56,20 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          if (isMe)
+            IconButton(
+              icon: Icon(
+                _isEditMode ? Icons.close_rounded : Icons.edit_rounded,
+                color: _isEditMode ? Colors.red : colorScheme.primary,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isEditMode = !_isEditMode;
+                });
+              },
+            ),
+        ],
       ),
       body: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
@@ -66,8 +83,13 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
           } else if (state is ProfileSuccess && _isEditMode) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(LocaleKeys.profile_doctor_info_update_success.tr()),
+                content:
+                    Text(LocaleKeys.profile_doctor_info_update_success.tr()),
                 backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
               ),
             );
             setState(() {
@@ -86,6 +108,32 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ================= HEADER BANNER =================
+                    _buildHeaderBanner(theme),
+                    SizedBox(height: 24.h),
+
+                    // ================= LOCATION & CLINIC =================
+                    Text(
+                      'Workplace Details',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+
+                    // Clinic Field
+                    CustomTextFormField(
+                      controller: cubit.docClinicController,
+                      labelText: 'Clinic / Hospital Name',
+                      hintText: 'Enter your clinic or hospital name',
+                      prefixIcon: const Icon(Icons.local_hospital_outlined),
+                      readOnly: !_isEditMode,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    SizedBox(height: 16.h),
+
                     // Location Field
                     CustomTextFormField(
                       controller: cubit.docLocationController,
@@ -95,7 +143,22 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
                       readOnly: !_isEditMode,
                       textInputAction: TextInputAction.next,
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 24.h),
+
+                    // ================= SPECIALTY & PRICE =================
+                    Text(
+                      'Professional Info',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+
+                    // Specialty Dropdown
+                    _buildSpecialtyDropdown(cubit, theme),
+                    SizedBox(height: 16.h),
 
                     // Price Field
                     CustomTextFormField(
@@ -107,119 +170,40 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
                       readOnly: !_isEditMode,
                       textInputAction: TextInputAction.next,
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 24.h),
 
-                    // Specialty Dropdown
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          LocaleKeys.auth_specialty.tr(),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        DropdownButtonFormField<String>(
-                          initialValue: cubit.selectedSpecialty,
-                          hint: Text(
-                            LocaleKeys.auth_specialty_hint.tr(),
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: colorScheme.onSurface.withValues(alpha: 0.5),
-                            ),
-                          ),
-                          decoration: InputDecoration(
-                            prefixIcon: IconTheme(
-                              data: IconThemeData(
-                                color: colorScheme.onSurface.withValues(alpha: 0.5),
-                                size: 20.sp,
-                              ),
-                              child: const Icon(Icons.stars_outlined),
-                            ),
-                            filled: true,
-                            fillColor: _isEditMode
-                                ? theme.cardColor
-                                : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 14.h,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                color: colorScheme.outlineVariant,
-                                width: 1.w,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                color: colorScheme.outlineVariant,
-                                width: 1.w,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                color: colorScheme.primary,
-                                width: 1.w,
-                              ),
-                            ),
-                          ),
-                          items: [
-                            'cardiologist',
-                            'neurosurgeon',
-                            'orthopedic',
-                            'pediatrician',
-                            'dermatologist',
-                            'gynecologist',
-                            'dentist',
-                            'ent',
-                            'ophthalmologist',
-                            'general_practitioner',
-                          ].map((spec) {
-                            String transKey = 'auth.specialties.$spec';
-                            return DropdownMenuItem<String>(
-                              value: spec,
-                              enabled: _isEditMode,
-                              child: Text(
-                                transKey.tr(),
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: _isEditMode
-                              ? (val) {
-                                  setState(() {
-                                    cubit.selectedSpecialty = val;
-                                  });
-                                }
-                              : null,
-                        ),
-                      ],
+                    // ================= BIO =================
+                    Text(
+                      'Biography',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 12.h),
 
                     // Bio Field
                     CustomTextFormField(
                       controller: cubit.docBioController,
                       labelText: 'Bio',
-                      hintText: 'Enter doctor bio/description',
+                      hintText:
+                          'Write a brief description about your experience and qualifications',
                       prefixIcon: const Icon(Icons.description_outlined),
                       readOnly: !_isEditMode,
                       textInputAction: TextInputAction.done,
                     ),
+                    SizedBox(height: 40.h),
                   ],
                 ),
               ),
               if (isLoading)
-                const Center(child: CircularProgressIndicator()),
+                Container(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             ],
           );
         },
@@ -227,39 +211,47 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
       bottomNavigationBar: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
           final isLoading = state is ProfileLoading;
-          if (isLoading) return const SizedBox.shrink();
+          if (isLoading || !_isEditMode) return const SizedBox.shrink();
+
           return Container(
-            padding: const EdgeInsets.all(20),
-            color: theme.scaffoldBackgroundColor,
+            padding: EdgeInsets.only(
+              left: 20.w,
+              right: 20.w,
+              bottom: 20.h + MediaQuery.of(context).padding.bottom,
+              top: 16.h,
+            ),
+            decoration: BoxDecoration(
+              color: theme.scaffoldBackgroundColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
             child: SizedBox(
               width: double.infinity,
-              height: 55,
+              height: 55.h,
               child: ElevatedButton(
                 onPressed: () {
-                  if (_isEditMode) {
-                    context.read<ProfileCubit>().updateDoctorProfile(_resolvedDoctorId);
-                  } else {
-                    setState(() {
-                      _isEditMode = true;
-                    });
-                  }
+                  context
+                      .read<ProfileCubit>()
+                      .updateDoctorProfile(_resolvedDoctorId);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isEditMode
-                      ? colorScheme.primary
-                      : colorScheme.onSurface.withValues(alpha: 0.2),
+                  backgroundColor: colorScheme.primary,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
                   elevation: 0,
                 ),
                 child: Text(
-                  _isEditMode ? LocaleKeys.general_save.tr() : LocaleKeys.general_edit.tr(),
+                  LocaleKeys.general_save.tr(),
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
-                    color: _isEditMode
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurface,
+                    color: colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -267,6 +259,187 @@ class _DoctorInfoScreenState extends State<DoctorInfoScreen> {
           );
         },
       ),
+    );
+  }
+
+  // ================= HEADER BANNER =================
+  Widget _buildHeaderBanner(ThemeData theme) {
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.primary.withValues(alpha: 0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.medical_services_rounded,
+              size: 32.sp,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Doctor Profile',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  'Manage your professional details to attract more patients.',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= SPECIALTY DROPDOWN =================
+  Widget _buildSpecialtyDropdown(ProfileCubit cubit, ThemeData theme) {
+    final colorScheme = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          LocaleKeys.auth_specialty.tr(),
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Builder(builder: (context) {
+          final specialties = [
+            'cardiologist',
+            'neurosurgeon',
+            'orthopedic',
+            'pediatrician',
+            'dermatologist',
+            'gynecologist',
+            'dentist',
+            'ent',
+            'ophthalmologist',
+            'general_practitioner',
+          ];
+
+          String? initialSpecialty = cubit.selectedSpecialty;
+          if (initialSpecialty != null &&
+              !specialties.contains(initialSpecialty)) {
+            initialSpecialty = null;
+          }
+
+          return DropdownButtonFormField<String>(
+            initialValue: initialSpecialty,
+            hint: Text(
+              LocaleKeys.auth_specialty_hint.tr(),
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+            icon: Icon(Icons.keyboard_arrow_down_rounded,
+                color: _isEditMode ? colorScheme.primary : Colors.grey),
+            decoration: InputDecoration(
+              prefixIcon: IconTheme(
+                data: IconThemeData(
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  size: 20.sp,
+                ),
+                child: const Icon(Icons.stars_outlined),
+              ),
+              filled: true,
+              fillColor: _isEditMode
+                  ? theme.cardColor
+                  : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 16.h,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant,
+                  width: 1.w,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant,
+                  width: 1.w,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: BorderSide(
+                  color: colorScheme.primary,
+                  width: 1.5.w,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            items: specialties.map((spec) {
+              String transKey = 'auth.specialties.$spec';
+              return DropdownMenuItem<String>(
+                value: spec,
+                enabled: _isEditMode,
+                child: Text(
+                  transKey.tr(),
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w500,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: _isEditMode
+                ? (val) {
+                    setState(() {
+                      cubit.selectedSpecialty = val;
+                    });
+                  }
+                : null,
+          );
+        }),
+      ],
     );
   }
 }
