@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:avo_app/app/core/routing/app_router.dart';
-import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
@@ -49,8 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bool isDarkTheme =
         context.watch<ThemeCubit>().state == ThemeMode.dark;
 
-    return AppExitPopScope(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
       
         // AppBar
@@ -222,8 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 
   void _showLanguageBottomSheet(bool isArabic) {
