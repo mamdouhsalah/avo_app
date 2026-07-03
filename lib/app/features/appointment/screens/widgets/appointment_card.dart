@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:avo_app/app/core/models/appointment_card_model.dart';
 import 'package:avo_app/app/core/models/appointment_model.dart';
 import 'package:avo_app/app/core/services/auth_service.dart';
@@ -31,23 +32,25 @@ class AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final uid = context.read<AuthService>().currentUid;
+    final uid = context.read<AuthService>().currentUid;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    final DateTime date = appointmentDoctor.appointment.date;
+    bool isAppointmentToday = isToday(date: date);
+    final formatted = DateFormat('d MMM').format(date);
+  
 
     return Padding(
       padding: EdgeInsetsDirectional.only(start: 24.w, top: 16.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// TODO: after modify date , uncomment this and make it a real date not just a day
-          Text(
-            // isToday(date: appointmentDoctor.appointment.date)
-            //     ? LocaleKeys.general_today.tr()
-            //     :
 
-            ///TODO : replace this with actual date
-            "${appointmentDoctor.appointment.date}",
+          Text(
+            isAppointmentToday
+                ? LocaleKeys.general_today.tr():
+                "${translateDay(appointmentDoctor.appointment.day)}  ${formatted} ",
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontSize: 14.sp,
@@ -91,7 +94,8 @@ class AppointmentCard extends StatelessWidget {
                               ),
                             ),
                             child: ClipOval(
-                              child: appointmentDoctor.doctor.imageUrl.isNotEmpty
+                              child: appointmentDoctor
+                                      .doctor.imageUrl.isNotEmpty
                                   ? Image.network(
                                       appointmentDoctor.doctor.imageUrl,
                                       fit: BoxFit.cover,
@@ -152,47 +156,43 @@ class AppointmentCard extends StatelessWidget {
                                 ),
 
                                 SizedBox(height: 16.h),
-                                
+
                                 // get it from doctor rating, else get the updated rating
                                 Row(
                                   children: [
-                                    BlocBuilder<DoctorRatingCubit, DoctorRatingState>(
-                                    builder: (context, state) {
-                                      double rating = appointmentDoctor.doctor.rating;
+                                    BlocBuilder<DoctorRatingCubit,
+                                        DoctorRatingState>(
+                                      builder: (context, state) {
+                                        double rating =
+                                            appointmentDoctor.doctor.rating;
 
-                                      if (state is DoctorRatingSuccess) {
-                                        rating = state.newDoctorRate;
-                                      }
+                                        if (state is DoctorRatingSuccess) {
+                                          rating = state.newDoctorRate;
+                                        }
 
-                                      return Text(
-                                        rating.toStringAsFixed(2),
-                                        style: TextStyle(
-                                          color: colorScheme.onSurface,
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      );
-                                    },
-                                  ),
-
+                                        return Text(
+                                          rating.toStringAsFixed(2),
+                                          style: TextStyle(
+                                            color: colorScheme.onSurface,
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        );
+                                      },
+                                    ),
                                     SizedBox(width: 10.w),
-
                                     Icon(
                                       Icons.star,
                                       color: AppColors.lightOrangeOutLine,
                                       size: 18.sp,
                                     ),
-
                                     SizedBox(width: 10.w),
-
                                     Icon(
                                       Icons.access_time,
                                       color: colorScheme.onSurface,
                                       size: 18.sp,
                                     ),
-
                                     SizedBox(width: 10.w),
-
                                     Text(
                                       "${appointmentDoctor.appointment.startTime} - ${appointmentDoctor.appointment.endTime}",
                                       style: TextStyle(
@@ -214,38 +214,46 @@ class AppointmentCard extends StatelessWidget {
 
                       /// button
                       MainButton(
-                        text: appointmentDoctor.appointment.status==AppointmentStatus.confirmed?
-                         LocaleKeys.appointment_cancel_appointment.tr():
-                         LocaleKeys.reminder_schedule.tr(),
-                    onPressed: appointmentDoctor.appointment.status==AppointmentStatus.confirmed?  () {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            barrierColor: Colors.black54,
-                            builder: (_) {
-                              return CancelAppointmentCard(
-                                doctorName: appointmentDoctor.doctor.name,
-                                onYes: () {
-                                  context.read<AppointmentCubit>().cancelAppointment(
-                                        appointmentDoctor.appointment.id,
+                          text: appointmentDoctor.appointment.status ==
+                                  AppointmentStatus.confirmed
+                              ? LocaleKeys.appointment_cancel_appointment.tr()
+                              : LocaleKeys.reminder_schedule.tr(),
+                          onPressed: appointmentDoctor.appointment.status ==
+                                  AppointmentStatus.confirmed
+                              ? () {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    barrierColor: Colors.black54,
+                                    builder: (_) {
+                                      return CancelAppointmentCard(
+                                        doctorName:
+                                            appointmentDoctor.doctor.name,
+                                        onYes: () {
+                                          context
+                                              .read<AppointmentCubit>()
+                                              .cancelAppointment(
+                                                appointmentDoctor
+                                                    .appointment.id,
+                                              );
+                                          Navigator.pop(context);
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            barrierColor: Colors.black54,
+                                            builder: (_) {
+                                              return CancelSuccessfullyAppointmentCard(
+                                                doctorName: appointmentDoctor
+                                                    .doctor.name,
+                                              );
+                                            },
+                                          );
+                                        },
                                       );
-                                      Navigator.pop(context);
-                                      showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      barrierColor: Colors.black54,
-                                      builder: (_) {
-                                        return CancelSuccessfullyAppointmentCard(
-                                          doctorName: appointmentDoctor.doctor.name,
-                                        );
-                                      },
-                                    );
-                                },
-                              );
-                            },
-                          );
-                        }:(){}
-                      )
+                                    },
+                                  );
+                                }
+                              : () {})
                     ],
                   ),
                 ),
@@ -254,31 +262,31 @@ class AppointmentCard extends StatelessWidget {
                 /// TODO: Speak with team about this
                 /// add the doctor to favorite list or remove it from favorite list
 
-              PositionedDirectional(
-                top: 8.h,
-                end: 41.w,
-                child: BlocBuilder<FavoriteCubit, FavoriteState>(
-                  builder: (context, favoriteState) {
-                    final isFav = context
-                        .read<FavoriteCubit>()
-                        .isFavorite(appointmentDoctor.doctor.id);
+                PositionedDirectional(
+                  top: 8.h,
+                  end: 41.w,
+                  child: BlocBuilder<FavoriteCubit, FavoriteState>(
+                    builder: (context, favoriteState) {
+                      final isFav = context
+                          .read<FavoriteCubit>()
+                          .isFavorite(appointmentDoctor.doctor.id);
 
-                    return IconButton(
-                      onPressed: () {
-                        context.read<FavoriteCubit>().toggleFavorite(
-                              uid!, 
-                              appointmentDoctor.doctor.id,
-                            );
-                      },
-                      icon: Icon(
-                        isFav ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.red,
-                        size: 24.sp,
-                      ),
-                    );
-                  },
+                      return IconButton(
+                        onPressed: () {
+                          context.read<FavoriteCubit>().toggleFavorite(
+                                uid!,
+                                appointmentDoctor.doctor.id,
+                              );
+                        },
+                        icon: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: Colors.red,
+                          size: 24.sp,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
               ],
             ),
           ),

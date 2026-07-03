@@ -457,6 +457,10 @@ class CodegenLoader extends AssetLoader{
     "select_slot_error": "برجاء اختيار موعد كشف أولاً",
     "number_of_reviews": "عدد التقييمات",
     "bio": "نبذة عن الطبيب"
+  },
+  "favorite": {
+    "myFavoriteDoctors": "الأطباء المفضلون",
+    "noFavoriteDoctors": "لا يوجد أطباء مفضلون بعد"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -730,8 +734,8 @@ static const Map<String,dynamic> _en = {
     "selected_date": "Selected Date",
     "selected_time": "Selected Time",
     "no_canceled_to_display": "No Canceled Appointments to display",
-    "no_upcoming_to_display": "No Canceled Appointments to display",
-    "no_completed_to_display": "No Canceled Appointments to display",
+    "no_upcoming_to_display": "No Upcoming Appointments to display",
+    "no_completed_to_display": "No Completed Appointments to display",
     "rated": "Rated",
     "submit_rating": "Submit Rating",
     "select_rating_first": "Please select a rating first.",
@@ -902,6 +906,10 @@ static const Map<String,dynamic> _en = {
     "select_slot_error": "Please select a schedule slot first",
     "number_of_reviews": "No. reviews",
     "bio": "Bio"
+  },
+  "favorite": {
+    "myFavoriteDoctors": "My Favorite Doctors",
+    "noFavoriteDoctors": "No favorite doctors yet"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};

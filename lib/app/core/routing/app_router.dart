@@ -8,6 +8,7 @@ import 'package:avo_app/app/features/doctor/services/add_doctor_cubit/add_doctor
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/features/doctor/view/screen/appointment_action.dart';
 import 'package:avo_app/app/features/doctor/view/screen/specific_appointment_display.dart';
+import 'package:avo_app/app/features/favorite/view/screens/favorite_doctors.dart';
 import 'package:avo_app/app/features/notification/view/screens/notification_screen.dart';
 import 'package:avo_app/app/features/scanner/view/screens/scanner_screen.dart';
 import 'package:avo_app/app/features/scanner/view/screens/saved_analysis_view_screen.dart';
@@ -106,6 +107,7 @@ class AppRouter {
 
   static const String chatBot = '/chat-bot';
   static const String favorites = '/favorites';
+  static const String favoriteDoctors = '/favorite-doctors';
   static const String checkout = '/checkout';
   static const String accountInfo = '/account-info';
   static const String personalInfo = '/personal-info';
@@ -280,6 +282,10 @@ class AppRouter {
       GoRoute(
           path: favorites,
           builder: (context, state) => const AppExitPopScope(child: FavoritesScreen())),
+      GoRoute(
+        path: favoriteDoctors,
+        builder: (context, state) => const FavoriteDoctorsScreen(),
+      ),
       GoRoute(
         path: savedAnalysis,
         builder: (context, state) {

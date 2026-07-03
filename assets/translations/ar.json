@@ -443,5 +443,10 @@
     "select_slot_error": "برجاء اختيار موعد كشف أولاً",
     "number_of_reviews": "عدد التقييمات",
     "bio": "نبذة عن الطبيب"
+  },
+
+   "favorite": {
+    "myFavoriteDoctors": "الأطباء المفضلون",
+    "noFavoriteDoctors": "لا يوجد أطباء مفضلون بعد"
   }
 }
