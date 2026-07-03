@@ -31,7 +31,7 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   ) async {
     try {
       await _consumer.update(
-        'favorites/$patientId',
+        'favorites/$patientId/doctors',
         data: {doctorId: isFavorite},
       );
     } catch (e) {
@@ -40,25 +40,41 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   }
 
   @override
-Future<List<DoctorModel>> getFavoriteDoctors() async {
-  try {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-
-    final favorites = await getFavorites(uid);
-
-    final doctors = await _consumer.getList<DoctorModel>(
-      DatabasePaths.doctors,
-      fromJson: (json) => DoctorModel.fromJson(json),
-    );
-
-    return doctors
-        .where((doctor) => favorites.isFavorite(doctor.id))
-        .toList();
-  } catch (e) {
-    throw DatabaseException(
-      e.toString(),
-      'failed-to-get-favorite-doctors',
-    );
+  Future<void> toggleFavoritePharmacy(
+    String patientId,
+    String pharmacyId,
+    bool isFavorite,
+  ) async {
+    try {
+      await _consumer.update(
+        'favorites/$patientId/pharmacies',
+        data: {pharmacyId: isFavorite},
+      );
+    } catch (e) {
+      throw DatabaseException(e.toString(), "failed to toggle pharmacy");
+    }
   }
-}
+
+  @override
+  Future<List<DoctorModel>> getFavoriteDoctors() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+
+      final favorites = await getFavorites(uid);
+
+      final doctors = await _consumer.getList<DoctorModel>(
+        DatabasePaths.doctors,
+        fromJson: (json) => DoctorModel.fromJson(json),
+      );
+
+      return doctors
+          .where((doctor) => favorites.isFavorite(doctor.id))
+          .toList();
+    } catch (e) {
+      throw DatabaseException(
+        e.toString(),
+        'failed-to-get-favorite-doctors',
+      );
+    }
+  }
 }

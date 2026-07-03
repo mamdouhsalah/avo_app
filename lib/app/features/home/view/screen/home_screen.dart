@@ -19,10 +19,13 @@ import 'package:avo_app/app/core/shared/bestpharmacy_card.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_cubit.dart';
 import 'package:avo_app/app/features/notification/logic/app_notification_state.dart';
 import 'package:avo_app/app/core/shared/section_header.dart';
+import 'package:avo_app/app/features/favorite/logic/favorite_cubit.dart';
+import 'package:avo_app/app/features/favorite/logic/favorite_sate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/Language/locale_keys.g.dart';
 
@@ -301,52 +304,62 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               SizedBox(height: 16.h),
                               SizedBox(
-                                  height: 158.h,
-                                  child: BlocBuilder<AppointmentCubit, AppointmentState>(
-                                    builder: (context, appointmentState) {
-                                      if (appointmentState is AppointmentLoading) {
-                                        return const Center(child: CircularProgressIndicator());
-                                      }
+                                height: 158.h,
+                                child: BlocBuilder<AppointmentCubit,
+                                    AppointmentState>(
+                                  builder: (context, appointmentState) {
+                                    if (appointmentState
+                                        is AppointmentLoading) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
 
-                                      if (appointmentState is AppointmentError) {
-                                        return Center(
-                                          child: Text(
-                                            appointmentState.message,
-                                            style: TextStyle(
-                                              color: Theme.of(context).colorScheme.error,
-                                              fontSize: 13.sp,
-                                            ),
+                                    if (appointmentState is AppointmentError) {
+                                      return Center(
+                                        child: Text(
+                                          appointmentState.message,
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error,
+                                            fontSize: 13.sp,
                                           ),
-                                        );
-                                      }
-
-                                      final cubit = context.read<AppointmentCubit>();
-                                      final upcoming = cubit.upcomingAppointments;
-
-                                      if (upcoming.isEmpty) {
-                                        return Center(
-                                          child: Text(
-                                            LocaleKeys.home_no_upcoming_appointments.tr(),
-                                            style: TextStyle(
-                                              color: Theme.of(context).colorScheme.outline,
-                                              fontSize: 13.sp,
-                                            ),
-                                          ),
-                                        );
-                                      }
-
-                                      return ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: upcoming.length,
-                                        itemBuilder: (_, i) {
-                                          return AppointmentCard(
-                                            appointmentCard: upcoming[i],
-                                          );
-                                        },
+                                        ),
                                       );
-                                    },
-                                  ),
+                                    }
+
+                                    final cubit =
+                                        context.read<AppointmentCubit>();
+                                    final upcoming = cubit.upcomingAppointments;
+
+                                    if (upcoming.isEmpty) {
+                                      return Center(
+                                        child: Text(
+                                          LocaleKeys
+                                              .home_no_upcoming_appointments
+                                              .tr(),
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline,
+                                            fontSize: 13.sp,
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    return ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: upcoming.length,
+                                      itemBuilder: (_, i) {
+                                        return AppointmentCard(
+                                          appointmentCard: upcoming[i],
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
+                              ),
                               SizedBox(height: 24.h),
                               SectionHeader(
                                 title: LocaleKeys.home_upcoming_medicine.tr(),
@@ -359,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (context, reminderState) {
                                   List<MedicineModel> upcomingMedicines = [];
                                   List<ReminderModel> upcomingReminders = [];
-          
+
                                   if (reminderState is ReminderLoaded) {
                                     upcomingReminders = reminderState
                                         .todaysSchedule
@@ -368,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             r.status == 'next' ||
                                             r.status == 'overdue')
                                         .toList();
-          
+
                                     upcomingMedicines = upcomingReminders
                                         .map((r) => MedicineModel(
                                               id: r.id,
@@ -379,7 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ))
                                         .toList();
                                   }
-          
+
                                   return SizedBox(
                                     height: 200.h,
                                     child: (reminderState is ReminderLoading)
@@ -486,22 +499,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                             LocaleKeys.home_no_doctors.tr()),
                                       ),
                                     )
-                                  : Column(
-                                      children: state.bestDoctors.map((doc) {
-                                        return BestDoctorCard(
-                                          key: ValueKey(doc.id),
-                                          doctor: doc,
-                                          onFavoriteToggle: () {},
-                                          onBook: () => context.push(
-                                              AppRouter.bookPatient,
-                                              extra: doc.id),
+                                  : BlocBuilder<FavoriteCubit, FavoriteState>(
+                                      builder: (context, favState) {
+                                        final patientId = FirebaseAuth
+                                                .instance.currentUser?.uid ??
+                                            '';
+                                        return Column(
+                                          children:
+                                              state.bestDoctors.map((doc) {
+                                            final isFav = context
+                                                .read<FavoriteCubit>()
+                                                .isFavorite(doc.id);
+                                            final updatedDoc =
+                                                doc.copyWith(isFavorite: isFav);
+                                            return BestDoctorCard(
+                                              key: ValueKey(doc.id),
+                                              doctor: updatedDoc,
+                                              onFavoriteToggle: () {
+                                                context
+                                                    .read<FavoriteCubit>()
+                                                    .toggleFavorite(
+                                                        patientId, doc.id);
+                                              },
+                                              onBook: () => context.push(
+                                                  AppRouter.bookPatient,
+                                                  extra: doc.id),
+                                            );
+                                          }).toList(),
                                         );
-                                      }).toList(),
+                                      },
                                     ),
                               SizedBox(height: 16.h),
                               SectionHeader(
                                 title: LocaleKeys.home_best_pharmacies.tr(),
-                                routePath: AppRouter.search,
+                                routePath: AppRouter.allPharmacies,
                               ),
                               SizedBox(height: 16.h),
                               state.bestPharmacies.isEmpty
@@ -513,16 +544,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                             LocaleKeys.home_no_pharmacies.tr()),
                                       ),
                                     )
-                                  : Column(
-                                      children:
-                                          state.bestPharmacies.map((pharmacy) {
-                                        return BestPharmacyCard(
-                                          key: ValueKey(pharmacy.id),
-                                          pharmacy: pharmacy,
-                                          onTap: () {},
-                                          onFavoriteToggle: () {},
+                                  : BlocBuilder<FavoriteCubit, FavoriteState>(
+                                      builder: (context, favState) {
+                                        final patientId = FirebaseAuth
+                                                .instance.currentUser?.uid ??
+                                            '';
+                                        return Column(
+                                          children: state.bestPharmacies
+                                              .map((pharmacy) {
+                                            final isFav = context
+                                                .read<FavoriteCubit>()
+                                                .isFavoritePharmacy(
+                                                    pharmacy.id);
+                                            final updatedPharmacy = pharmacy
+                                                .copyWith(isFavorite: isFav);
+                                            return BestPharmacyCard(
+                                              key: ValueKey(pharmacy.id),
+                                              pharmacy: updatedPharmacy,
+                                              onTap: () {
+                                                context.push(
+                                                    AppRouter.sendPrescription,
+                                                    extra: pharmacy.id);
+                                              },
+                                              onFavoriteToggle: () {
+                                                context
+                                                    .read<FavoriteCubit>()
+                                                    .toggleFavoritePharmacy(
+                                                        patientId, pharmacy.id);
+                                              },
+                                            );
+                                          }).toList(),
                                         );
-                                      }).toList(),
+                                      },
                                     ),
                               SizedBox(height: 100.h),
                             ],

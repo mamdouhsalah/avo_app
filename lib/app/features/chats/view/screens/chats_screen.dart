@@ -5,6 +5,7 @@ import 'package:avo_app/app/features/chats/view/widget/chat_widget.dart';
 import 'package:avo_app/app/core/services/remote/firestore_chats_services.dart';
 import 'package:avo_app/app/features/admin/views/widgets/admin_custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/pharmacy/view/widget/pharmacy_custom_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ import 'package:go_router/go_router.dart';
 class ChatsScreen extends StatefulWidget {
   final bool isDoctor;
   final bool isAdmin;
-  const ChatsScreen({super.key, this.isDoctor = false, this.isAdmin = false});
+  final bool isPharmacy;
+  const ChatsScreen({super.key, this.isDoctor = false, this.isAdmin = false, this.isPharmacy = false});
 
   @override
   State<ChatsScreen> createState() => _ChatsScreenState();
@@ -202,7 +204,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
-        leading: (widget.isDoctor || widget.isAdmin)
+        leading: (widget.isDoctor || widget.isAdmin || widget.isPharmacy)
             ? Builder(
                 builder: (context) => IconButton(
                   icon: Icon(
@@ -217,7 +219,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
       ),
       drawer: widget.isAdmin 
           ? const AdminCustomDrawer() 
-          : (widget.isDoctor ? const CustomDrawer() : null),
+          : widget.isPharmacy 
+              ? const PharmacyCustomDrawer() 
+              : (widget.isDoctor ? const CustomDrawer() : null),
       body: Column(
         children: [
           Padding(

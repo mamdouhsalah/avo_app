@@ -51,13 +51,22 @@ import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/catogery_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
 import 'package:avo_app/app/features/home/view/widget/all_doctors_screen.dart';
+import 'package:avo_app/app/features/home/view/screen/all_pharmacies_screen.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
 import 'package:avo_app/app/features/payment/screens/add_card_screen.dart';
 import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/pharmacy_dashboard_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/pharmacy_orders_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/pharmacy_analytics_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/order_details_screen.dart';
+import 'package:avo_app/app/core/models/pharmacy_order_model.dart';
 import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/send_prescription_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/patient_pharmacy_orders_screen.dart';
 import 'package:avo_app/app/features/profile/screens/doctor_info_screen.dart';
+import 'package:avo_app/app/features/profile/screens/emergency_numbers_screen.dart';
 import 'package:avo_app/app/features/profile/screens/medical_records_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
@@ -91,15 +100,18 @@ class AppRouter {
   static const String newChat = '/new-chat';
   static const String analytics = '/analytics';
   static const String specificAppointmentDisplay = '/specific-appointment-display';
+  
   // Other Features
   static const String home = '/home';
   static const String search = '/search';
   static const String allDoctors = '/all-doctors';
+  static const String allPharmacies = '/all-pharmacies';
   static const String reminder = '/reminder';
   static const String profile = '/profile';
   static const String profileFull = '/profile/full'; // بدون Bottom Nav
   static const String adherenceReport = '/adherence-report';
   static const String scanner = '/scanner';
+  static const String scannerFull = '/scanner/full';
   static const String savedAnalysis = '/saved-analysis';
   static const String savedAnalysisList = '/saved-analysis-list';
   static const String categories = '/categories';
@@ -119,6 +131,16 @@ class AppRouter {
   static const String scheduleAppointment = '/schedule-appointment';
   static const String patientAppointment = '/patient-appointment';
   static const String appointmentAction = '/appointment-action';
+  static const String sendPrescription = '/send-prescription';
+  static const String patientPharmacyOrders = '/patient-pharmacy-orders';
+  static const String emergencyNumbers = '/emergency-numbers';
+
+  // Pharmacy Routes
+  static const String pharmacyDashboard = '/pharmacy-dashboard';
+  static const String pharmacyOrders = '/pharmacy-orders';
+  static const String orderDetails = '/order-details';
+  static const String pharmacyChats = '/pharmacy-chats';
+  static const String pharmacyAnalytics = '/pharmacy-analytics';
 
   // Admin Routes
   static const String adminDashboard = '/admin-dashboard';
@@ -133,21 +155,12 @@ class AppRouter {
     routes: [
       // ==================== Auth Routes ====================
       GoRoute(path: splash, builder: (context, state) => const AppExitPopScope(child: SplashScreen())),
-      GoRoute(
-          path: onboard, builder: (context, state) => const AppExitPopScope(child: OnboardScreen())),
+      GoRoute(path: onboard, builder: (context, state) => const AppExitPopScope(child: OnboardScreen())),
       GoRoute(path: login, builder: (context, state) => const AppExitPopScope(child: LoginScreen())),
-      GoRoute(
-          path: createAccountType,
-          builder: (context, state) => const AppExitPopScope(child: CreateAccountTypeScreen())),
-      GoRoute(
-          path: validationCode,
-          builder: (context, state) => const AppExitPopScope(child: ValidationCodeScreen())),
-      GoRoute(
-          path: setPassword,
-          builder: (context, state) => const AppExitPopScope(child: SetPasswordScreen())),
-      GoRoute(
-          path: resetPassword,
-          builder: (context, state) => const AppExitPopScope(child: ResetPasswordScreen())),
+      GoRoute(path: createAccountType, builder: (context, state) => const AppExitPopScope(child: CreateAccountTypeScreen())),
+      GoRoute(path: validationCode, builder: (context, state) => const AppExitPopScope(child: ValidationCodeScreen())),
+      GoRoute(path: setPassword, builder: (context, state) => const AppExitPopScope(child: SetPasswordScreen())),
+      GoRoute(path: resetPassword, builder: (context, state) => const AppExitPopScope(child: ResetPasswordScreen())),
 
       // ==================== Main Layout (With Bottom Navigation) ====================
       ShellRoute(
@@ -155,9 +168,7 @@ class AppRouter {
         routes: [
           GoRoute(path: scanner, builder: (context, state) => const AppExitPopScope(child: ScannerScreen())),
           GoRoute(path: home, builder: (context, state) => const AppExitPopScope(child: HomeScreen())),
-          GoRoute(
-              path: reminder,
-              builder: (context, state) => const AppExitPopScope(child: ReminderScreen())),
+          GoRoute(path: reminder, builder: (context, state) => const AppExitPopScope(child: ReminderScreen())),
           GoRoute(
             path: profile,
             builder: (context, state) => const AppExitPopScope(
@@ -178,7 +189,6 @@ class AppRouter {
         path: appointmentAction,
         builder: (context, state) {
           final args = state.extra as AppointmentActionArgs;
-
           return AppExitPopScope(
             child: AppointmentActionScreen(
               patient: args.patient,
@@ -193,44 +203,33 @@ class AppRouter {
         builder: (context, state) {
           final appointmentCards = state.extra as List<AppointmentCardModel>;
           return AppExitPopScope(child: SpecificAppointmentDisplay(appointmentCards: appointmentCards));
-        }
+        },
       ),
+
       // ==================== Full Screen Routes (بدون Bottom Navigation) ====================
+      GoRoute(path: dashboard, builder: (context, state) => const AppExitPopScope(child: DashboardScreen())),
+      GoRoute(path: patients, builder: (context, state) => const AppExitPopScope(child: PatientScreen())),
+      GoRoute(path: appointments, builder: (context, state) => const AppExitPopScope(child: AppointmentScreen())),
+      GoRoute(path: patientAppointment, builder: (context, state) => const AppExitPopScope(child: AppointmentPatientScreen())),
       GoRoute(
-          path: dashboard,
-          builder: (context, state) => const AppExitPopScope(child: DashboardScreen())),
-      GoRoute(
-          path: patients, builder: (context, state) => const AppExitPopScope(child: PatientScreen())),
-      GoRoute( // for doctor
-          path: appointments,
-          builder: (context, state) => const AppExitPopScope(child: AppointmentScreen())),
-      GoRoute(path:patientAppointment, builder: (context, state) => const AppExitPopScope(child: AppointmentPatientScreen())),
-      GoRoute(
-          path: addSchedule,
-          builder: (context, state) => AppExitPopScope(
-                child: BlocProvider(
-                  create: (context) => AddDoctorCubit(
-                    repository: DoctorRepositoryImpl(
-                      consumer: context.read<FirebaseConsumer>(),
-                    ),
-                  )..loadSchedules(),
-                  child: const AddDoctorScheduleScreen(),
-                ),
-              )),
-      GoRoute(
-          path: labResults,
-          builder: (context, state) => const AppExitPopScope(child: LabresultScreen())),
-      GoRoute(
-          path: analytics,
-          builder: (context, state) => const AppExitPopScope(child: AnalyticsScreen())),
-      GoRoute(
-          path: doctorChats,
-          builder: (context, state) => const AppExitPopScope(child: ChatsScreen(isDoctor: true))),
-      GoRoute(
-          path: newChat, builder: (context, state) => const AppExitPopScope(child: NewChatScreen())),
-      GoRoute(
-          path: scheduleAppointment,
-          builder: (context, state) => const AppExitPopScope(child: ScheduleAppointmentScreen())),
+        path: addSchedule,
+        builder: (context, state) => AppExitPopScope(
+          child: BlocProvider(
+            create: (context) => AddDoctorCubit(
+              repository: DoctorRepositoryImpl(
+                consumer: context.read<FirebaseConsumer>(),
+              ),
+            )..loadSchedules(),
+            child: const AddDoctorScheduleScreen(),
+          ),
+        ),
+      ),
+      GoRoute(path: labResults, builder: (context, state) => const AppExitPopScope(child: LabresultScreen())),
+      GoRoute(path: analytics, builder: (context, state) => const AppExitPopScope(child: AnalyticsScreen())),
+      GoRoute(path: doctorChats, builder: (context, state) => const AppExitPopScope(child: ChatsScreen(isDoctor: true))),
+      GoRoute(path: pharmacyChats, builder: (context, state) => const AppExitPopScope(child: ChatsScreen(isPharmacy: true))),
+      GoRoute(path: newChat, builder: (context, state) => const AppExitPopScope(child: NewChatScreen())),
+      GoRoute(path: scheduleAppointment, builder: (context, state) => const AppExitPopScope(child: ScheduleAppointmentScreen())),
 
       // Profile Full Screen (بدون Bottom Nav)
       GoRoute(
@@ -242,6 +241,12 @@ class AppRouter {
             showDrawer: true,
           ),
         ),
+      ),
+
+      // Scanner Full Screen (بدون Bottom Nav)
+      GoRoute(
+        path: scannerFull,
+        builder: (context, state) => const ScannerScreen(),
       ),
 
       // Other Routes
@@ -273,19 +278,11 @@ class AppRouter {
         },
       ),
       GoRoute(path: search, builder: (context, state) => const AppExitPopScope(child: SearchScreen())),
-      GoRoute(
-          path: categories,
-          builder: (context, state) => const AppExitPopScope(child: CatogeryScreen())),
-      GoRoute(
-          path: allDoctors,
-          builder: (context, state) => const AppExitPopScope(child: AllDoctorsScreen())),
-      GoRoute(
-          path: favorites,
-          builder: (context, state) => const AppExitPopScope(child: FavoritesScreen())),
-      GoRoute(
-        path: favoriteDoctors,
-        builder: (context, state) => const FavoriteDoctorsScreen(),
-      ),
+      GoRoute(path: categories, builder: (context, state) => const AppExitPopScope(child: CatogeryScreen())),
+      GoRoute(path: allDoctors, builder: (context, state) => const AppExitPopScope(child: AllDoctorsScreen())),
+      GoRoute(path: allPharmacies, builder: (context, state) => const AllPharmaciesScreen()),
+      GoRoute(path: favorites, builder: (context, state) => const AppExitPopScope(child: FavoritesScreen())),
+      GoRoute(path: favoriteDoctors, builder: (context, state) => const FavoriteDoctorsScreen()),
       GoRoute(
         path: savedAnalysis,
         builder: (context, state) {
@@ -300,37 +297,33 @@ class AppRouter {
           );
         },
       ),
+      GoRoute(path: medicalRecords, builder: (context, state) => const AppExitPopScope(child: MedicalRecordsScreen())),
+      GoRoute(path: checkout, builder: (context, state) => const AppExitPopScope(child: CheckoutScreen())),
+      GoRoute(path: accountInfo, builder: (context, state) => AppExitPopScope(child: AccountInfoScreen())),
+      GoRoute(path: personalInfo, builder: (context, state) => const AppExitPopScope(child: PersonalInfoScreen())),
       GoRoute(
-          path: medicalRecords,
-          builder: (context, state) => const AppExitPopScope(child: MedicalRecordsScreen())),
+        path: doctorInfo,
+        builder: (context, state) {
+          final docId = state.extra as String?;
+          return AppExitPopScope(child: DoctorInfoScreen(doctorId: docId));
+        },
+      ),
       GoRoute(
-          path: checkout, builder: (context, state) => const AppExitPopScope(child: CheckoutScreen())),
-      GoRoute(
-          path: accountInfo, builder: (context, state) => AppExitPopScope(child: AccountInfoScreen())),
-      GoRoute(
-          path: personalInfo,
-          builder: (context, state) => const AppExitPopScope(child: PersonalInfoScreen())),
-      GoRoute(
-          path: doctorInfo,
-          builder: (context, state) {
-            final docId = state.extra as String?;
-            return AppExitPopScope(child: DoctorInfoScreen(doctorId: docId));
-          }),
-      GoRoute(
-          path: bookPatient,
-          builder: (context, state) {
-            final docId = state.extra as String?;
-            return AppExitPopScope(
-              child: BlocProvider(
-                create: (context) => BookPatientCubit(
-                  repository: BookPatientRepositoryImpl(
-                    consumer: context.read<FirebaseConsumer>(),
-                  ),
+        path: bookPatient,
+        builder: (context, state) {
+          final docId = state.extra as String?;
+          return AppExitPopScope(
+            child: BlocProvider(
+              create: (context) => BookPatientCubit(
+                repository: BookPatientRepositoryImpl(
+                  consumer: context.read<FirebaseConsumer>(),
                 ),
-                child: BookPatientScreen(doctorId: docId),
               ),
-            );
-          }),
+              child: BookPatientScreen(doctorId: docId),
+            ),
+          );
+        },
+      ),
       GoRoute(
         path: addCard,
         builder: (context, state) {
@@ -342,12 +335,41 @@ class AppRouter {
           );
         },
       ),
-
       GoRoute(
-        path: savedAnalysisList,
-        builder: (context, state) => const AppExitPopScope(child: SavedAnalysesListScreen()),
+        path: sendPrescription,
+        builder: (context, state) {
+          final pharmacyId = state.extra as String;
+          return SendPrescriptionScreen(pharmacyId: pharmacyId);
+        },
       ),
-
+      GoRoute(
+        path: patientPharmacyOrders,
+        builder: (context, state) => const PatientPharmacyOrdersScreen(),
+      ),
+      GoRoute(
+        path: emergencyNumbers,
+        builder: (context, state) => const EmergencyNumbersScreen(),
+      ),
+      GoRoute(
+        path: pharmacyDashboard,
+        builder: (context, state) => const PharmacyDashboardScreen(),
+      ),
+      GoRoute(
+        path: pharmacyOrders,
+        builder: (context, state) => const PharmacyOrdersScreen(),
+      ),
+      GoRoute(
+        path: orderDetails,
+        builder: (context, state) {
+          final order = state.extra as PharmacyOrderModel;
+          return OrderDetailsScreen(order: order);
+        },
+      ),
+      GoRoute(
+        path: pharmacyAnalytics,
+        builder: (context, state) => const PharmacyAnalyticsScreen(),
+      ),
+      GoRoute(path: savedAnalysisList, builder: (context, state) => const AppExitPopScope(child: SavedAnalysesListScreen())),
       GoRoute(
         path: addMedication,
         builder: (context, state) => AppExitPopScope(
@@ -361,7 +383,6 @@ class AppRouter {
       ),
 
       // ── Schedule screen ("See All" from ReminderScreen) ──
-      // Previously missing — would crash the app on navigation.
       GoRoute(
         path: schedule,
         builder: (context, state) => AppExitPopScope(
@@ -385,29 +406,15 @@ class AppRouter {
           ),
         ),
       ),
-      GoRoute(
-          path: chatBot, builder: (context, state) => const AppExitPopScope(child: ChatBotScreen())),
-      GoRoute(
-          path: notifications,
-          builder: (context, state) => const AppExitPopScope(child: NotificationScreen())),
+      GoRoute(path: chatBot, builder: (context, state) => const AppExitPopScope(child: ChatBotScreen())),
+      GoRoute(path: notifications, builder: (context, state) => const AppExitPopScope(child: NotificationScreen())),
 
       // ==================== Admin Routes ====================
-      GoRoute(
-          path: adminDashboard,
-          builder: (context, state) => const AppExitPopScope(child: AdminDashboardScreen())),
-      GoRoute(
-          path: adminLogs,
-          builder: (context, state) => const AppExitPopScope(child: AdminLogsScreen())),
-      GoRoute(
-          path: adminApprovals,
-          builder: (context, state) => const AppExitPopScope(child: AdminApprovalsScreen())),
-      GoRoute(
-          path: adminUsers,
-          builder: (context, state) => const AppExitPopScope(child: AdminUsersScreen())),
-      GoRoute(
-          path: adminChats,
-          builder: (context, state) => const AppExitPopScope(child: ChatsScreen(isAdmin: true)),
-      ),
+      GoRoute(path: adminDashboard, builder: (context, state) => const AppExitPopScope(child: AdminDashboardScreen())),
+      GoRoute(path: adminLogs, builder: (context, state) => const AppExitPopScope(child: AdminLogsScreen())),
+      GoRoute(path: adminApprovals, builder: (context, state) => const AppExitPopScope(child: AdminApprovalsScreen())),
+      GoRoute(path: adminUsers, builder: (context, state) => const AppExitPopScope(child: AdminUsersScreen())),
+      GoRoute(path: adminChats, builder: (context, state) => const AppExitPopScope(child: ChatsScreen(isAdmin: true))),
     ],
   );
 
@@ -422,13 +429,11 @@ class AppRouter {
 
   static void goToDashboard(BuildContext context) => context.go(dashboard);
   static void goToPatients(BuildContext context) => context.go(patients);
-  static void goToAppointments(BuildContext context) =>
-      context.go(appointments);
+  static void goToAppointments(BuildContext context) => context.go(appointments);
   static void goToLabResults(BuildContext context) => context.go(labResults);
   static void goToChats(BuildContext context) => context.go(chats);
   static void goToDoctorChats(BuildContext context) => context.go(doctorChats);
   static void goToAnalytics(BuildContext context) => context.go(analytics);
   static void goToNewChat(BuildContext context) => context.go(newChat);
-  static void goToAdminDashboard(BuildContext context) =>
-      context.go(adminDashboard);
+  static void goToAdminDashboard(BuildContext context) => context.go(adminDashboard);
 }

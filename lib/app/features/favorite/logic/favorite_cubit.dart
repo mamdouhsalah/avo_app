@@ -41,17 +41,18 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       _favorites = FavoriteModel(
         patientId: patientId,
         doctorIds: {},
+        pharmacyIds: {},
       );
     }
-
-    final current = _favorites!.isFavorite(doctorId);
-
+    // optimistic update — flip immediately in UI
+    final current = _favorites!.isFavoriteDoctor(doctorId);
     final updatedMap = Map<String, bool>.from(_favorites!.doctorIds)
       ..[doctorId] = !current;
 
     _favorites = FavoriteModel(
       patientId: patientId,
       doctorIds: updatedMap,
+      pharmacyIds: _favorites!.pharmacyIds,
     );
 
     if (isClosed) return;
@@ -76,6 +77,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       _favorites = FavoriteModel(
         patientId: patientId,
         doctorIds: revertedMap,
+        pharmacyIds: _favorites!.pharmacyIds,
       );
 
       if (isClosed) return;
@@ -91,14 +93,65 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     }
   }
 
+  Future<void> toggleFavoritePharmacy(String patientId, String pharmacyId) async {
+    if (_favorites == null) {
+      _favorites = FavoriteModel(
+        patientId: patientId,
+        doctorIds: {},
+        pharmacyIds: {},
+      );
+    }
+    // optimistic update — flip immediately in UI
+    final current = _favorites!.isFavoritePharmacy(pharmacyId);
+    final updatedMap = Map<String, bool>.from(_favorites!.pharmacyIds)
+      ..[pharmacyId] = !current;
+
+    _favorites = FavoriteModel(
+      patientId: patientId,
+      doctorIds: _favorites!.doctorIds,
+      pharmacyIds: updatedMap,
+    );
+
+    if (isClosed) return;
+
+    emit(
+      FavoriteLoaded(
+        favorites: _favorites!,
+        favoriteDoctors: _favoriteDoctors,
+      ),
+    );
+
+    try {
+      await _repository.toggleFavoritePharmacy(patientId, pharmacyId, !current);
+    } catch (e) {
+      // revert on failure
+      final revertedMap = Map<String, bool>.from(_favorites!.pharmacyIds)
+        ..[pharmacyId] = current;
+      _favorites = FavoriteModel(
+        patientId: patientId,
+        doctorIds: _favorites!.doctorIds,
+        pharmacyIds: revertedMap,
+      );
+
+      if (isClosed) return;
+
+      emit(
+        FavoriteLoaded(
+          favorites: _favorites!,
+          favoriteDoctors: _favoriteDoctors,
+        ),
+      );
+      emit(FavoriteError(e.toString()));
+    }
+  }
+
   Future<void> getFavoriteDoctors(String patientId) async {
     if (isClosed) return;
 
     emit(const FavoriteLoading());
 
     try {
-      _favoriteDoctors =
-          await _repository.getFavoriteDoctors();
+      _favoriteDoctors = await _repository.getFavoriteDoctors();
 
       if (isClosed) return;
 
@@ -108,6 +161,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
               FavoriteModel(
                 patientId: patientId,
                 doctorIds: {},
+                pharmacyIds: {},
               ),
           favoriteDoctors: _favoriteDoctors,
         ),
@@ -120,7 +174,10 @@ class FavoriteCubit extends Cubit<FavoriteState> {
   }
 
   bool isFavorite(String doctorId) =>
-      _favorites?.isFavorite(doctorId) ?? false;
+      _favorites?.isFavoriteDoctor(doctorId) ?? false;
+
+  bool isFavoritePharmacy(String pharmacyId) =>
+      _favorites?.isFavoritePharmacy(pharmacyId) ?? false;
 
   List<DoctorModel> get favoriteDoctors => _favoriteDoctors;
 }

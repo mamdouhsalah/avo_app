@@ -13,6 +13,7 @@ class DatabasePaths {
   static const String messages = 'messages';
   static const String chatrooms = 'chatrooms';
   static const String schedules = 'schedules';
+  static const String pharmacyOrders = 'pharmacy_orders';
 
   // doctor Schedule
   static String doctorSchedule(String doctorId) => 'schedules/$doctorId';
