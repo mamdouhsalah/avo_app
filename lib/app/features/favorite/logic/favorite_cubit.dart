@@ -31,16 +31,18 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       _favorites = FavoriteModel(
         patientId: patientId,
         doctorIds: {},
+        pharmacyIds: {},
       );
     }
     // optimistic update — flip immediately in UI
-    final current = _favorites!.isFavorite(doctorId);
+    final current = _favorites!.isFavoriteDoctor(doctorId);
     final updatedMap = Map<String, bool>.from(_favorites!.doctorIds)
       ..[doctorId] = !current;
 
     _favorites = FavoriteModel(
       patientId: patientId,
       doctorIds: updatedMap,
+      pharmacyIds: _favorites!.pharmacyIds,
     );
 
     if (isClosed) return;
@@ -55,6 +57,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       _favorites = FavoriteModel(
         patientId: patientId,
         doctorIds: revertedMap,
+        pharmacyIds: _favorites!.pharmacyIds,
       );
       if (isClosed) return;
       emit(FavoriteLoaded(_favorites!));
@@ -62,5 +65,45 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     }
   }
 
-  bool isFavorite(String doctorId) => _favorites?.isFavorite(doctorId) ?? false;
+  bool isFavorite(String doctorId) => _favorites?.isFavoriteDoctor(doctorId) ?? false;
+  bool isFavoritePharmacy(String pharmacyId) => _favorites?.isFavoritePharmacy(pharmacyId) ?? false;
+
+  Future<void> toggleFavoritePharmacy(String patientId, String pharmacyId) async {
+    if (_favorites == null) {
+      _favorites = FavoriteModel(
+        patientId: patientId,
+        doctorIds: {},
+        pharmacyIds: {},
+      );
+    }
+    // optimistic update — flip immediately in UI
+    final current = _favorites!.isFavoritePharmacy(pharmacyId);
+    final updatedMap = Map<String, bool>.from(_favorites!.pharmacyIds)
+      ..[pharmacyId] = !current;
+
+    _favorites = FavoriteModel(
+      patientId: patientId,
+      doctorIds: _favorites!.doctorIds,
+      pharmacyIds: updatedMap,
+    );
+
+    if (isClosed) return;
+    emit(FavoriteLoaded(_favorites!));
+
+    try {
+      await _repository.toggleFavoritePharmacy(patientId, pharmacyId, !current);
+    } catch (e) {
+      // revert on failure
+      final revertedMap = Map<String, bool>.from(_favorites!.pharmacyIds)
+        ..[pharmacyId] = current;
+      _favorites = FavoriteModel(
+        patientId: patientId,
+        doctorIds: _favorites!.doctorIds,
+        pharmacyIds: revertedMap,
+      );
+      if (isClosed) return;
+      emit(FavoriteLoaded(_favorites!));
+      emit(FavoriteError(e.toString()));
+    }
+  }
 }

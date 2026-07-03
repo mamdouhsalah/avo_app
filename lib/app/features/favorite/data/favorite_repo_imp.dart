@@ -28,11 +28,27 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   ) async {
     try {
       await _consumer.update(
-        'favorites/$patientId',
+        'favorites/$patientId/doctors',
         data: {doctorId: isFavorite},
       );
     } catch (e) {
       throw DatabaseException(e.toString(), "failed to toggle");
+    }
+  }
+
+  @override
+  Future<void> toggleFavoritePharmacy(
+    String patientId,
+    String pharmacyId,
+    bool isFavorite,
+  ) async {
+    try {
+      await _consumer.update(
+        'favorites/$patientId/pharmacies',
+        data: {pharmacyId: isFavorite},
+      );
+    } catch (e) {
+      throw DatabaseException(e.toString(), "failed to toggle pharmacy");
     }
   }
 }

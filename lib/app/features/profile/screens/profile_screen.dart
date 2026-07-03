@@ -4,6 +4,8 @@ import 'package:avo_app/app/core/shared/app_exit_pop_scope.dart';
 import 'package:avo_app/app/core/shared/custom_avatar.dart';
 import 'package:avo_app/app/core/theme/theme_cubit.dart';
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/pharmacy/view/widget/pharmacy_custom_drawer.dart';
+import 'package:avo_app/app/features/admin/views/widgets/admin_custom_drawer.dart';
 import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
 import 'package:avo_app/app/features/profile/logic/profile_state.dart';
 import 'package:easy_localization/easy_localization.dart'; // 🔥 الترجمة
@@ -52,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return AppExitPopScope(
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-      
+
         // AppBar
         appBar: widget.showAppBar
             ? AppBar(
@@ -69,10 +71,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     : null,
               )
             : null,
-      
+
         // Drawer
-        drawer: widget.showDrawer ? const CustomDrawer() : null,
-      
+        drawer: widget.showDrawer
+            ? Builder(
+                builder: (context) {
+                  final role = context.read<ProfileCubit>().userProfile?.role;
+                  if (role == 'admin') return const AdminCustomDrawer();
+                  if (role == 'pharmacy' || role == 'pharmacy_specialist')
+                    return const PharmacyCustomDrawer();
+                  return const CustomDrawer();
+                },
+              )
+            : null,
+
         body: BlocConsumer<ProfileCubit, ProfileState>(
           listener: (context, state) {
             if (state is ProfileFailure) {
@@ -90,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             final cubit = context.read<ProfileCubit>();
             final profileName = cubit.userProfile?.fullName ?? 'No Name';
             final avatarUrl = cubit.imageUrl;
-      
+
             return Stack(
               children: [
                 Column(
@@ -140,20 +152,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _buildListTile(
                               context,
                               Icons.lock_outline,
-                              LocaleKeys.profile_account_info.tr(), // 🔥 ترجمة
+                              LocaleKeys.profile_account_info.tr(),
                               () => context.push(AppRouter.accountInfo)),
                           if (!widget.showDrawer)
                             _buildListTile(
                                 context,
                                 Icons.person_outline,
-                                LocaleKeys.profile_personal_info.tr(), // 🔥 ترجمة
+                                LocaleKeys.profile_personal_info.tr(),
                                 () => context.push(AppRouter.personalInfo)),
                           if (cubit.userProfile?.role == 'patient')
                             _buildListTile(
                                 context,
                                 Icons.medical_information_outlined,
-                                'Medical Records', // TODO: Add LocaleKeys.profile_medical_records if needed
+                                LocaleKeys.medical_records_title.tr(),
                                 () => context.push(AppRouter.medicalRecords)),
+                          if (cubit.userProfile?.role == 'patient')
+                            _buildListTile(
+                                context,
+                                Icons.local_pharmacy_outlined,
+                                LocaleKeys.medical_records_pharmacy_orders.tr(),
+                                () => context
+                                    .push(AppRouter.patientPharmacyOrders)),
+                          if (cubit.userProfile?.role == 'patient')
+                            _buildListTile(
+                                context,
+                                Icons.emergency_outlined,
+                                LocaleKeys.emergency_title.tr(),
+                                () => context.push(AppRouter.emergencyNumbers)),
                           if (cubit.userProfile?.role == 'doctor')
                             _buildListTile(
                                 context,
@@ -164,14 +189,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               context,
                               Icons.credit_card_outlined,
                               LocaleKeys.profile_cards_details.tr(),
-                              () => context.push(AppRouter.checkout)), // 🔥 ترجمة
+                              () => context.push(AppRouter.checkout)),
                           ListTile(
                             leading: Icon(Icons.translate,
                                 color: theme.colorScheme.onSurface),
                             title: Text(LocaleKeys.profile_app_language.tr(),
-                                style: theme.textTheme.bodyLarge), // 🔥 ترجمة
+                                style: theme.textTheme.bodyLarge),
                             trailing: IconButton(
-                              onPressed: () => _showLanguageBottomSheet(isArabic),
+                              onPressed: () =>
+                                  _showLanguageBottomSheet(isArabic),
                               icon: Icon(Icons.language,
                                   color: theme.colorScheme.onSurface),
                             ),
@@ -183,7 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             leading: Icon(Icons.wb_sunny_outlined,
                                 color: theme.colorScheme.onSurface),
                             title: Text(
-                              LocaleKeys.profile_app_theme.tr(), // 🔥 ترجمة
+                              LocaleKeys.profile_app_theme.tr(),
                               style: theme.textTheme.bodyLarge,
                             ),
                             trailing: Switch(
@@ -203,10 +229,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: 1,
                           ),
                           ListTile(
-                            leading: const Icon(Icons.logout, color: Colors.red),
-                            title:
-                                Text(LocaleKeys.profile_sign_out.tr(), // 🔥 ترجمة
-                                    style: const TextStyle(color: Colors.red)),
+                            leading:
+                                const Icon(Icons.logout, color: Colors.red),
+                            title: Text(LocaleKeys.profile_sign_out.tr(),
+                                style: const TextStyle(color: Colors.red)),
                             onTap: () {
                               cubit.logout();
                             },

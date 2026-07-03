@@ -457,6 +457,29 @@ class CodegenLoader extends AssetLoader{
     "select_slot_error": "برجاء اختيار موعد كشف أولاً",
     "number_of_reviews": "عدد التقييمات",
     "bio": "نبذة عن الطبيب"
+  },
+  "medical_records": {
+    "title": "السجل الطبي",
+    "no_prescriptions": "لا توجد روشتات مسجلة.",
+    "unknown_date": "تاريخ غير معروف",
+    "dosage": "الجرعة",
+    "frequency": "التكرار",
+    "instructions": "التعليمات",
+    "notes": "ملاحظات",
+    "no_lab_results": "لا توجد نتائج تحاليل.",
+    "dosage_freq": "الجرعة: {dosage} | التكرار: {freq}",
+    "notes_with_val": "ملاحظات: {notes}",
+    "pharmacy_orders": "الطلبات"
+  },
+  "emergency": {
+    "title": "أرقام الطوارئ",
+    "police": "الشرطة (122)",
+    "ambulance": "الإسعاف (123)",
+    "fire": "المطافئ (180)",
+    "electricity": "طوارئ الكهرباء (121)",
+    "gas": "طوارئ الغاز (129)",
+    "water": "طوارئ المياه (125)",
+    "health_ministry": "وزارة الصحة (105)"
   }
 };
 static const Map<String,dynamic> _en = {
@@ -875,7 +898,7 @@ static const Map<String,dynamic> _en = {
     "analysis_failed": "An error occurred during AI analysis. You can manually save the extracted text.",
     "analysis_failed_quota": "Smart analysis failed (Quota Exceeded or Connection Issue).\n\nExtracted text from image:\n{}",
     "storage_not_ready": "Storage is not ready yet, please wait...",
-    "gemini_prompt": "You are a medical assistant. Analyze the following extracted text: {}. IMPORTANT: If the text is NOT related to medical analysis, laboratory results, prescriptions, or healthcare, politely refuse to answer and inform the user that you only analyze medical documents. Otherwise, explain the results simply and clearly, and guide the patient to the appropriate specialty.",
+    "gemini_prompt": "You are a medical assistant. Analyze the following extracted text: {}. IMPORTANT: Respond in English language only. If the text is NOT related to medical analysis, laboratory results, prescriptions, or healthcare, politely refuse to answer and inform the user that you only analyze medical documents. Otherwise, explain the results simply and clearly, and guide the patient to the appropriate specialty.",
     "analysis_name": "Analysis Name",
     "type_file_name": "Type File Name...",
     "extracted_text": "Extracted Text:\n{}",
@@ -902,6 +925,29 @@ static const Map<String,dynamic> _en = {
     "select_slot_error": "Please select a schedule slot first",
     "number_of_reviews": "No. reviews",
     "bio": "Bio"
+  },
+  "medical_records": {
+    "title": "Medical Records",
+    "no_prescriptions": "No prescriptions found.",
+    "unknown_date": "Unknown Date",
+    "dosage": "Dosage",
+    "frequency": "Frequency",
+    "instructions": "Instructions",
+    "notes": "Notes",
+    "no_lab_results": "No lab results found.",
+    "dosage_freq": "Dosage: {dosage} | Freq: {freq}",
+    "notes_with_val": "Notes: {notes}",
+    "pharmacy_orders": "Orders"
+  },
+  "emergency": {
+    "title": "Emergency Numbers",
+    "police": "Police (122)",
+    "ambulance": "Ambulance (123)",
+    "fire": "Fire Department (180)",
+    "electricity": "Electricity Emergency (121)",
+    "gas": "Gas Emergency (129)",
+    "water": "Water Emergency (125)",
+    "health_ministry": "Ministry of Health (105)"
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": _ar, "en": _en};

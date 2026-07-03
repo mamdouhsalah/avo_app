@@ -443,5 +443,28 @@
     "select_slot_error": "برجاء اختيار موعد كشف أولاً",
     "number_of_reviews": "عدد التقييمات",
     "bio": "نبذة عن الطبيب"
+  },
+  "medical_records": {
+    "title": "السجل الطبي",
+    "no_prescriptions": "لا توجد روشتات مسجلة.",
+    "unknown_date": "تاريخ غير معروف",
+    "dosage": "الجرعة",
+    "frequency": "التكرار",
+    "instructions": "التعليمات",
+    "notes": "ملاحظات",
+    "no_lab_results": "لا توجد نتائج تحاليل.",
+    "dosage_freq": "الجرعة: {dosage} | التكرار: {freq}",
+    "notes_with_val": "ملاحظات: {notes}",
+    "pharmacy_orders": "الطلبات"
+  },
+  "emergency": {
+    "title": "أرقام الطوارئ",
+    "police": "الشرطة (122)",
+    "ambulance": "الإسعاف (123)",
+    "fire": "المطافئ (180)",
+    "electricity": "طوارئ الكهرباء (121)",
+    "gas": "طوارئ الغاز (129)",
+    "water": "طوارئ المياه (125)",
+    "health_ministry": "وزارة الصحة (105)"
   }
 }

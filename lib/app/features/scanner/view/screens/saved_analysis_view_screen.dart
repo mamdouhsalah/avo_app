@@ -124,14 +124,14 @@ class _SavedAnalysisViewScreenState extends State<SavedAnalysisViewScreen> {
                           ),
 
                         // Markdown for analysis result
-                        SingleChildScrollView(
-                          child: Markdown(
+                        Directionality(
+                          textDirection: detectArabicOrEnglish(_displayedText) == 'Arabic'
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
+                          child: MarkdownBody(
                             selectable: true,
                             data: _displayedText,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
                             styleSheet: MarkdownStyleSheet(
-                              textAlign: WrapAlignment.end,
                               p: const TextStyle(
                                 fontSize: 16,
                                 fontFamily: 'Cairo',

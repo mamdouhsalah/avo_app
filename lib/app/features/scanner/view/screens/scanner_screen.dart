@@ -16,8 +16,12 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:avo_app/app/core/Language/locale_keys.g.dart';
+import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
+import 'package:avo_app/app/features/pharmacy/view/widget/pharmacy_custom_drawer.dart';
+import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/admin/views/widgets/admin_custom_drawer.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -52,9 +56,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
     _scrollController = ScrollController();
     _markDownScrollController = ScrollController();
     _nameController = TextEditingController();
-    _nameController.text = "تحليل جديد - ${DateTime.now().toString().split(' ').first}";
+    _nameController.text =
+        "تحليل جديد - ${DateTime.now().toString().split(' ').first}";
     _timer = Timer.periodic(Duration.zero, (timer) {});
-    
+
     // Open picker immediately when entering page
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showPickOptions();
@@ -66,7 +71,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
       await _medicalAnalysisService.init();
       setState(() => _isServiceInitialized = true);
     } catch (e) {
-      _showSnackBar(LocaleKeys.scanner_storage_init_failed.tr(args: [e.toString()]));
+      _showSnackBar(
+          LocaleKeys.scanner_storage_init_failed.tr(args: [e.toString()]));
     }
   }
 
@@ -144,28 +150,42 @@ class _ScannerScreenState extends State<ScannerScreen> {
         _displayedText = "";
         saved = false;
       });
-      
+
       _extractTextFromImage(_image!);
     } catch (e) {
-      _showSnackBar(LocaleKeys.scanner_image_pick_error.tr(args: [e.toString()]));
+      _showSnackBar(
+          LocaleKeys.scanner_image_pick_error.tr(args: [e.toString()]));
     }
   }
 
   void _showPickOptions() {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
       builder: (context) => SafeArea(
         child: Wrap(
           children: [
             Padding(
               padding: EdgeInsets.all(16.w),
-              child: Text(LocaleKeys.scanner_image_source.tr(), style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 18.sp)),
+              child: Text(LocaleKeys.scanner_image_source.tr(),
+                  style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.sp)),
             ),
             ListTile(
-              leading: Icon(Icons.camera_alt, color: Theme.of(context).colorScheme.primary),
-              title: Text(LocaleKeys.scanner_take_photo.tr(), style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-              subtitle: Text(LocaleKeys.scanner_take_new_photo.tr(), style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey)),
+              leading: Icon(Icons.camera_alt,
+                  color: Theme.of(context).colorScheme.primary),
+              title: Text(LocaleKeys.scanner_take_photo.tr(),
+                  style: const TextStyle(
+                      fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+              subtitle: Text(LocaleKeys.scanner_take_new_photo.tr(),
+                  style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 12,
+                      color: Theme.of(context).textTheme.bodySmall?.color ??
+                          Colors.grey)),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
@@ -173,9 +193,17 @@ class _ScannerScreenState extends State<ScannerScreen> {
             ),
             const Divider(height: 1),
             ListTile(
-              leading: Icon(Icons.photo_library, color: Theme.of(context).colorScheme.primary),
-              title: Text(LocaleKeys.scanner_choose_gallery.tr(), style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-              subtitle: Text(LocaleKeys.scanner_choose_gallery_sub.tr(), style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey)),
+              leading: Icon(Icons.photo_library,
+                  color: Theme.of(context).colorScheme.primary),
+              title: Text(LocaleKeys.scanner_choose_gallery.tr(),
+                  style: const TextStyle(
+                      fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+              subtitle: Text(LocaleKeys.scanner_choose_gallery_sub.tr(),
+                  style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 12,
+                      color: Theme.of(context).textTheme.bodySmall?.color ??
+                          Colors.grey)),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -191,11 +219,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Future<void> _extractTextFromImage(File image) async {
     try {
       final inputImage = InputImage.fromFile(image);
-      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-      
+      final textRecognizer =
+          TextRecognizer(script: TextRecognitionScript.latin);
+      final RecognizedText recognizedText =
+          await textRecognizer.processImage(inputImage);
+
       setState(() => _extractedText = recognizedText.text);
-      
+
       if (_extractedText.isNotEmpty) {
         _analyzeText(_extractedText);
       } else {
@@ -203,7 +233,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
       }
       await textRecognizer.close();
     } catch (e) {
-      _showSnackBar(LocaleKeys.scanner_text_extract_failed.tr(args: [e.toString()]));
+      _showSnackBar(
+          LocaleKeys.scanner_text_extract_failed.tr(args: [e.toString()]));
     }
   }
 
@@ -212,8 +243,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
     try {
       final analysis = await _geminiService.sendMessage(
-        LocaleKeys.scanner_gemini_prompt.tr(args: [extractedText])
-      );
+          LocaleKeys.scanner_gemini_prompt.tr(args: [extractedText]));
       if (analysis is GeminiSuccess) {
         _startTyping(analysis.text);
       } else if (analysis is GeminiError) {
@@ -224,7 +254,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
       _showSnackBar(LocaleKeys.scanner_analysis_failed.tr());
       setState(() {
         _isAnalyzing = false;
-        _displayedText = LocaleKeys.scanner_analysis_failed_quota.tr(args: [extractedText]);
+        _displayedText =
+            LocaleKeys.scanner_analysis_failed_quota.tr(args: [extractedText]);
       });
     }
   }
@@ -235,7 +266,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       _showSnackBar(LocaleKeys.scanner_storage_not_ready.tr());
       return;
     }
-    
+
     final syncRepo = context.read<SyncRepository>();
 
     final selectedDate = await showDatePicker(
@@ -258,10 +289,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
       }
 
       // Save locally directly - no AI parsing needed
-      final fullDescription = "${LocaleKeys.scanner_extracted_text_label.tr()}:\n$_extractedText\n\n${LocaleKeys.scanner_analysis_label.tr()}:\n$_displayedText";
-      final analysisName = _nameController.text.isNotEmpty 
-            ? _nameController.text 
-            : "${LocaleKeys.scanner_default_analysis_name.tr()} - ${DateTime.now().toString().split(' ').first}";
+      final fullDescription =
+          "${LocaleKeys.scanner_extracted_text_label.tr()}:\n$_extractedText\n\n${LocaleKeys.scanner_analysis_label.tr()}:\n$_displayedText";
+      final analysisName = _nameController.text.isNotEmpty
+          ? _nameController.text
+          : "${LocaleKeys.scanner_default_analysis_name.tr()} - ${DateTime.now().toString().split(' ').first}";
       await _medicalAnalysisService.addAnalysisData(
         analysisName: analysisName,
         stateName: LocaleKeys.scanner_analysis_results_state.tr(),
@@ -271,19 +303,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
         imageUrl: uploadedImageUrl,
         date: selectedDate,
       );
-      
+
       // Fetch the updated analysis and push to Firebase
       final updatedAnalyses = _medicalAnalysisService.getAllAnalyses();
       final targetAnalysis = updatedAnalyses.firstWhere(
         (a) => a.analysisName.toLowerCase() == analysisName.toLowerCase(),
       );
-      
+
       await syncRepo.pushAnalysisToRemote(targetAnalysis);
 
       setState(() => saved = true);
       _showSnackBar(LocaleKeys.scanner_analysis_saved_successfully.tr());
     } catch (saveError) {
-      _showSnackBar(LocaleKeys.scanner_data_save_failed.tr(args: [saveError.toString()]));
+      _showSnackBar(
+          LocaleKeys.scanner_data_save_failed.tr(args: [saveError.toString()]));
     } finally {
       setState(() => _isAnalyzing = false);
     }
@@ -292,8 +325,19 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Builder(
+        builder: (context) {
+          final role = context.read<ProfileCubit>().userProfile?.role;
+          if (role == 'admin') return const AdminCustomDrawer();
+          if (role == 'pharmacy' || role == 'pharmacy_specialist') return const PharmacyCustomDrawer();
+          if (role == 'doctor') return const CustomDrawer();
+          return const SizedBox(); 
+        },
+      ),
       appBar: AppBar(
-        title: Text(LocaleKeys.scanner_medical_analysis.tr(), style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+        title: Text(LocaleKeys.scanner_medical_analysis.tr(),
+            style: const TextStyle(
+                fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
         actions: [
           if (_displayedText.isNotEmpty && !saved)
             IconButton(
@@ -314,9 +358,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 height: 250.h,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade900 : Colors.grey.shade100,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey.shade900
+                      : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(color: Theme.of(context).dividerColor, width: 2),
+                  border: Border.all(
+                      color: Theme.of(context).dividerColor, width: 2),
                 ),
                 child: _image != null
                     ? ClipRRect(
@@ -326,10 +373,21 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_a_photo, size: 50.sp, color: Theme.of(context).colorScheme.primary),
+                          Icon(Icons.add_a_photo,
+                              size: 50.sp,
+                              color: Theme.of(context).colorScheme.primary),
                           SizedBox(height: 10.h),
-                          Text(LocaleKeys.scanner_tap_scan.tr(), style: const TextStyle(fontFamily: 'Cairo')),
-                          Text(LocaleKeys.scanner_camera_or_gallery.tr(), style: TextStyle(fontFamily: 'Cairo', fontSize: 12.sp, color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey)),
+                          Text(LocaleKeys.scanner_tap_scan.tr(),
+                              style: const TextStyle(fontFamily: 'Cairo')),
+                          Text(LocaleKeys.scanner_camera_or_gallery.tr(),
+                              style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontSize: 12.sp,
+                                  color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color ??
+                                      Colors.grey)),
                         ],
                       ),
               ),
@@ -343,11 +401,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     child: ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt, color: Colors.white),
-                      label: Text(LocaleKeys.scanner_camera.tr(), style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+                      label: Text(LocaleKeys.scanner_camera.tr(),
+                          style: const TextStyle(
+                              fontFamily: 'Cairo', color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         padding: EdgeInsets.symmetric(vertical: 12.h),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r)),
                       ),
                     ),
                   ),
@@ -355,14 +416,19 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.gallery),
-                      icon: Icon(Icons.photo_library, color: Theme.of(context).colorScheme.primary),
-                      label: Text(LocaleKeys.scanner_gallery.tr(), style: TextStyle(fontFamily: 'Cairo', color: Theme.of(context).colorScheme.primary)),
+                      icon: Icon(Icons.photo_library,
+                          color: Theme.of(context).colorScheme.primary),
+                      label: Text(LocaleKeys.scanner_gallery.tr(),
+                          style: TextStyle(
+                              fontFamily: 'Cairo',
+                              color: Theme.of(context).colorScheme.primary)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.surface,
                         padding: EdgeInsets.symmetric(vertical: 12.h),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
-                          side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                          side: BorderSide(
+                              color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ),
@@ -372,13 +438,19 @@ class _ScannerScreenState extends State<ScannerScreen> {
             SizedBox(height: 20.h),
             if (_isAnalyzing)
               Shimmer.fromColors(
-                baseColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade300,
-                highlightColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade600 : Colors.white,
+                baseColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade300,
+                highlightColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade600
+                    : Colors.white,
                 child: Container(
                   height: 100.h,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade300,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(15.r),
                   ),
                 ),
@@ -400,16 +472,24 @@ class _ScannerScreenState extends State<ScannerScreen> {
                       decoration: InputDecoration(
                         labelText: LocaleKeys.scanner_analysis_name.tr(),
                         labelStyle: const TextStyle(fontFamily: 'Cairo'),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r)),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 12.w, vertical: 8.h),
                       ),
                       style: const TextStyle(fontFamily: 'Cairo'),
                     ),
                     SizedBox(height: 12.h),
-                    MarkdownBody(
-                      data: _displayedText,
-                      styleSheet: MarkdownStyleSheet(
-                        p: TextStyle(fontFamily: 'Cairo', fontSize: 14.sp),
+                    Directionality(
+                      textDirection:
+                          RegExp(r'[\u0600-\u06FF]').hasMatch(_displayedText)
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
+                      child: MarkdownBody(
+                        data: _displayedText,
+                        styleSheet: MarkdownStyleSheet(
+                          p: TextStyle(fontFamily: 'Cairo', fontSize: 14.sp),
+                        ),
                       ),
                     ),
                     if (!saved) ...[
@@ -419,11 +499,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         child: ElevatedButton.icon(
                           onPressed: _saveData,
                           icon: const Icon(Icons.save, color: Colors.white),
-                          label: Text(LocaleKeys.scanner_save_analysis.tr(), style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+                          label: Text(LocaleKeys.scanner_save_analysis.tr(),
+                              style: const TextStyle(
+                                  fontFamily: 'Cairo', color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             padding: EdgeInsets.symmetric(vertical: 12.h),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r)),
                           ),
                         ),
                       ),
@@ -435,7 +518,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
                           children: [
                             const Icon(Icons.check_circle, color: Colors.green),
                             const SizedBox(width: 8),
-                            Text(LocaleKeys.scanner_saved_success.tr(), style: const TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.bold)),
+                            Text(LocaleKeys.scanner_saved_success.tr(),
+                                style: const TextStyle(
+                                    fontFamily: 'Cairo',
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),

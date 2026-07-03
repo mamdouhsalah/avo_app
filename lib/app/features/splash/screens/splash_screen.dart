@@ -37,8 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
               context.go(AppRouter.dashboard);
             } else if (state.role == UserRole.radiologySpecialist) {
               // TODO when radiologist exist
-            } else if (state.role == UserRole.pharmacySpecialist) {
-              // TODO when pharmacy exist
+            } else if (state.role == UserRole.pharmacySpecialist || state.role == 'pharmacy') {
+              context.go(AppRouter.pharmacyDashboard);
             } else if (state.role == UserRole.laboratorySpecialist) {
               // TODO when laboratory exist
             } else if (state.role == UserRole.admin) {

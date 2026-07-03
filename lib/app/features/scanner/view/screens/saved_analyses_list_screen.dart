@@ -3,6 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:avo_app/app/core/services/local/hive_medical_analysis_service.dart';
 import 'package:avo_app/app/core/routing/app_router.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:avo_app/app/core/Language/locale_keys.g.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:avo_app/app/features/profile/logic/profile_cubit.dart';
+import 'package:avo_app/app/features/pharmacy/view/widget/pharmacy_custom_drawer.dart';
+import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
+import 'package:avo_app/app/features/admin/views/widgets/admin_custom_drawer.dart';
 
 class SavedAnalysesListScreen extends StatefulWidget {
   const SavedAnalysesListScreen({super.key});
@@ -36,17 +43,22 @@ class _SavedAnalysesListScreenState extends State<SavedAnalysesListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Builder(
+        builder: (context) {
+          final role = context.read<ProfileCubit>().userProfile?.role;
+          if (role == 'admin') return const AdminCustomDrawer();
+          if (role == 'pharmacy' || role == 'pharmacy_specialist') return const PharmacyCustomDrawer();
+          if (role == 'doctor') return const CustomDrawer();
+          return const SizedBox(); 
+        },
+      ),
       appBar: AppBar(
-        title: const Text('التحاليل المحفوظة', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
+        title: Text(LocaleKeys.scanner_analysis_results_state.tr(), style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
       ),
       body: _analyses.isEmpty
           ? const Center(
               child: Text(
-                'لا توجد تحاليل محفوظة.',
+                'No saved analyses found.',
                 style: TextStyle(fontFamily: 'Cairo', fontSize: 18),
               ),
             )

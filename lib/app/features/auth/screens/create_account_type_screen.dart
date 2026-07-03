@@ -70,8 +70,8 @@ class CreateAccountTypeScreen extends StatelessWidget {
                 context.pushReplacement(AppRouter.dashboard);
               } else if (state.response.role == "radiology_specialist") {
                 // TODO when radiologist exist
-              } else if (state.response.role == "pharmacy_specialist") {
-                // TODO when pharmacy exist
+              } else if (state.response.role == "pharmacy_specialist" || state.response.role == "pharmacy") {
+                context.pushReplacement(AppRouter.pharmacyDashboard);
               } else if (state.response.role == "laboratory_specialist") {
                 // TODO when laboratory exist
               } else {

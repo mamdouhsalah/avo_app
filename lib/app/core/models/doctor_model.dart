@@ -43,6 +43,33 @@ class DoctorModel extends UserProfileModel {
     this.ratingCount = 0
   });
 
+  DoctorModel copyWith({bool? isFavorite}) {
+    return DoctorModel(
+      id: id,
+      email: email,
+      fullName: fullName,
+      role: role,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
+      phoneNumber: phoneNumber,
+      height: height,
+      weight: weight,
+      image: image,
+      isVerified: isVerified,
+      specialty: specialty,
+      clinic: clinic,
+      location: location,
+      rating: rating,
+      numberOfReviews: numberOfReviews,
+      price: price,
+      bio: bio,
+      patientsTreated: patientsTreated,
+      schedules: schedules,
+      isFavorite: isFavorite ?? this.isFavorite,
+      ratingCount: ratingCount,
+    );
+  }
+
   factory DoctorModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return const DoctorModel(

@@ -50,13 +50,22 @@ import 'package:avo_app/app/features/home/view/screen/home_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/catogery_screen.dart';
 import 'package:avo_app/app/features/home/view/screen/search_screen.dart';
 import 'package:avo_app/app/features/home/view/widget/all_doctors_screen.dart';
+import 'package:avo_app/app/features/home/view/screen/all_pharmacies_screen.dart';
 import 'package:avo_app/app/features/payment/data/payment_card_model.dart';
 import 'package:avo_app/app/features/payment/screens/add_card_screen.dart';
 import 'package:avo_app/app/features/payment/screens/checkout_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/pharmacy_dashboard_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/pharmacy_orders_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/pharmacy_analytics_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/order_details_screen.dart';
+import 'package:avo_app/app/core/models/pharmacy_order_model.dart';
 import 'package:avo_app/app/features/profile/screens/account_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/personal_info_screen.dart';
 import 'package:avo_app/app/features/profile/screens/profile_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/send_prescription_screen.dart';
+import 'package:avo_app/app/features/pharmacy/view/screen/patient_pharmacy_orders_screen.dart';
 import 'package:avo_app/app/features/profile/screens/doctor_info_screen.dart';
+import 'package:avo_app/app/features/profile/screens/emergency_numbers_screen.dart';
 import 'package:avo_app/app/features/profile/screens/medical_records_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/add_medication_screen.dart';
 import 'package:avo_app/app/features/reminder/screens/reminder_screen.dart';
@@ -89,16 +98,19 @@ class AppRouter {
   static const String doctorChats = '/doctor-chats';
   static const String newChat = '/new-chat';
   static const String analytics = '/analytics';
-  static const String specificAppointmentDisplay = '/specific-appointment-display';
+  static const String specificAppointmentDisplay =
+      '/specific-appointment-display';
   // Other Features
   static const String home = '/home';
   static const String search = '/search';
   static const String allDoctors = '/all-doctors';
+  static const String allPharmacies = '/all-pharmacies';
   static const String reminder = '/reminder';
   static const String profile = '/profile';
   static const String profileFull = '/profile/full'; // بدون Bottom Nav
   static const String adherenceReport = '/adherence-report';
   static const String scanner = '/scanner';
+  static const String scannerFull = '/scanner/full';
   static const String savedAnalysis = '/saved-analysis';
   static const String savedAnalysisList = '/saved-analysis-list';
   static const String categories = '/categories';
@@ -117,6 +129,16 @@ class AppRouter {
   static const String scheduleAppointment = '/schedule-appointment';
   static const String patientAppointment = '/patient-appointment';
   static const String appointmentAction = '/appointment-action';
+  static const String sendPrescription = '/send-prescription';
+  static const String patientPharmacyOrders = '/patient-pharmacy-orders';
+  static const String emergencyNumbers = '/emergency-numbers';
+
+  // Pharmacy Routes
+  static const String pharmacyDashboard = '/pharmacy-dashboard';
+  static const String pharmacyOrders = '/pharmacy-orders';
+  static const String orderDetails = '/order-details';
+  static const String pharmacyChats = '/pharmacy-chats';
+  static const String pharmacyAnalytics = '/pharmacy-analytics';
 
   // Admin Routes
   static const String adminDashboard = '/admin-dashboard';
@@ -151,8 +173,13 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => MainLayout(child: child),
         routes: [
-          GoRoute(path: scanner, builder: (context, state) => const ScannerScreen()),
-          GoRoute(path: home, builder: (context, state) => AppExitPopScope(child: const HomeScreen())),
+          GoRoute(
+              path: scanner,
+              builder: (context, state) => const ScannerScreen()),
+          GoRoute(
+              path: home,
+              builder: (context, state) =>
+                  AppExitPopScope(child: const HomeScreen())),
           GoRoute(
               path: reminder,
               builder: (context, state) => const ReminderScreen()),
@@ -183,22 +210,25 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: specificAppointmentDisplay,
-        builder: (context, state) {
-          final appointmentCards = state.extra as List<AppointmentCardModel>;
-          return SpecificAppointmentDisplay(appointmentCards: appointmentCards);
-        }
-      ),
+          path: specificAppointmentDisplay,
+          builder: (context, state) {
+            final appointmentCards = state.extra as List<AppointmentCardModel>;
+            return SpecificAppointmentDisplay(
+                appointmentCards: appointmentCards);
+          }),
       // ==================== Full Screen Routes (بدون Bottom Navigation) ====================
       GoRoute(
           path: dashboard,
           builder: (context, state) => const DashboardScreen()),
       GoRoute(
           path: patients, builder: (context, state) => const PatientScreen()),
-      GoRoute( // for doctor
+      GoRoute(
+          // for doctor
           path: appointments,
           builder: (context, state) => const AppointmentScreen()),
-      GoRoute(path:patientAppointment, builder: (context, state) => const AppointmentPatientScreen()),
+      GoRoute(
+          path: patientAppointment,
+          builder: (context, state) => const AppointmentPatientScreen()),
       GoRoute(
           path: addSchedule,
           builder: (context, state) => BlocProvider(
@@ -219,6 +249,9 @@ class AppRouter {
           path: doctorChats,
           builder: (context, state) => const ChatsScreen(isDoctor: true)),
       GoRoute(
+          path: pharmacyChats,
+          builder: (context, state) => const ChatsScreen(isPharmacy: true)),
+      GoRoute(
           path: newChat, builder: (context, state) => const NewChatScreen()),
       GoRoute(
           path: scheduleAppointment,
@@ -232,6 +265,12 @@ class AppRouter {
           showAppBar: true,
           showDrawer: true,
         ),
+      ),
+
+      // Scanner Full Screen (بدون Bottom Nav)
+      GoRoute(
+        path: scannerFull,
+        builder: (context, state) => const ScannerScreen(),
       ),
 
       // Other Routes
@@ -267,6 +306,9 @@ class AppRouter {
       GoRoute(
           path: allDoctors,
           builder: (context, state) => const AllDoctorsScreen()),
+      GoRoute(
+          path: allPharmacies,
+          builder: (context, state) => const AllPharmaciesScreen()),
       GoRoute(
           path: favorites,
           builder: (context, state) => const FavoritesScreen()),
@@ -319,6 +361,40 @@ class AppRouter {
             onCardAdded: onCardAdded ?? (card) {},
           );
         },
+      ),
+      GoRoute(
+        path: sendPrescription,
+        builder: (context, state) {
+          final pharmacyId = state.extra as String;
+          return SendPrescriptionScreen(pharmacyId: pharmacyId);
+        },
+      ),
+      GoRoute(
+        path: patientPharmacyOrders,
+        builder: (context, state) => const PatientPharmacyOrdersScreen(),
+      ),
+      GoRoute(
+        path: emergencyNumbers,
+        builder: (context, state) => const EmergencyNumbersScreen(),
+      ),
+      GoRoute(
+        path: pharmacyDashboard,
+        builder: (context, state) => const PharmacyDashboardScreen(),
+      ),
+      GoRoute(
+        path: pharmacyOrders,
+        builder: (context, state) => const PharmacyOrdersScreen(),
+      ),
+      GoRoute(
+        path: orderDetails,
+        builder: (context, state) {
+          final order = state.extra as PharmacyOrderModel;
+          return OrderDetailsScreen(order: order);
+        },
+      ),
+      GoRoute(
+        path: pharmacyAnalytics,
+        builder: (context, state) => const PharmacyAnalyticsScreen(),
       ),
 
       GoRoute(

@@ -76,6 +76,19 @@ class AuthRepositoryImpl implements AuthRepository {
           bio: '',
         );
         await _consumer.set('${DatabasePaths.doctors}/$uid', data: doctorModel.toJson());
+      } else if (registerRequestModel.role == 'pharmacy' || registerRequestModel.role == 'pharmacy_specialist') {
+        final pharmacyData = {
+          'id': uid,
+          'name': registerRequestModel.fullName,
+          'type': 'General Pharmacy',
+          'rating': 0.0,
+          'reviews': 0,
+          'open_time': '08:00 AM',
+          'close_time': '10:00 PM',
+          'image_url': imageUrl,
+          'is_favorite': false,
+        };
+        await _consumer.set('${DatabasePaths.pharmacies}/$uid', data: pharmacyData);
       }
 
       final user = credential.user;

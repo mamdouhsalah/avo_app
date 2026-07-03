@@ -196,7 +196,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ...pharmacies.map(
                                 (pharmacy) => BestPharmacyCard(
                               pharmacy: pharmacy,
-                              onTap: () {},
+                              onTap: () => context.push(AppRouter.sendPrescription, extra: pharmacy.id),
                               onFavoriteToggle: () {},
                             ),
                           ),

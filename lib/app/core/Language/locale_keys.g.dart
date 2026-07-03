@@ -422,5 +422,26 @@ abstract class  LocaleKeys {
   static const booking_number_of_reviews = 'booking.number_of_reviews';
   static const booking_bio = 'booking.bio';
   static const booking = 'booking';
+  static const medical_records_title = 'medical_records.title';
+  static const medical_records_no_prescriptions = 'medical_records.no_prescriptions';
+  static const medical_records_unknown_date = 'medical_records.unknown_date';
+  static const medical_records_dosage = 'medical_records.dosage';
+  static const medical_records_frequency = 'medical_records.frequency';
+  static const medical_records_instructions = 'medical_records.instructions';
+  static const medical_records_notes = 'medical_records.notes';
+  static const medical_records_no_lab_results = 'medical_records.no_lab_results';
+  static const medical_records_dosage_freq = 'medical_records.dosage_freq';
+  static const medical_records_notes_with_val = 'medical_records.notes_with_val';
+  static const medical_records_pharmacy_orders = 'medical_records.pharmacy_orders';
+  static const medical_records = 'medical_records';
+  static const emergency_title = 'emergency.title';
+  static const emergency_police = 'emergency.police';
+  static const emergency_ambulance = 'emergency.ambulance';
+  static const emergency_fire = 'emergency.fire';
+  static const emergency_electricity = 'emergency.electricity';
+  static const emergency_gas = 'emergency.gas';
+  static const emergency_water = 'emergency.water';
+  static const emergency_health_ministry = 'emergency.health_ministry';
+  static const emergency = 'emergency';
 
 }

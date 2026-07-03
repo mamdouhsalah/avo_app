@@ -4,4 +4,5 @@ import 'package:avo_app/app/core/services/remote/firebase_consumer.dart';
 abstract class FavoriteRepository {
   Future<FavoriteModel> getFavorites(String patientId);
   Future<void> toggleFavorite(String patientId, String doctorId, bool isFavorite);
+  Future<void> toggleFavoritePharmacy(String patientId, String pharmacyId, bool isFavorite);
 }

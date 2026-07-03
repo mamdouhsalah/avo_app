@@ -72,7 +72,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Medical Records'), // You can translate this later
+        title: Text(LocaleKeys.medical_records_title.tr()), // You can translate this later
         centerTitle: true,
         elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
@@ -107,7 +107,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
 
   Widget _buildPrescriptionsTab(ThemeData theme) {
     if (_medicines.isEmpty) {
-      return const Center(child: Text('No prescriptions found.'));
+      return Center(child: Text(LocaleKeys.medical_records_no_prescriptions.tr()));
     }
     return ListView.builder(
       padding: EdgeInsets.all(16.sp),
@@ -116,7 +116,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
         final m = _medicines[index];
         final dateStr = m.date != null
             ? DateFormat.yMMMd().format(m.date!)
-            : 'Unknown Date';
+            : LocaleKeys.medical_records_unknown_date.tr();
 
         return Card(
           margin: EdgeInsets.only(bottom: 12.h),
@@ -171,12 +171,12 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
                         ],
                       ),
                       SizedBox(height: 24.h),
-                      _buildDetailRow(Icons.monitor_weight_outlined, 'Dosage', m.dosage),
+                      _buildDetailRow(Icons.monitor_weight_outlined, LocaleKeys.medical_records_dosage.tr(), m.dosage),
                       SizedBox(height: 16.h),
-                      _buildDetailRow(Icons.access_time, 'Frequency', m.time),
+                      _buildDetailRow(Icons.access_time, LocaleKeys.medical_records_frequency.tr(), m.time),
                       if (m.instructions != null && m.instructions!.isNotEmpty) ...[
                         SizedBox(height: 16.h),
-                        _buildDetailRow(Icons.info_outline, 'Instructions', m.instructions!),
+                        _buildDetailRow(Icons.info_outline, LocaleKeys.medical_records_instructions.tr(), m.instructions!),
                       ],
                       SizedBox(height: 32.h),
                     ],
@@ -195,10 +195,10 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 4.h),
-                Text('Dosage: ${m.dosage} | Freq: ${m.time}'),
+                Text(LocaleKeys.medical_records_dosage_freq.tr(namedArgs: {'dosage': m.dosage, 'freq': m.time})),
                 if (m.instructions != null && m.instructions!.isNotEmpty) ...[
                   SizedBox(height: 4.h),
-                  Text('Notes: ${m.instructions}',
+                  Text(LocaleKeys.medical_records_notes_with_val.tr(namedArgs: {'notes': m.instructions!}),
                       style: const TextStyle(fontStyle: FontStyle.italic)),
                 ],
                 SizedBox(height: 4.h),
@@ -214,7 +214,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
 
   Widget _buildLabResultsTab(ThemeData theme) {
     if (_labResults.isEmpty) {
-      return const Center(child: Text('No lab results found.'));
+      return Center(child: Text(LocaleKeys.medical_records_no_lab_results.tr()));
     }
     return ListView.builder(
       padding: EdgeInsets.all(16.sp),
