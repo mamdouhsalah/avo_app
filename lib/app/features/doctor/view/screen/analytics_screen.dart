@@ -1,5 +1,3 @@
-// ====================== ANALYTICS SCREEN ======================
-
 import 'package:avo_app/app/features/doctor/view/widget/custom_drawer.dart';
 import 'package:avo_app/app/features/doctor/data/doctor_repository_impl.dart';
 import 'package:avo_app/app/core/services/remote/firebase_consumer_impl.dart';
@@ -9,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:math';
 
 enum ChartViewType { month, week, day }
 
@@ -39,6 +38,111 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     super.initState();
     _doctorRepo = DoctorRepositoryImpl(consumer: FirebaseConsumerImpl());
     _patientsFuture = _doctorRepo.getDoctorPatients(_doctorId);
+  }
+
+  // Helper to calculate statistics
+  Map<String, dynamic> _calculateStats(
+      List<AppointmentModel> appts, List<PatientModel> patients) {
+    int totalPatients = patients.length;
+    int totalAppts = appts.length;
+    
+    int completedAppts = appts.where((a) => a.status == 'completed').length;
+    
+    // Average rating
+    double totalRating = 0;
+    int ratingCount = 0;
+    for (var a in appts) {
+      if (a.patientRating != null && a.patientRating! > 0) {
+        totalRating += a.patientRating!;
+        ratingCount++;
+      }
+    }
+    double avgRating = ratingCount > 0 ? totalRating / ratingCount : 0.0;
+    String satisfaction =
+        ratingCount > 0 ? '${(avgRating / 5.0 * 100).toStringAsFixed(1)}%' : 'N/A';
+
+    return {
+      'patients': totalPatients,
+      'appointments': totalAppts,
+      'completed': completedAppts,
+      'satisfaction': satisfaction,
+    };
+  }
+
+  // Real data calculator
+  List<double> _getRealChartData(
+      ChartViewType type, List<AppointmentModel> appointments) {
+    final now = DateTime.now();
+    List<double> values = List.filled(7, 0.0);
+
+    if (type == ChartViewType.day) {
+      // 7 intervals today: 8-10, 10-12, 12-14, 14-16, 16-18, 18-20, 20-22
+      for (var appt in appointments) {
+        if (appt.date.year == now.year &&
+            appt.date.month == now.month &&
+            appt.date.day == now.day) {
+          int hour = appt.startHour;
+          if (hour >= 8 && hour < 10) values[0]++;
+          else if (hour >= 10 && hour < 12) values[1]++;
+          else if (hour >= 12 && hour < 14) values[2]++;
+          else if (hour >= 14 && hour < 16) values[3]++;
+          else if (hour >= 16 && hour < 18) values[4]++;
+          else if (hour >= 18 && hour < 20) values[5]++;
+          else if (hour >= 20 && hour <= 24) values[6]++;
+        }
+      }
+    } else if (type == ChartViewType.week) {
+      // Current week: Sun=0, Mon=1, ..., Sat=6
+      final weekStart = now.subtract(Duration(days: now.weekday % 7));
+      for (var appt in appointments) {
+        if (appt.date.isAfter(weekStart.subtract(const Duration(days: 1))) &&
+            appt.date.isBefore(weekStart.add(const Duration(days: 7)))) {
+          int idx = appt.date.weekday % 7; // Sun=0, Mon=1, ...
+          values[idx]++;
+        }
+      }
+    } else if (type == ChartViewType.month) {
+      // Last 7 months including this month
+      for (int i = 0; i < 7; i++) {
+        int targetMonth = now.month - (6 - i);
+        int targetYear = now.year;
+        while (targetMonth <= 0) {
+          targetMonth += 12;
+          targetYear--;
+        }
+
+        for (var appt in appointments) {
+          if (appt.date.year == targetYear && appt.date.month == targetMonth) {
+            values[i]++;
+          }
+        }
+      }
+    }
+    return values;
+  }
+
+  List<String> _getRealChartLabels(ChartViewType type) {
+    final now = DateTime.now();
+    if (type == ChartViewType.day) {
+      return ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'];
+    } else if (type == ChartViewType.week) {
+      return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    } else if (type == ChartViewType.month) {
+      List<String> labels = [];
+      final monthNames = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      for (int i = 0; i < 7; i++) {
+        int targetMonth = now.month - (6 - i);
+        while (targetMonth <= 0) {
+          targetMonth += 12;
+        }
+        labels.add(monthNames[targetMonth - 1]);
+      }
+      return labels;
+    }
+    return [];
   }
 
   @override
@@ -72,24 +176,35 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ),
       ),
       drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(14.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ===================== STATS =====================
-            
-            FutureBuilder<List<PatientModel>>(
-              future: _patientsFuture,
-              builder: (context, snapshotPatients) {
-                return StreamBuilder<List<AppointmentModel>>(
-                  stream: _doctorRepo.streamDoctorAppointments(_doctorId),
-                  builder: (context, snapshotAppts) {
-                    final patientsCount = snapshotPatients.data?.length ?? 0;
-                    final apptsCount = snapshotAppts.data?.length ?? 0;
-                    final avgWaitTime = 18; // Mocked for UI purposes
+      body: FutureBuilder<List<PatientModel>>(
+        future: _patientsFuture,
+        builder: (context, snapshotPatients) {
+          return StreamBuilder<List<AppointmentModel>>(
+            stream: _doctorRepo.streamDoctorAppointments(_doctorId),
+            builder: (context, snapshotAppts) {
+              if (snapshotPatients.connectionState == ConnectionState.waiting ||
+                  snapshotAppts.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                    return GridView.count(
+              final patients = snapshotPatients.data ?? [];
+              final appts = snapshotAppts.data ?? [];
+              final stats = _calculateStats(appts, patients);
+
+              // Prepare Chart Data
+              final topData = _getRealChartData(topChartView, appts);
+              final topLabels = _getRealChartLabels(topChartView);
+
+              final bottomData = _getRealChartData(bottomChartView, appts);
+              final bottomLabels = _getRealChartLabels(bottomChartView);
+
+              return SingleChildScrollView(
+                padding: EdgeInsets.all(14.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ===================== STATS =====================
+                    GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -100,123 +215,110 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         _buildStatCard(
                           context,
                           "Total Patients",
-                          patientsCount.toString(),
-                          "+12% from last month",
+                          stats['patients'].toString(),
+                          "All time registered",
                           Colors.blue,
                           Icons.people,
                         ),
                         _buildStatCard(
                           context,
                           "Appointments",
-                          apptsCount.toString(),
-                          "+8% from last month",
+                          stats['appointments'].toString(),
+                          "Total scheduled",
                           Colors.green,
-                          Icons.check_circle,
+                          Icons.calendar_month_rounded,
                         ),
                         _buildStatCard(
                           context,
-                          "Wait Time",
-                          "$avgWaitTime min",
-                          "-2 min improved",
+                          "Completed",
+                          stats['completed'].toString(),
+                          "Successfully treated",
                           Colors.orange,
-                          Icons.timer,
+                          Icons.check_circle_rounded,
                         ),
                         _buildStatCard(
                           context,
                           "Satisfaction",
-                          "98%",
-                          "+0.2% growth",
+                          stats['satisfaction'],
+                          "Average rating score",
                           Colors.purple,
-                          Icons.star,
+                          Icons.star_rounded,
                         ),
                       ],
-                    );
-                  }
-                );
-              }
-            ),
+                    ),
 
-            SizedBox(height: 24.h),
+                    SizedBox(height: 24.h),
 
-            // ===================== TOP CHART =====================
-
-            _buildChartCard(
-              context,
-              title: "Patient Visits Over Time",
-              selectedType: topChartView,
-              showLineChart: topShowLineChart,
-              onTypeChanged: (value) {
-                setState(() {
-                  topChartView = value;
-                });
-              },
-              onChartToggle: () {
-                setState(() {
-                  topShowLineChart = !topShowLineChart;
-                });
-              },
-              child: SizedBox(
-                height: 220.h,
-                child: topShowLineChart
-                    ? LineChart(
-                        _buildLineChartData(
-                          theme,
-                          topChartView,
-                        ),
-                      )
-                    : BarChart(
-                        _buildBarChartData(
-                          theme,
-                          topChartView,
-                        ),
+                    // ===================== TOP CHART =====================
+                    _buildChartCard(
+                      context,
+                      title: "Patient Visits Trend",
+                      selectedType: topChartView,
+                      showLineChart: topShowLineChart,
+                      onTypeChanged: (value) {
+                        setState(() {
+                          topChartView = value;
+                        });
+                      },
+                      onChartToggle: () {
+                        setState(() {
+                          topShowLineChart = !topShowLineChart;
+                        });
+                      },
+                      child: SizedBox(
+                        height: 220.h,
+                        child: topShowLineChart
+                            ? LineChart(
+                                _buildLineChartData(theme, topData, topLabels),
+                              )
+                            : BarChart(
+                                _buildBarChartData(theme, topData, topLabels),
+                              ),
                       ),
-              ),
-            ),
+                    ),
 
-            SizedBox(height: 24.h),
+                    SizedBox(height: 24.h),
 
-            // ===================== BOTTOM CHART =====================
-
-            _buildChartCard(
-              context,
-              title: "Patient Statistics",
-              selectedType: bottomChartView,
-              showLineChart: bottomShowLineChart,
-              onTypeChanged: (value) {
-                setState(() {
-                  bottomChartView = value;
-                });
-              },
-              onChartToggle: () {
-                setState(() {
-                  bottomShowLineChart = !bottomShowLineChart;
-                });
-              },
-              child: SizedBox(
-                height: 220.h,
-                child: bottomShowLineChart
-                    ? LineChart(
-                        _buildLineChartData(
-                          theme,
-                          bottomChartView,
-                        ),
-                      )
-                    : BarChart(
-                        _buildBarChartData(
-                          theme,
-                          bottomChartView,
-                        ),
+                    // ===================== BOTTOM CHART =====================
+                    _buildChartCard(
+                      context,
+                      title: "Activity Overview",
+                      selectedType: bottomChartView,
+                      showLineChart: bottomShowLineChart,
+                      onTypeChanged: (value) {
+                        setState(() {
+                          bottomChartView = value;
+                        });
+                      },
+                      onChartToggle: () {
+                        setState(() {
+                          bottomShowLineChart = !bottomShowLineChart;
+                        });
+                      },
+                      child: SizedBox(
+                        height: 220.h,
+                        child: bottomShowLineChart
+                            ? LineChart(
+                                _buildLineChartData(
+                                    theme, bottomData, bottomLabels),
+                              )
+                            : BarChart(
+                                _buildBarChartData(
+                                    theme, bottomData, bottomLabels),
+                              ),
                       ),
-              ),
-            ),
-          ],
-        ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
 
   // ===================== STAT CARD =====================
-
   Widget _buildStatCard(
     BuildContext context,
     String title,
@@ -251,16 +353,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w500,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+              Expanded(
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Container(
@@ -280,10 +388,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           Text(
             change,
             style: TextStyle(
-              fontSize: 12.sp,
-              color: color,
-              fontWeight: FontWeight.w600,
+              fontSize: 11.sp,
+              color: Colors.grey[500],
+              fontWeight: FontWeight.w500,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -291,7 +401,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   // ===================== CHART CARD =====================
-
   Widget _buildChartCard(
     BuildContext context, {
     required String title,
@@ -320,7 +429,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       child: Column(
         children: [
           // ================= HEADER =================
-
           Row(
             children: [
               Expanded(
@@ -335,7 +443,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ),
 
               // ================= FILTERS =================
-
               _buildFilterButton(
                 context,
                 "M",
@@ -343,9 +450,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 selectedType,
                 onTypeChanged,
               ),
-
               SizedBox(width: 8.w),
-
               _buildFilterButton(
                 context,
                 "W",
@@ -353,9 +458,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 selectedType,
                 onTypeChanged,
               ),
-
               SizedBox(width: 8.w),
-
               _buildFilterButton(
                 context,
                 "D",
@@ -363,11 +466,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 selectedType,
                 onTypeChanged,
               ),
-
               SizedBox(width: 14.w),
 
               // ================= TOGGLE ICON =================
-
               GestureDetector(
                 onTap: onChartToggle,
                 child: Container(
@@ -397,7 +498,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   // ===================== FILTER BUTTON =====================
-
   Widget _buildFilterButton(
     BuildContext context,
     String text,
@@ -437,21 +537,25 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   // ===================== LINE CHART =====================
-
   LineChartData _buildLineChartData(
-    ThemeData theme,
-    ChartViewType viewType,
-  ) {
+      ThemeData theme, List<double> data, List<String> labels) {
     final primary = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface.withValues(alpha: 0.5);
 
+    double maxVal = data.isEmpty ? 5 : data.reduce(max);
+    if (maxVal < 5) maxVal = 5;
+
+    final spots = data.asMap().entries.map((e) {
+      return FlSpot(e.key.toDouble(), e.value);
+    }).toList();
+
     return LineChartData(
       minY: 0,
-      maxY: 120,
+      maxY: (maxVal * 1.2).ceilToDouble(),
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,
-        horizontalInterval: 25,
+        horizontalInterval: maxVal > 10 ? (maxVal / 4).ceilToDouble() : 1,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: theme.dividerColor.withValues(alpha: 0.2),
@@ -466,6 +570,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             showTitles: true,
             reservedSize: 30.w,
             getTitlesWidget: (value, meta) {
+              if (value % 1 != 0 && maxVal < 10) return const SizedBox();
               return Text(
                 value.toInt().toString(),
                 style: TextStyle(
@@ -486,8 +591,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           sideTitles: SideTitles(
             showTitles: true,
             getTitlesWidget: (value, meta) {
-              final labels = _getBottomLabels(viewType);
-
+              if (value.toInt() < 0 || value.toInt() >= labels.length) {
+                return const SizedBox();
+              }
               return Padding(
                 padding: EdgeInsets.only(top: 8.h),
                 child: Text(
@@ -504,7 +610,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       ),
       lineBarsData: [
         LineChartBarData(
-          spots: _getLineSpots(viewType),
+          spots: spots,
           isCurved: true,
           color: primary,
           barWidth: 3.w,
@@ -512,27 +618,27 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             show: true,
             color: primary.withValues(alpha: 0.08),
           ),
-          dotData: FlDotData(show: false),
+          dotData: FlDotData(show: true),
         ),
       ],
     );
   }
 
   // ===================== BAR CHART =====================
-
   BarChartData _buildBarChartData(
-    ThemeData theme,
-    ChartViewType viewType,
-  ) {
+      ThemeData theme, List<double> data, List<String> labels) {
     final primary = theme.colorScheme.primary;
+
+    double maxVal = data.isEmpty ? 5 : data.reduce(max);
+    if (maxVal < 5) maxVal = 5;
 
     return BarChartData(
       alignment: BarChartAlignment.spaceAround,
-      maxY: 120,
+      maxY: (maxVal * 1.2).ceilToDouble(),
       borderData: FlBorderData(show: false),
       gridData: FlGridData(
         drawVerticalLine: false,
-        horizontalInterval: 20,
+        horizontalInterval: maxVal > 10 ? (maxVal / 4).ceilToDouble() : 1,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: theme.dividerColor.withValues(alpha: 0.2),
@@ -542,7 +648,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       ),
       titlesData: FlTitlesData(
         leftTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 30.w,
+            getTitlesWidget: (value, meta) {
+              if (value % 1 != 0 && maxVal < 10) return const SizedBox();
+              return Text(
+                value.toInt().toString(),
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+              );
+            },
+          ),
         ),
         topTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: false),
@@ -554,8 +673,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           sideTitles: SideTitles(
             showTitles: true,
             getTitlesWidget: (value, meta) {
-              final labels = _getBottomLabels(viewType);
-
+              if (value.toInt() < 0 || value.toInt() >= labels.length) {
+                return const SizedBox();
+              }
               return Padding(
                 padding: EdgeInsets.only(top: 8.h),
                 child: Text(
@@ -571,13 +691,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ),
       ),
       barGroups: List.generate(
-        _getBarValues(viewType).length,
+        data.length,
         (index) {
           return BarChartGroupData(
             x: index,
             barRods: [
               BarChartRodData(
-                toY: _getBarValues(viewType)[index],
+                toY: data[index],
                 width: 16.w,
                 borderRadius: BorderRadius.circular(8.r),
                 color: primary,
@@ -587,74 +707,5 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         },
       ),
     );
-  }
-
-  // ===================== DYNAMIC LABELS =====================
-
-  List<String> _getBottomLabels(ChartViewType viewType) {
-    switch (viewType) {
-      case ChartViewType.day:
-        return ['1', '4', '8', '12', '16', '20', '24'];
-
-      case ChartViewType.week:
-        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-      case ChartViewType.month:
-        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-    }
-  }
-
-  // ===================== LINE SPOTS =====================
-
-  List<FlSpot> _getLineSpots(ChartViewType viewType) {
-    switch (viewType) {
-      case ChartViewType.day:
-        return const [
-          FlSpot(0, 15),
-          FlSpot(1, 35),
-          FlSpot(2, 55),
-          FlSpot(3, 45),
-          FlSpot(4, 80),
-          FlSpot(5, 60),
-          FlSpot(6, 95),
-        ];
-
-      case ChartViewType.week:
-        return const [
-          FlSpot(0, 5),
-          FlSpot(1, 50),
-          FlSpot(2, 15),
-          FlSpot(3, 60),
-          FlSpot(4, 30),
-          FlSpot(5, 105),
-          FlSpot(6, 70),
-        ];
-
-      case ChartViewType.month:
-        return const [
-          FlSpot(0, 20),
-          FlSpot(1, 40),
-          FlSpot(2, 65),
-          FlSpot(3, 45),
-          FlSpot(4, 85),
-          FlSpot(5, 100),
-          FlSpot(6, 90),
-        ];
-    }
-  }
-
-  // ===================== BAR VALUES =====================
-
-  List<double> _getBarValues(ChartViewType viewType) {
-    switch (viewType) {
-      case ChartViewType.day:
-        return [20, 40, 60, 50, 90, 70, 100];
-
-      case ChartViewType.week:
-        return [30, 50, 45, 70, 90, 80, 110];
-
-      case ChartViewType.month:
-        return [40, 70, 55, 85, 100, 95, 120];
-    }
   }
 }

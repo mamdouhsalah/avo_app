@@ -19,6 +19,8 @@ class DayViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
     final dayAppointments =
         ScheduleController.getAppointmentsForDate(selectedDate, appointments);
 
@@ -27,15 +29,15 @@ class DayViewWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ========== DATE NAVIGATION ==========
-          _buildDateNavigation(context),
+          _buildDateNavigation(context, primary),
           SizedBox(height: 20.h),
 
-          // ========== TIMELINE ==========
-          _buildTimeline(dayAppointments),
+          // ========== TIMELINE SUMMARY ==========
+          _buildTimelineSummary(dayAppointments, primary),
           SizedBox(height: 24.h),
 
-          // ========== APPOINTMENTS LIST ==========
-          _buildAppointmentsList(dayAppointments),
+          // ========== APPOINTMENTS TIMELINE ==========
+          _buildAppointmentsTimeline(dayAppointments, primary),
           SizedBox(height: 20.h),
         ],
       ),
@@ -43,22 +45,28 @@ class DayViewWidget extends StatelessWidget {
   }
 
   // ========== DATE NAVIGATION ==========
-  Widget _buildDateNavigation(BuildContext context) {
+  Widget _buildDateNavigation(BuildContext context, Color primary) {
     final previousDate = selectedDate.subtract(const Duration(days: 1));
     final nextDate = selectedDate.add(const Duration(days: 1));
+    final isToday = ScheduleController.isToday(selectedDate);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12.r),
+        color: isToday
+            ? primary.withValues(alpha: 0.05)
+            : Colors.grey.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16.r),
+        border: isToday
+            ? Border.all(color: primary.withValues(alpha: 0.2))
+            : Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Previous Day Button
           IconButton(
-            icon: Icon(Icons.chevron_left, size: 24.sp),
+            icon: Icon(Icons.chevron_left, size: 28.sp, color: primary),
             onPressed: () => onDateChanged(previousDate),
             tooltip: DateFormat('MMM dd').format(previousDate),
           ),
@@ -67,19 +75,20 @@ class DayViewWidget extends StatelessWidget {
           Column(
             children: [
               Text(
-                DateFormat('EEEE').format(selectedDate),
+                isToday ? 'Today' : DateFormat('EEEE').format(selectedDate),
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+                  color: isToday ? primary : Colors.grey[600],
                 ),
               ),
               SizedBox(height: 4.h),
               Text(
                 DateFormat('MMM dd, yyyy').format(selectedDate),
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -87,7 +96,7 @@ class DayViewWidget extends StatelessWidget {
 
           // Next Day Button
           IconButton(
-            icon: Icon(Icons.chevron_right, size: 24.sp),
+            icon: Icon(Icons.chevron_right, size: 28.sp, color: primary),
             onPressed: () => onDateChanged(nextDate),
             tooltip: DateFormat('MMM dd').format(nextDate),
           ),
@@ -96,353 +105,345 @@ class DayViewWidget extends StatelessWidget {
     );
   }
 
-  // ========== TIMELINE ==========
-  Widget _buildTimeline(List<AppointmentModel> appointments) {
-    if (appointments.isEmpty) {
-      return Container(
-        padding: EdgeInsets.all(32.w),
-        decoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(
-                Icons.calendar_today,
-                size: 48.sp,
-                color: Colors.grey[400],
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                'No appointments today',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Column(
-        children: _buildTimeSlots(appointments),
-      ),
-    );
-  }
-
-  List<Widget> _buildTimeSlots(List<AppointmentModel> allAppointments) {
-    List<Widget> slots = [];
-
-    // Sort by time
-    allAppointments.sort(
-        (a, b) => a.startHour.compareTo(b.startHour));
-
-    for (int i = 0; i < 12; i++) {
-      int hour = 8 + i;
-
-      final appointmentsThisHour = allAppointments
-          .where((apt) => apt.startHour == hour)
-          .toList();
-
-      slots.add(
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.withValues(alpha: 0.1),
-                width: 0.5,
-              ),
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Time label
-              SizedBox(
-                width: 50.w,
-                child: Text(
-                  '${hour.toString().padLeft(2, '0')}:00',
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12.w),
-
-              // Appointments
-              Expanded(
-                child: appointmentsThisHour.isNotEmpty
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: appointmentsThisHour
-                            .asMap()
-                            .entries
-                            .map((entry) => Padding(
-                                  padding: EdgeInsets.only(bottom: 8.h),
-                                  child: _buildTimeSlotEvent(
-                                    appointment: entry.value,
-                                    colorIndex: entry.key,
-                                  ),
-                                ))
-                            .toList(),
-                      )
-                    : SizedBox(height: 30.h),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return slots;
-  }
-
-  // ========== TIME SLOT EVENT ==========
-  Widget _buildTimeSlotEvent({
-    required AppointmentModel appointment,
-    required int colorIndex,
-  }) {
-    final bgColor = ScheduleUtils.getEventColor(colorIndex);
-    final borderColor = ScheduleUtils.getEventBorderColor(colorIndex);
-
-    return Container(
-      padding: EdgeInsets.all(10.w),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8.r),
-        border:
-            Border.all(color: borderColor.withValues(alpha: 0.5), width: 0.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  // ========== TIMELINE SUMMARY ==========
+  Widget _buildTimelineSummary(
+      List<AppointmentModel> dayAppointments, Color primary) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      child: Row(
         children: [
-          // Time range
-          Text(
-            '${appointment.startTime} - ${appointment.endTime}',
-            style: TextStyle(
-              fontSize: 10.sp,
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
+          Container(
+            width: 4.w,
+            height: 18.h,
+            decoration: BoxDecoration(
+              color: primary,
+              borderRadius: BorderRadius.circular(2.r),
             ),
           ),
-          SizedBox(height: 6.h),
-
-          // Patient name
+          SizedBox(width: 8.w),
           Text(
-            appointment.patientName ?? 'Unknown Patient',
+            'Daily Schedule',
             style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: 3.h),
-
-          // Diagnosis
-          Text(
-            appointment.notes ?? 'No diagnosis',
-            style: TextStyle(
-              fontSize: 10.sp,
-              color: Colors.grey[600],
+          const Spacer(),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20.r),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            child: Text(
+              '${dayAppointments.length} appointment${dayAppointments.length != 1 ? 's' : ''}',
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: primary,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // ========== APPOINTMENTS LIST ==========
-  Widget _buildAppointmentsList(List<AppointmentModel> appointments) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4.w),
-          child: Text(
-            'Today\'s Schedule',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+  // ========== APPOINTMENTS TIMELINE ==========
+  Widget _buildAppointmentsTimeline(
+      List<AppointmentModel> appointments, Color primary) {
+    if (appointments.isEmpty) {
+      return Container(
+        padding: EdgeInsets.all(40.w),
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
         ),
-        SizedBox(height: 12.h),
-        if (appointments.isNotEmpty)
-          ...appointments.asMap().entries.map((entry) {
-            return _buildAppointmentCard(
-              appointment: entry.value,
-              colorIndex: entry.key,
-            );
-          })
-        else
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.h),
-              child: Text(
+        child: Center(
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.coffee_rounded,
+                  size: 48.sp,
+                  color: Colors.grey[400],
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Text(
                 'No appointments today',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Enjoy your free time!',
                 style: TextStyle(
                   fontSize: 13.sp,
                   color: Colors.grey[500],
                 ),
               ),
-            ),
+            ],
           ),
-      ],
-    );
-  }
-
-  // ========== APPOINTMENT CARD ==========
-  Widget _buildAppointmentCard({
-    required AppointmentModel appointment,
-    required int colorIndex,
-  }) {
-    final bgColor = ScheduleUtils.getEventColor(colorIndex);
-    final borderColor = ScheduleUtils.getEventBorderColor(colorIndex);
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Container(
-        padding: EdgeInsets.all(12.w),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: borderColor.withValues(alpha: 0.3)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header: Time + Status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.access_time, size: 14.sp, color: borderColor),
-                    SizedBox(width: 6.w),
-                    Text(
-                      appointment.startTime,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: borderColor,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: borderColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(6.r),
-                  ),
+      );
+    }
+
+    // Create a continuous timeline from 8 AM to 8 PM
+    List<Widget> timelineSlots = [];
+    appointments.sort((a, b) => a.startHour.compareTo(b.startHour));
+
+    // Find the earliest and latest hour to limit the scroll range slightly if desired,
+    // or just show a fixed 8 AM - 8 PM range. We'll use fixed for consistency.
+    for (int hour = 8; hour <= 20; hour++) {
+      final apptsForHour =
+          appointments.where((a) => a.startHour == hour).toList();
+
+      timelineSlots.add(
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Time column
+              SizedBox(
+                width: 60.w,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 8.h),
                   child: Text(
-                    'Scheduled',
+                    '${hour > 12 ? hour - 12 : hour}:00 ${hour >= 12 ? 'PM' : 'AM'}',
                     style: TextStyle(
-                      fontSize: 10.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
-                      color: borderColor,
+                      color: Colors.grey[500],
                     ),
+                    textAlign: TextAlign.right,
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-
-            // Patient Info
-            Container(
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Patient Name
-                  Row(
-                    children: [
-                      Icon(Icons.person, size: 14.sp, color: Colors.grey),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Text(
-                          appointment.patientName ?? 'Unknown Patient',
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
+              SizedBox(width: 12.w),
 
-                  // Diagnosis
-                  Row(
-                    children: [
-                      Icon(Icons.healing, size: 14.sp, color: Colors.grey),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Text(
-                          appointment.notes ??
-                              'No diagnosis recorded',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: Colors.grey[700],
-                          ),
-                        ),
+              // Timeline line & dots
+              Column(
+                children: [
+                  Container(
+                    width: 12.w,
+                    height: 12.w,
+                    margin: EdgeInsets.only(top: 10.h),
+                    decoration: BoxDecoration(
+                      color: apptsForHour.isNotEmpty
+                          ? primary
+                          : Colors.grey.withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
                       ),
-                    ],
+                      boxShadow: apptsForHour.isNotEmpty
+                          ? [
+                              BoxShadow(
+                                color: primary.withValues(alpha: 0.3),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              )
+                            ]
+                          : [],
+                    ),
                   ),
-                  // Patient contact info removed (not available in flat model)
+                  Expanded(
+                    child: Container(
+                      width: 2.w,
+                      color: Colors.grey.withValues(alpha: 0.2),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            SizedBox(height: 12.h),
+              SizedBox(width: 16.w),
 
-            // Doctor Info
-            Row(
+              // Appointments cards
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 24.h),
+                  child: apptsForHour.isNotEmpty
+                      ? Column(
+                          children: apptsForHour.asMap().entries.map((entry) {
+                            return _buildDayAppointmentCard(
+                                entry.value, entry.key);
+                          }).toList(),
+                        )
+                      : const SizedBox(height: 40), // Empty space for this hour
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(children: timelineSlots);
+  }
+
+  Widget _buildDayAppointmentCard(AppointmentModel apt, int index) {
+    final colors = [
+      const Color(0xFFEAF6FF),
+      const Color(0xFFF0FFF4),
+      const Color(0xFFFFF7E6),
+      const Color(0xFFF9F0FF),
+    ];
+    final borders = [
+      const Color(0xFF4A90D9),
+      const Color(0xFF27AE60),
+      const Color(0xFFE67E22),
+      const Color(0xFF8E44AD),
+    ];
+    // We use the patient name length as a simple deterministic hash so the colors stay consistent for the same appt
+    final hash = apt.patientName?.length ?? index;
+    final bgColor = colors[hash % colors.length];
+    final borderColor = borders[hash % borders.length];
+
+    return Padding(
+      padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(color: borderColor.withValues(alpha: 0.4)),
+          boxShadow: [
+            BoxShadow(
+              color: borderColor.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14.r),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Colored left border
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6.r),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.medical_information, size: 12.sp),
-                      SizedBox(width: 4.w),
-                      Text(
-                        appointment.doctorName ?? 'Doctor',
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w600,
+                  width: 5.w,
+                  color: borderColor,
+                ),
+                
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Time & Status
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.access_time_filled,
+                                    size: 14.sp, color: borderColor),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  '${apt.startTime} – ${apt.endTime}',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: borderColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w, vertical: 4.h),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                borderRadius: BorderRadius.circular(6.r),
+                                border: Border.all(
+                                    color: borderColor.withValues(alpha: 0.2)),
+                              ),
+                              child: Text(
+                                apt.status[0].toUpperCase() +
+                                    apt.status.substring(1),
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: borderColor,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 10.h),
+
+                        // Patient Info
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8.w),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: borderColor.withValues(alpha: 0.2)),
+                              ),
+                              child: Icon(Icons.person,
+                                  size: 16.sp, color: borderColor),
+                            ),
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    apt.patientName ?? 'Unknown Patient',
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (apt.notes != null && apt.notes!.isNotEmpty) ...[
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      apt.notes!,
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: Colors.grey[700],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

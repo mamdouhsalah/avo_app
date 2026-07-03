@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:avo_app/app/core/models/lab_result_model.dart';
 import 'package:share_plus/share_plus.dart';
-// ignore: unused_import
-import 'package:share_plus/share_plus.dart' as sp;
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LabResultService {
   static List<LabResultModel> labResults = [];
@@ -59,18 +60,61 @@ class LabResultService {
     }
   }
 
-  /// Download (placeholder — hook up real file logic here)
-  static Future<void> downloadFile(LabResultModel result) async {
-    // TODO: implement real download
-    await Future.delayed(const Duration(milliseconds: 500));
+  /// Download file from URL
+  static Future<String?> downloadFile(LabResultModel result) async {
+    if (result.fileUrl == null || result.fileUrl!.isEmpty) {
+      throw Exception('No file URL available');
+    }
+    
+    // If it is already a local file path
+    if (!result.fileUrl!.startsWith('http')) {
+      final file = File(result.fileUrl!);
+      if (await file.exists()) {
+        return result.fileUrl!;
+      }
+      throw Exception('File not found locally');
+    }
+
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      String ext = result.fileType.isNotEmpty ? result.fileType : 'pdf';
+      final fileName = 'lab_result_${result.id}.$ext';
+      final savePath = '${dir.path}/$fileName';
+
+      // Check if already downloaded
+      if (await File(savePath).exists()) {
+        return savePath;
+      }
+
+      await Dio().download(result.fileUrl!, savePath);
+      return savePath;
+    } catch (e) {
+      throw Exception('Failed to download file: $e');
+    }
   }
 
   static Future<void> shareFile(LabResultModel result) async {
-    await SharePlus.instance.share(
-      ShareParams(
-        text: 'Lab Result: ${result.title}\nPatient: ${result.patientName}\nDate: ${result.dateTime.toLocal()}\nSummary: ${result.resultSummary ?? "N/A"}',
-        subject: 'Lab Result - ${result.title}',
-      ),
+    final text = 'Lab Result: ${result.title}\nPatient: ${result.patientName ?? "Unknown"}\nDate: ${result.formattedDate}\nSummary: ${result.resultSummary ?? "N/A"}';
+    
+    try {
+      // Try to download/get local path
+      final localPath = await downloadFile(result);
+      if (localPath != null) {
+        await Share.shareXFiles(
+          [XFile(localPath)],
+          text: text,
+          subject: 'Lab Result - ${result.title}',
+        );
+        return;
+      }
+    } catch (e) {
+      // Ignore download errors and share text only if file fails
+    }
+
+    // Fallback to text sharing
+    await Share.share(
+      text,
+      subject: 'Lab Result - ${result.title}',
     );
   }
 }

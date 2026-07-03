@@ -57,9 +57,9 @@ class LabResultModel {
       'date_time': dateTime.toIso8601String(),
       'file_type': fileType,
       'type_add': typeAdd,
-      'result_summary': resultSummary,
-      'notes': notes,
-      'file_url': fileUrl,
+      if (resultSummary != null) 'result_summary': resultSummary,
+      if (notes != null) 'notes': notes,
+      if (fileUrl != null) 'file_url': fileUrl,
       if (patientName != null) 'patientName': patientName,
       if (doctorName != null) 'doctorName': doctorName,
     };
